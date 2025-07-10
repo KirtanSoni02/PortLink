@@ -23,7 +23,7 @@ const PortDashboardOverview: React.FC<PortDashboardOverviewProps> = ({ portData,
       value: portData.totalShipsInTransit,
       icon: Ship,
       color: 'from-blue-500 to-blue-600',
-      change: '+12%',
+      // change: '+12%',
       description: 'Currently active'
     },
     {
@@ -31,7 +31,7 @@ const PortDashboardOverview: React.FC<PortDashboardOverviewProps> = ({ portData,
       value: portData.totalContractsCompleted,
       icon: FileText,
       color: 'from-emerald-500 to-emerald-600',
-      change: '+8%',
+      // change: '+8%',
       description: 'All time total'
     },
     {
@@ -39,7 +39,7 @@ const PortDashboardOverview: React.FC<PortDashboardOverviewProps> = ({ portData,
       value: portData.activeJobPosts,
       icon: Briefcase,
       color: 'from-purple-500 to-purple-600',
-      change: '+3',
+      // change: '+3',
       description: 'Open positions'
     },
     {
@@ -47,7 +47,7 @@ const PortDashboardOverview: React.FC<PortDashboardOverviewProps> = ({ portData,
       value: portData.registeredSailors,
       icon: Users,
       color: 'from-amber-500 to-amber-600',
-      change: '+24%',
+      // change: '+24%',
       description: 'In our network'
     }
   ];
@@ -73,7 +73,7 @@ const PortDashboardOverview: React.FC<PortDashboardOverviewProps> = ({ portData,
               </div>
               <div className="text-right">
                 <div className="text-2xl font-bold text-slate-800">{card.value}</div>
-                <div className="text-sm text-emerald-600 font-medium">{card.change}</div>
+                {/* <div className="text-sm text-emerald-600 font-medium">{card.change}</div> */}
               </div>
             </div>
             <h3 className="text-lg font-semibold text-slate-800 mb-1">{card.title}</h3>

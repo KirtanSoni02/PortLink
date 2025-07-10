@@ -6,7 +6,7 @@ import cors from 'cors';
 import connectDB from './config/db.js';
 import authRoutes from './routes/authroutes.js'; // ✅ OK
 import protectedRoutes from './routes/protectedroutes.js'; // ✅ OK
-
+import portRoutes from './routes/portroutes.js'; // ✅ OK, assuming portroutes.js is in the same directory
 await connectDB();
 
 const app = express();
@@ -17,8 +17,8 @@ app.use(express.json());
 // ✅ Route mounting
 app.use('/api/auth', authRoutes);
 app.use('/api/protected', protectedRoutes);
-
-console.log("ENV JWT_SECRET:", process.env.JWT_SECRET); // ✅ This must print your secret
+app.use('/api/port', portRoutes); // ✅ OK, assuming port.js is in protectedroutes.js
+// console.log("ENV JWT_SECRET:", process.env.JWT_SECRET); // ✅ This must print your secret
 
 
 app.get('/', (req, res) => {

@@ -61,7 +61,8 @@ const Login: React.FC = () => {
     if (role === 'sailor') {
       navigate('/dashboard/sailor');
     } else if (role === 'port') {
-      navigate('/dashboard/port');
+      
+      navigate('/dashboard/port-authority');
     } else if (role === 'service') {
       navigate('/dashboard/service');
     } else {

@@ -40,7 +40,7 @@ const RegisterUser = async (req, res) => {
             return res.status(409).json({ message: "User already exists" });
         }
 
-        const hashedPassword = await bcrypt.hash(req.body.password, 10);
+        const hashedPassword = await bcrypt.hash(password, 10);
 
         const newUser = new User({
             firstName,
@@ -64,4 +64,4 @@ const RegisterUser = async (req, res) => {
     }
 };
 
-export default { LoginUser, RegisterUser };
+export { LoginUser, RegisterUser };

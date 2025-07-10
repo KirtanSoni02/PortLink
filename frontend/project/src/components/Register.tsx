@@ -273,7 +273,7 @@ const Register: React.FC = () => {
                 >
                   <option value="">Select your role</option>
                   <option value="sailor">Sailor</option>
-                  <option value="port-authority">Port Authority</option>
+                  <option value="port">Port Authority</option>
                   <option value="service-provider">Service Provider</option>
                 </select>
               </div>

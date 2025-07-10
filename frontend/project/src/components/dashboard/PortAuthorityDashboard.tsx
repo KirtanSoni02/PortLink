@@ -8,6 +8,7 @@ import JobPostingForm from './JobPostingForm';
 import JobPostsManagement from './JobPostsManagement';
 import CompletedContracts from './CompletedContracts';
 import PortProfileSettings from './PortProfileSettings';
+import axios from 'axios';
 
 export type PortActiveSection = 'dashboard' | 'create-job' | 'active-shipments' | 'completed-contracts' | 'profile';
 
@@ -46,21 +47,52 @@ const PortAuthorityDashboard: React.FC = () => {
   const [jobPosts, setJobPosts] = useState<JobPost[]>([]);
 
   // Mock port authority data - replace with API call
-  const [portData] = useState<PortAuthorityData>({
-    id: 'port_001',
-    name: 'Captain Maria Santos',
-    email: 'maria.santos@portofmiami.com',
-    portName: 'Port of Miami',
-    location: {
-      city: 'Miami',
-      state: 'Florida',
-      country: 'United States'
-    },
-    totalShipsInTransit: 24,
-    totalContractsCompleted: 156,
-    activeJobPosts: 8,
-    registeredSailors: 342
-  });
+  // const [portData] = useState<PortAuthorityData>({
+  //   id: 'port_001',
+  //   name: 'Captain Maria Santos',
+  //   email: 'maria.santos@portofmiami.com',
+  //   portName: 'Port of Miami',
+  //   location: {
+  //     city: 'Miami',
+  //     state: 'Florida',
+  //     country: 'United States'
+  //   },
+  //   totalShipsInTransit: 24,
+  //   totalContractsCompleted: 156,
+  //   activeJobPosts: 8,
+  //   registeredSailors: 342
+  // });
+
+const [portData, setPortData] = useState<PortAuthorityData>({
+  id: '',
+  name: '',
+  email: '',
+  portName: '',
+  location: { city: '', state: '', country: '' },
+  totalShipsInTransit: 0,
+  totalContractsCompleted: 0,
+  activeJobPosts: 0,
+  registeredSailors: 0
+});
+
+useEffect(() => {
+  const fetchPortData = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get('http://localhost:3000/api/port/profile', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      setPortData(response.data);
+    } catch (err) {
+      console.error("Error fetching port data:", err);
+    }
+  };
+
+  fetchPortData();
+}, []);
+
 
   // Initialize with mock job posts
   useEffect(() => {
@@ -145,10 +177,12 @@ const PortAuthorityDashboard: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Header */}
-      <PortDashboardHeader 
-        portData={portData}
-        onMenuClick={() => setSidebarOpen(!sidebarOpen)}
-      />
+      {portData && (
+  <PortDashboardHeader 
+    portData={portData}
+    onMenuClick={() => setSidebarOpen(!sidebarOpen)}
+  />
+    )}
 
       <div className="flex">
         {/* Sidebar */}
@@ -168,7 +202,8 @@ const PortAuthorityDashboard: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              {renderActiveSection()}
+              {portData && renderActiveSection()}
+
             </motion.div>
           </div>
         </main>
