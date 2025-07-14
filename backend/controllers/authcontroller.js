@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import User from "../models/User.model.js";
+import PortAuthority from "../models/PortAuthority.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
@@ -33,13 +34,12 @@ const LoginUser = async (req, res) => {
 };
 
 const RegisterUser = async (req, res) => {
-    const { firstName, lastName, email, phone, password, role, location, city, state, country, experience } = req.body;
+    const { firstName, lastName, email, phone, password, role, location, city, state, country, experience, selectedPort } = req.body;
     try {
         const existingUser = await User.findOne({ email });
         if (existingUser) {
             return res.status(409).json({ message: "User already exists" });
         }
-
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const newUser = new User({
@@ -55,6 +55,23 @@ const RegisterUser = async (req, res) => {
             country,
             experience
         });
+
+        if (role === 'port') {
+            await PortAuthority.create({
+                user: newUser._id,
+                portName: req.body.selectedPort,
+                location: {
+                    city: req.body.city,
+                    state: req.body.state,
+                    country: req.body.country
+            },
+                totalShipsInTransit: 0,
+                totalIncomingShips: 0,
+                totalContractsCompleted: 0,
+                activeJobPosts: 0,
+                registeredSailors: 0
+        });
+}
 
         await newUser.save();
         return res.status(201).json({ message: "User registered successfully" });

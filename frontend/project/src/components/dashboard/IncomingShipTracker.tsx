@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Ship, MapPin, Clock, Users, Package, Cloud, Eye, ChevronDown, ChevronUp } from 'lucide-react';
- import axios from "axios";
 
 interface CrewMember {
   id: string;
@@ -29,18 +28,15 @@ interface ActiveShip {
   progress: number;
 }
 
-interface LiveShipTrackerProps {
+interface IncomingShipTrackerProps {
   ships: ActiveShip[];
 }
 
-const LiveShipTracker: React.FC<LiveShipTrackerProps> = ({ ships }) => {
-
+const IncomingShipTracker: React.FC<IncomingShipTrackerProps> = ({ ships }) => {
+ 
   const [expandedShip, setExpandedShip] = useState<string | null>(null);
 
-  // Mock data - replace with API call
-
-
-
+  // Mock data - replace with API cal
 
   const getWeatherColor = (weather: string) => {
     switch (weather) {
@@ -71,11 +67,11 @@ const LiveShipTracker: React.FC<LiveShipTrackerProps> = ({ ships }) => {
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-slate-800 flex items-center">
           <Ship className="w-7 h-7 mr-3 text-blue-500" />
-          Live Ship Tracker
+          Incoming Ship Tracker
         </h2>
         <div className="flex items-center space-x-2">
           <div className="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></div>
-          <span className="text-sm text-slate-600">Live Tracking</span>
+          <span className="text-sm text-slate-600">Incoming Ship Tracking</span>
         </div>
       </div>
 
@@ -327,4 +323,4 @@ const LiveShipTracker: React.FC<LiveShipTrackerProps> = ({ ships }) => {
   );
 };
 
-export default LiveShipTracker;
+export default IncomingShipTracker;

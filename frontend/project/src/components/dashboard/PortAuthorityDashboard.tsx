@@ -6,13 +6,15 @@ import PortDashboardOverview from './PortDashboardOverview';
 import LiveShipTracker from './LiveShipTracker';
 import JobPostingForm from './JobPostingForm';
 import JobPostsManagement from './JobPostsManagement';
-import CompletedContracts from './CompletedContracts';
+import  CompletedContracts   from './CompletedContracts';
 import PortProfileSettings from './PortProfileSettings';
+import IncomingShipTracker from './IncomingShipTracker';
 import axios from 'axios';
 
 export type PortActiveSection = 'dashboard' | 'create-job' | 'active-shipments' | 'completed-contracts' | 'profile';
 
 interface PortAuthorityData {
+  _id?: string;
   id: string;
   name: string;
   email: string;
@@ -45,6 +47,10 @@ const PortAuthorityDashboard: React.FC = () => {
   const [activeSection, setActiveSection] = useState<PortActiveSection>('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [jobPosts, setJobPosts] = useState<JobPost[]>([]);
+  const [activeShips, setActiveShips] = useState([]);
+  const [incomingShips, setIncomingShips] = useState([]);
+  const [completedContracts, setCompletedContracts] = useState([]);
+
 
   // Mock port authority data - replace with API call
   // const [portData] = useState<PortAuthorityData>({
@@ -75,7 +81,10 @@ const [portData, setPortData] = useState<PortAuthorityData>({
   registeredSailors: 0
 });
 
-useEffect(() => {
+
+
+
+
   const fetchPortData = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -84,58 +93,162 @@ useEffect(() => {
           Authorization: `Bearer ${token}`
         }
       });
-      setPortData(response.data);
+      console.log("Port Data API Response:", response.data); // Debugging line
+      // setPortData(response.data);
+
+      setPortData({
+      ...response.data,
+      id: response.data._id, // ✅ normalize to always have `id`
+    });
     } catch (err) {
       console.error("Error fetching port data:", err);
     }
   };
 
-  fetchPortData();
+  
+
+useEffect(() => {
+    fetchPortData(); 
+  
+},[]);
+
+  // Initialize with mock job posts
+
+
+
+useEffect(() => {
+  const fetchJobPosts = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.get('http://localhost:3000/api/activejob/activejobpost', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      console.log("JobPost API Response:", res.data); // Add this to debug
+      // Case 1: if it's an array
+      if (Array.isArray(res.data)) {
+        const formatted = res.data.map((job: any) => ({
+          ...job,
+          id: job._id, // 👈 convert Mongo _id to id
+        }));
+        setJobPosts(formatted);
+      }
+      // Case 2: if it's an object with array inside
+      else if (Array.isArray(res.data.jobs)) {
+        const formatted = res.data.jobs.map((job: any) => ({
+          ...job,
+          id: job._id, // 👈 convert Mongo _id to id
+        }));
+        setJobPosts(formatted);
+      } else {
+        console.error("Unexpected job post data format");
+      }
+    } catch (err) {
+      console.error("Failed to fetch job posts:", err);
+    }
+  };
+
+  fetchJobPosts();
+}, []);
+
+ useEffect(() => {
+  if (activeSection === 'dashboard') {
+    fetchPortData(); // ⬅️ This is your solution
+  }
+}, [activeSection]);
+
+
+//For the disply information of active ships (outgoing)
+useEffect(() => {
+  const fetchActiveShips = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.get("http://localhost:3000/api/ship/active", {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      setActiveShips(res.data);
+    } catch (err) {
+      console.error("Error fetching active ships:", err);
+      setActiveShips([]);
+    }
+  };
+
+  fetchActiveShips();
+  const interval = setInterval(fetchActiveShips, 20000); // every 20 seconds
+  return () => clearInterval(interval);
+}, []);
+
+//this is to display the incoming ships
+
+
+useEffect(() => {
+  const fetchIncomingShips = async () => {
+    try {
+      const token = localStorage.getItem("token"); // or from context if you use AuthProvider
+
+      const res = await axios.get("http://localhost:3000/api/ship/incoming", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log("API response:", res.data); // Add this line
+      setIncomingShips(res.data); // assuming res.data is an array
+    } catch (error) {
+      console.error("Failed to fetch ships:", error);
+      setIncomingShips([]); // fallback to empty array on error to avoid crashing
+    }
+  };
+
+  fetchIncomingShips(); // fetch once initially
+
+  const interval = setInterval(fetchIncomingShips, 30000); // refetch every 30 sec
+
+  return () => clearInterval(interval);
 }, []);
 
 
-  // Initialize with mock job posts
-  useEffect(() => {
-    const mockJobPosts: JobPost[] = [
-      {
-        id: 'job_001',
-        sourcePort: 'Port of Miami',
-        destinationPort: 'Port of Barcelona',
-        sailorsRequired: 8,
-        salaryOffered: 18000,
-        departureDate: '2024-02-15',
-        cargoType: 'Container Cargo',
-        status: 'active',
-        applicationsCount: 12,
-        createdDate: '2024-01-20'
-      },
-      {
-        id: 'job_002',
-        sourcePort: 'Port of Miami',
-        destinationPort: 'Port of Rotterdam',
-        sailorsRequired: 6,
-        salaryOffered: 16000,
-        departureDate: '2024-02-20',
-        cargoType: 'General Cargo',
-        status: 'active',
-        applicationsCount: 8,
-        createdDate: '2024-01-19'
-      },
-      {
-        id: 'job_003',
-        sourcePort: 'Port of Miami',
-        destinationPort: 'Port of Hamburg',
-        sailorsRequired: 10,
-        salaryOffered: 20000,
-        departureDate: '2024-02-25',
-        cargoType: 'Bulk Cargo',
-        status: 'filled',
-        applicationsCount: 15,
-        createdDate: '2024-01-18'
-      }
-    ];
-    setJobPosts(mockJobPosts);
-  }, []);
+useEffect(() => {
+  const fetchCompletedContracts = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.get("http://localhost:3000/api/contract/completed", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+console.log("Completed Contracts API Response:", res.data); // Debugging line
+      const formatted = res.data.map((contract: any) => ({
+        id: contract._id,
+        shipNumber: contract.shipNumber,
+        shipName: contract.shipName,
+        startDate: contract.startDate,
+        endDate: contract.endDate,
+        sailorsCount: contract.sailorsCount,
+        route: contract.route,
+        cargoType: contract.cargoType,
+        totalPayment: contract.totalPayment,
+        duration: contract.duration,
+      }));
+
+      setCompletedContracts(formatted);
+
+    } catch (err) {
+      console.error("Failed to fetch completed contracts:", err);
+    }
+  };
+
+  fetchCompletedContracts();
+}, []);
+
+
+
+  // This runs **only after** portData is ready
+
+
+
 
   const handleCreateJobPost = (newJobPost: Omit<JobPost, 'id' | 'status' | 'applicationsCount' | 'createdDate'>) => {
     const jobPost: JobPost = {
@@ -158,15 +271,16 @@ useEffect(() => {
         return (
           <div className="space-y-8">
             <PortDashboardOverview portData={portData} jobPosts={jobPosts} />
-            <LiveShipTracker />
+            <LiveShipTracker ships={activeShips}/>
+            <IncomingShipTracker ships={incomingShips}/>
           </div>
         );
       case 'create-job':
         return <JobPostingForm onCreateJob={handleCreateJobPost} portData={portData} />;
       case 'active-shipments':
-        return <LiveShipTracker />;
+        return <LiveShipTracker ships={activeShips}/>;
       case 'completed-contracts':
-        return <CompletedContracts portId={portData.id} />;
+        return <CompletedContracts contracts={completedContracts} />;
       case 'profile':
         return <PortProfileSettings portData={portData} />;
       default:
@@ -209,7 +323,7 @@ useEffect(() => {
         </main>
 
         {/* Job Posts Management - Always visible when there are job posts */}
-        {activeSection === 'dashboard' && jobPosts.length > 0 && (
+        {activeSection === 'dashboard' && (
           <div className="hidden xl:block w-80 pt-16">
             <div className="p-6">
               <JobPostsManagement 

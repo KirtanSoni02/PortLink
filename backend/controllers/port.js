@@ -28,12 +28,18 @@ export const createJobPost = async (req, res) => {
     await newJob.save();
 
     // Increment job post count in PortAuthority
-    await PortAuthority.findByIdAndUpdate(portId, {
-      $inc: { activeJobPosts: 1 }
-    });
+    const updateResult = await PortAuthority.findOneAndUpdate(
+  { user: portId }, // ✅ match by user field
+  { $inc: { activeJobPosts: 1 } },
+  { new: true }
+);
 
-    return res.status(201).json({ message: "Job posted successfully", job: newJob });
-  } catch (error) {
+
+console.log("Updated PortAuthority:", updateResult); // ✅ Add this log
+
+
+   return res.status(201).json(newJob); // ✅ Send the job object directly
+   } catch (error) {
     console.error("Error creating job post:", error);
     res.status(500).json({ message: "Internal server error" });
   }
@@ -140,3 +146,7 @@ export const getPortDashboardProfile = async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
+
+
+

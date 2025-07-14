@@ -24,7 +24,7 @@ const shipSchema = new mongoose.Schema({
   // Link to the port authority who created this shipment
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    ref: 'PortAuthority',
     required: true,
   },
 
@@ -56,6 +56,7 @@ const shipSchema = new mongoose.Schema({
     enum: ['active', 'completed', 'cancelled'],
     default: 'active',
   },
+  currentspeed: { type: Number, default: 0 }, // in knots
 }, { timestamps: true });
 
 export default mongoose.model('Ship', shipSchema);

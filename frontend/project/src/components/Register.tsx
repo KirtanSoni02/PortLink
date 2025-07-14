@@ -16,6 +16,7 @@ interface FormData {
   state: string;
   country: string;
   experience: string;
+  selectedPort: string;
 }
 
 interface FormErrors {
@@ -35,8 +36,14 @@ const Register: React.FC = () => {
     city: '',
     state: '',
     country: '',
-    experience: ''
+    experience: '',
+    selectedPort: ''  
   });
+
+  const [portList, setPortList] = useState<string[]>([
+    "Port of Deendayal (Kandla)", "Port of Mumbai", "Port of Jawaharlal Nehru (Nhava Sheva)", "Port of Mormugao", "Port of New Mangalore", "Port of Cochin (Kochi)", "Port of V.O. Chidambaranar (Tuticorin)", "Port of Chennai", "Port of Kamarajar (Ennore)", "Port of Visakhapatnam", "Port of Paradip", "Port of Syama Prasad Mookerjee (Kolkata)", "Port of Port Blair", "Port of Vadhavan", "Port of Porbandar", "Port of Veraval", "Port of Bhavnagar", "Port of Bharuch", "Port of Surat", "Port of Mandvi", "Port of Navlakhi", "Port of Bedi", "Port of Sikka", "Port of Jafarabad", "Port of Okha", "Port of Magdalla", "Port of Mundra", "Port of Pipavav", "Port of Dahej", "Port of Hazira", "Port of Tuna", "Port of Ratnagiri", "Port of Dahanu", "Port of Tarapur", "Port of Satpati", "Port of Kellwa-Mahim", "Port of Arnala", "Port of Uttan", "Port of Bassein", "Port of Bhiwandi", "Port of Manori", "Port of Kalyan", "Port of Thane", "Port of Versova", "Port of Bandra", "Port of Trombay", "Port of Ulwa-Belapur", "Port of Panvel", "Port of More", "Port of Mandwa", "Port of Karanja", "Port of Thal", "Port of Rewas", "Port of Alibag", "Port of Dharamtar", "Port of Revdanda", "Port of Borli/Mandla", "Port of Nandgaon", "Port of Murud-Janjira", "Port of Rajpuri", "Port of Mandad", "Port of Dighi", "Port of Panaji", "Port of Chapora", "Port of Betul", "Port of Talpona", "Port of Tiracol", "Port of Mangalore", "Port of Malpe", "Port of Hangarkatta", "Port of Kundapur", "Port of Bhatkal", "Port of Honavar", "Port of Tadri", "Port of Belekeri", "Port of Karwar", "Port of Padubidri", "Port of Alappuzha", "Port of Vadakara", "Port of Kannur", "Port of Kasargode", "Port of Kodungallore", "Port of Ponnani", "Port of Thalassery", "Port of Thiruvananthapuram", "Port of Kollam (Quilon)", "Port of Kozhikode/Beypore", "Port of Neendakara", "Port of Azhikkal", "Port of Vizhinjam", "Port of Nagapattinam", "Port of Kattupalli", "Port of Karaikal", "Port of Cuddalore", "Port of Thirukkadaiyur", "Port of Koondankulam", "Port of Machilipatnam", "Port of Kakinada", "Port of Krishnapatnam", "Port of Gangavaram", "Port of Bhavanapadu", "Port of Calingapatnam", "Port of Bheemunipatnam", "Port of Narsapur", "Port of Vadarevu", "Port of Nizampatnam", "Port of Gopalpur", "Port of Dhamra", "Port of Kulpi", "Port of Durgachak", "Port of Farakka", "Port of Sahebganj"
+]);
+
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [showPassword, setShowPassword] = useState(false);
@@ -66,6 +73,11 @@ const Register: React.FC = () => {
       newErrors.password = 'Password must be at least 6 characters long';
     }
 
+    if (formData.role === "port" && !formData.selectedPort) {
+    newErrors.selectedPort = "Please select your port";
+  }
+
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -79,19 +91,25 @@ const Register: React.FC = () => {
   setIsLoading(true);
 
   try {
+    // const response = await axios.post("http://localhost:3000/api/auth/register", {
+    //   firstName: formData.firstName,
+    //   lastName: formData.lastName,
+    //   email: formData.email,
+    //   phone: formData.phone,
+    //   password: formData.password,
+    //   role: formData.role,               // e.g., "sailor"
+    //   location: formData.location,
+    //   city: formData.city,
+    //   state: formData.state,
+    //   country: formData.country,
+    //   experience: formData.experience,
+    //   selectedport: formData.selectedPort   
+    // });
+
     const response = await axios.post("http://localhost:3000/api/auth/register", {
-      firstName: formData.firstName,
-      lastName: formData.lastName,
-      email: formData.email,
-      phone: formData.phone,
-      password: formData.password,
-      role: formData.role,               // e.g., "sailor"
-      location: formData.location,
-      city: formData.city,
-      state: formData.state,
-      country: formData.country,
-      experience: formData.experience    // "yes" or "no"
-    });
+  ...formData, // includes all necessary fields including selectedPort
+});
+
 
     alert("✅ Registration successful!");
     console.log("Registration response:", response.data);
@@ -277,6 +295,45 @@ const Register: React.FC = () => {
                   <option value="service-provider">Service Provider</option>
                 </select>
               </div>
+
+
+
+    {formData.role === "port" && (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.5, delay: 0.5 }}
+  >
+    <label htmlFor="selectedPort" className="block text-sm font-medium text-slate-700 mb-2 mt-6">
+      Select Port You Work At
+    </label>
+    <select
+      id="selectedPort"
+      name="selectedPort"
+      value={formData.selectedPort}
+      onChange={handleInputChange}
+      className="block w-full pl-3 pr-3 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
+    >
+      <option value="">-- Select a Port --</option>
+      {portList.map((port, idx) => (
+        <option key={idx} value={port}>
+          {port}
+        </option>
+      ))}
+    </select>
+    {errors.selectedPort && (
+      <motion.p
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="mt-2 text-sm text-red-600"
+      >
+        {errors.selectedPort}
+      </motion.p>
+    )}
+  </motion.div>
+)}
+
+              
               {errors.role && (
                 <motion.p
                   initial={{ opacity: 0, y: -10 }}

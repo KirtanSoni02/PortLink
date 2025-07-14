@@ -14,6 +14,7 @@ const portAuthoritySchema = new mongoose.Schema({
     country: String
   },
   totalShipsInTransit: { type: Number, default: 0 },
+  totalIncomingShips: { type: Number, default: 0 },
   totalContractsCompleted: { type: Number, default: 0 },
   activeJobPosts: { type: Number, default: 0 },
   registeredSailors: { type: Number, default: 0 }

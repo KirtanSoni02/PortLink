@@ -7,6 +7,9 @@ import connectDB from './config/db.js';
 import authRoutes from './routes/authroutes.js'; // ✅ OK
 import protectedRoutes from './routes/protectedroutes.js'; // ✅ OK
 import portRoutes from './routes/portroutes.js'; // ✅ OK, assuming portroutes.js is in the same directory
+import shipRoutes from './routes/shiproutes.js'; // ✅ OK, assuming shiproutes.js is in the same directory
+import activeJobRoutes from './routes/activejobroute.js'; 
+import completedContractRoutes from './routes/CompletedContractroutes.js' // ✅ OK, assuming CompletedContractroutes.js is in the same directory
 await connectDB();
 
 const app = express();
@@ -19,7 +22,10 @@ app.use('/api/auth', authRoutes);
 app.use('/api/protected', protectedRoutes);
 app.use('/api/port', portRoutes); // ✅ OK, assuming port.js is in protectedroutes.js
 // console.log("ENV JWT_SECRET:", process.env.JWT_SECRET); // ✅ This must print your secret
+app.use('/api/ship', shipRoutes)
+app.use('/api/activejob', activeJobRoutes); // ✅ OK, assuming activejobroute.js is in the same directory
 
+app.use('/api/contract', completedContractRoutes);
 
 app.get('/', (req, res) => {
   res.send('Welcome to the backend server!');
