@@ -1,6 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Briefcase, MapPin, Users, DollarSign, Calendar, Eye, Edit, Trash2 } from 'lucide-react';
+import axios from 'axios';
+import { toast } from 'react-hot-toast';
 
 interface JobPost {
   id: string;
@@ -17,10 +19,10 @@ interface JobPost {
 
 interface JobPostsManagementProps {
   jobPosts: JobPost[];
-  onDeleteJob: (jobId: string) => void;
+  onDeleteJob: (jobId: string) => void; 
 }
 
-const JobPostsManagement: React.FC<JobPostsManagementProps> = ({ jobPosts, onDeleteJob }) => {
+const JobPostsManagement: React.FC<JobPostsManagementProps> = ({ jobPosts, onDeleteJob}) => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'active': return 'bg-emerald-100 text-emerald-700 border-emerald-200';
@@ -39,6 +41,28 @@ const JobPostsManagement: React.FC<JobPostsManagementProps> = ({ jobPosts, onDel
     console.log('Editing job:', jobId);
     // Handle edit job logic
   };
+
+   const handleDeleteJob = async (jobId: string) => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.delete(`http://localhost:3000/api/activejob/delete/${jobId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      toast.success("Job post deleted successfully");
+      onDeleteJob(jobId); // ⬅️ Remove from UI list
+
+    } catch (err) {
+      console.error("Failed to delete job post:", err);
+      toast.error("Failed to delete job post");
+    }
+  };
+    
+  
+
+
 
   return (
     <motion.div
@@ -124,7 +148,7 @@ const JobPostsManagement: React.FC<JobPostsManagementProps> = ({ jobPosts, onDel
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => onDeleteJob(job.id)}
+                onClick={() => handleDeleteJob(job.id)}
                 className="flex items-center space-x-1 px-2 py-1 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200 transition-colors"
               >
                 <Trash2 className="w-3 h-3" />

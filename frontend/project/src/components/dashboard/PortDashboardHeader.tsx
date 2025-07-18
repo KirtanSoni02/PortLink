@@ -105,10 +105,7 @@ const PortDashboardHeader: React.FC<PortDashboardHeaderProps> = ({ portData, onM
                   </div>
                   
                   <div className="py-2">
-                    <button className="flex items-center space-x-3 w-full px-4 py-2 text-left hover:bg-slate-50 transition-colors">
-                      <Settings className="w-4 h-4 text-slate-500" />
-                      <span className="text-sm text-slate-700">Profile Settings</span>
-                    </button>
+                   
                     <Link
                       to="/"
                       className="flex items-center space-x-3 w-full px-4 py-2 text-left hover:bg-slate-50 transition-colors"

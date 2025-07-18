@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { User, Mail, Phone, MapPin, Star, Edit, Save, X, Camera } from 'lucide-react';
+import axios from 'axios';
 
 interface ProfileSettingsProps {
   sailorData: {
@@ -9,6 +10,7 @@ interface ProfileSettingsProps {
     email: string;
     phone: string;
     experience: string;
+    location: string;
     rating: number;
     completedContracts: number;
   };
@@ -20,24 +22,44 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ sailorData }) => {
     name: sailorData.name,
     email: sailorData.email,
     phone: sailorData.phone,
-    location: 'San Francisco, CA',
+    location: sailorData.location,
     bio: 'Experienced maritime professional with 8+ years in international shipping.',
     certifications: 'STCW Basic Safety Training, Advanced Firefighting, Medical First Aid',
     languages: 'English (Native), Spanish (Fluent), Portuguese (Conversational)'
   });
 
-  const handleSave = () => {
-    // Handle save logic here
-    console.log('Saving profile:', formData);
-    setIsEditing(false);
-  };
+ const handleSave = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await axios.put('http://localhost:3000/api/sailor/edit-profile',{
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      location: formData.location,
+    }, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (response.data.success) {
+      alert('Profile updated successfully. Please log out and log in again to see changes reflected.');
+      setIsEditing(false);
+    } else {
+      alert('Failed to update profile.');
+    }
+  } catch (error) {
+    console.error('Error updating profile:', error);
+    alert('Something went wrong while updating your profile.');
+  }
+};
 
   const handleCancel = () => {
     setFormData({
       name: sailorData.name,
       email: sailorData.email,
       phone: sailorData.phone,
-      location: 'San Francisco, CA',
+      location: sailorData.location,
       bio: 'Experienced maritime professional with 8+ years in international shipping.',
       certifications: 'STCW Basic Safety Training, Advanced Firefighting, Medical First Aid',
       languages: 'English (Native), Spanish (Fluent), Portuguese (Conversational)'

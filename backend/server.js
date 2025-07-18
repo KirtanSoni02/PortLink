@@ -10,6 +10,8 @@ import portRoutes from './routes/portroutes.js'; // ✅ OK, assuming portroutes.
 import shipRoutes from './routes/shiproutes.js'; // ✅ OK, assuming shiproutes.js is in the same directory
 import activeJobRoutes from './routes/activejobroute.js'; 
 import completedContractRoutes from './routes/CompletedContractroutes.js' // ✅ OK, assuming CompletedContractroutes.js is in the same directory
+import sailorRoutes from './routes/sailorRoutes.js';
+
 await connectDB();
 
 const app = express();
@@ -26,6 +28,8 @@ app.use('/api/ship', shipRoutes)
 app.use('/api/activejob', activeJobRoutes); // ✅ OK, assuming activejobroute.js is in the same directory
 
 app.use('/api/contract', completedContractRoutes);
+
+app.use('/api/sailor', sailorRoutes);
 
 app.get('/', (req, res) => {
   res.send('Welcome to the backend server!');

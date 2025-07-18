@@ -108,7 +108,8 @@ const [portData, setPortData] = useState<PortAuthorityData>({
   
 
 useEffect(() => {
-    fetchPortData(); 
+    const interval = setInterval(fetchPortData, 40000); // Fetch every 40 seconds
+    return () => clearInterval(interval);
   
 },[]);
 
@@ -177,7 +178,7 @@ useEffect(() => {
   };
 
   fetchActiveShips();
-  const interval = setInterval(fetchActiveShips, 20000); // every 20 seconds
+  const interval = setInterval(fetchActiveShips, 300000); // every 60 seconds
   return () => clearInterval(interval);
 }, []);
 
@@ -204,7 +205,7 @@ useEffect(() => {
 
   fetchIncomingShips(); // fetch once initially
 
-  const interval = setInterval(fetchIncomingShips, 30000); // refetch every 30 sec
+  const interval = setInterval(fetchIncomingShips, 300000); // refetch every 30 sec
 
   return () => clearInterval(interval);
 }, []);
@@ -261,9 +262,15 @@ console.log("Completed Contracts API Response:", res.data); // Debugging line
     setJobPosts(prev => [jobPost, ...prev]);
   };
 
-  const handleDeleteJobPost = (jobId: string) => {
-    setJobPosts(prev => prev.filter(job => job.id !== jobId));
-  };
+const handleDeleteJobPost = (jobId: string) => {
+  setJobPosts(prev => prev.filter(job => job.id !== jobId));
+
+  // Optionally update port stats if needed
+  setPortData(prev => ({
+    ...prev,
+    activeJobPosts: prev.activeJobPosts - 1,
+  }));
+};
 
   const renderActiveSection = () => {
     switch (activeSection) {

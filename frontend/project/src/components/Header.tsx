@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Anchor, Menu, X } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
-
+// import { useThemeToggle } from '../hooks/useTheme'
+// import { Sun, Moon } from 'lucide-react';
 const Header: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -15,6 +16,7 @@ const Header: React.FC = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+// const { theme, toggleTheme } = useThemeToggle(); // Place this inside the component
 
   // Don't show header on auth pages
   if (location.pathname === '/login' || location.pathname === '/register') {
@@ -22,6 +24,7 @@ const Header: React.FC = () => {
   }
 
   return (
+    
     <motion.header
       initial={{ y: -100 }}
       animate={{ y: 0 }}
@@ -94,6 +97,18 @@ const Header: React.FC = () => {
               </Link>
             </motion.div>
           </div>
+    {/* <motion.button
+  whileHover={{ scale: 1.1 }}
+  whileTap={{ scale: 0.95 }}
+  onClick={toggleTheme}
+  className="p-2 rounded-full border border-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition"
+>
+  {theme === 'dark' ? (
+    <Sun className="w-5 h-5 text-yellow-400" />
+  ) : (
+    <Moon className="w-5 h-5 text-slate-600" />
+  )}
+</motion.button> */}
 
           {/* Mobile Menu Button */}
           <button

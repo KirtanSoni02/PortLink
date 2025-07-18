@@ -1,13 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Ship, MapPin, Clock, Users, Package, Cloud, Eye, ChevronDown, ChevronUp } from 'lucide-react';
- import axios from "axios";
-
-interface CrewMember {
-  id: string;
-  name: string;
-  role: string;
+import axios from "axios";
+import { Types } from 'mongoose';
+export interface User {
+  _id: string;
+  firstName: string;
+  lastName: string;
   experience: string;
+  // Add other fields if needed
+}
+
+export interface Sailor {
+  _id: string;
+  user: User;
+  // Add other sailor fields if needed
+}
+
+export interface CrewMember {
+  _id: string;
+  sailorId: Sailor;
 }
 
 interface ActiveShip {
@@ -224,18 +236,25 @@ const LiveShipTracker: React.FC<LiveShipTrackerProps> = ({ ships }) => {
                           Crew Members ({ship.crewCount})
                         </h4>
                         <div className="space-y-3 max-h-48 overflow-y-auto">
-                          {ship.crew.map((member) => (
-                            <div key={member.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                              <div>
-                                <div className="font-medium text-slate-800">{member.name}</div>
-                                <div className="text-sm text-slate-600">{member.role}</div>
-                              </div>
-                              <div className="text-right">
-                                <div className="text-sm text-slate-500">Experience</div>
-                                <div className="text-sm font-medium text-slate-700">{member.experience}</div>
-                              </div>
-                            </div>
-                          ))}
+                         {ship.crew.map((member) => (
+  <div key={member._id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+    <div>
+      <div className="font-medium text-slate-800">
+        {member.sailorId?.user?.firstName ?? 'Unknown'} {member.sailorId?.user?.lastName ?? ''}
+      </div>
+      <div className="text-sm text-slate-800">
+       
+      </div>
+    </div>
+    <div className="text-right">
+      <div className="text-sm text-slate-500">Experience</div>
+      <div className="text-sm font-medium text-slate-700">
+        {member.sailorId?.user?.experience ?? 'N/A'}
+      </div>
+    </div>
+  </div>
+))}
+
                           {ship.crew.length < ship.crewCount && (
                             <div className="text-center text-slate-500 text-sm py-2">
                               +{ship.crewCount - ship.crew.length} more crew members

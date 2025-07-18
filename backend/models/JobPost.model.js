@@ -17,7 +17,7 @@ const jobPostSchema = new mongoose.Schema({
     enum: ['active', 'filled', 'expired'],
     default: 'active'
   },
-  crewAssigned: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  crewAssigned: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Sailor' }],
   applicationsCount: { type: Number, default: 0 },
   createdDate: { type: Date, default: Date.now }
 });

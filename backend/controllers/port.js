@@ -4,7 +4,14 @@ import PortAuthority from "../models/PortAuthority.model.js";
 
 export const createJobPost = async (req, res) => {
   try {
-    const portId = req.user.id; // assuming JWT middleware attaches user info to req.user
+    const userId = req.user.id; // assuming JWT middleware attaches user info to req.user
+    const portAuthority = await PortAuthority.findOne({ user: userId });
+    
+            if (!portAuthority) {
+              return res.status(404).json({ error: "PortAuthority not found" });
+            }
+        
+    const portId = portAuthority._id;
     const {
       sourcePort,
       destinationPort,
@@ -129,6 +136,18 @@ export const getPortDashboardProfile = async (req, res) => {
     if (!user || !portData) {
       return res.status(404).json({ message: 'User or port authority not found' });
     }
+
+    const totalShipsInTransit = await Ship.countDocuments({ createdBy: portData._id, status: 'active' });
+    const totalContractsCompleted = await CompletedContract.countDocuments({ portAuthority: portData._id });
+    const activeJobPosts = await JobPost.countDocuments({ createdBy: portData._id, status: 'active' });
+    const registeredSailors = await User.countDocuments({ role: 'sailor', location: portData.portName });
+
+    portData.totalShipsInTransit = totalShipsInTransit;
+    portData.totalContractsCompleted = totalContractsCompleted; 
+    portData.activeJobPosts = activeJobPosts;
+    portData.registeredSailors = registeredSailors;
+
+    await PortAuthority.findByIdAndUpdate(portData._id, portData, { new: true });
 
     res.status(200).json({
       name: `${user.firstName} ${user.lastName}`,

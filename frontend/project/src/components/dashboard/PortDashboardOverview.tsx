@@ -99,7 +99,7 @@ const PortDashboardOverview: React.FC<PortDashboardOverviewProps> = ({ portData,
           <div className="space-y-4">
             <div className="flex justify-between items-center">
               <span className="text-slate-600">Total Applications</span>
-              <span className="text-2xl font-bold text-blue-600">{totalApplications}</span>
+              <span className="text-xl font-bold text-blue-600">{totalApplications}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-slate-600">Active Job Posts</span>
@@ -130,7 +130,7 @@ const PortDashboardOverview: React.FC<PortDashboardOverviewProps> = ({ portData,
         >
           <h3 className="text-xl font-bold text-slate-800 mb-6 flex items-center">
             <Activity className="w-6 h-6 mr-3 text-emerald-500" />
-            Recent Activity
+            Recent Activity (We will use the Web Sockets API to update this in real-time)
           </h3>
           
           <div className="space-y-4">

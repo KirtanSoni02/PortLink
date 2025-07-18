@@ -7,6 +7,7 @@ import AvailableShipments from './AvailableShipments';
 import ShipDetails from './ShipDetails';
 import ContractHistory from './ContractHistory';
 import ProfileSettings from './ProfileSettings';
+import axios from "axios";
 
 export type ActiveSection = 'dashboard' | 'contracts' | 'shipments' | 'profile';
 
@@ -17,6 +18,7 @@ interface SailorData {
   phone: string;
   experience: string;
   rating: number;
+  location: string;
   completedContracts: number;
   hasOngoingContract: boolean;
   currentContract?: {
@@ -51,43 +53,37 @@ const SailorDashboard: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Mock sailor data - replace with API call
-  const [sailorData] = useState<SailorData>({
-    id: 'sailor_001',
-    name: 'Captain James Rodriguez',
-    email: 'james.rodriguez@websailor.com',
-    phone: '+1 (555) 123-4567',
-    experience: '8 years',
-    rating: 4.8,
-    completedContracts: 47,
-    hasOngoingContract: true,
-    currentContract: {
-      id: 'contract_789',
-      sourcePort: 'Port of Los Angeles',
-      destinationPort: 'Port of Tokyo',
-      shipName: 'Ocean Navigator',
-      shipNumber: 'ON-2024-001',
-      estimatedArrival: '8 hours 32 minutes',
-      currentLocation: {
-        lat: 35.6762,
-        lng: 139.6503,
-        name: 'Pacific Ocean - 120 nautical miles from Tokyo'
-      },
-      progress: 85,
-      salary: 15000,
-      startDate: '2024-01-15'
-    },
-    currentShip: {
-      id: 'ship_001',
-      name: 'Ocean Navigator',
-      number: 'ON-2024-001',
-      cargoType: 'Container Cargo',
-      capacity: '14,000 TEU',
-      departureTime: '2024-01-15 08:00',
-      arrivalTime: '2024-01-28 14:30'
+
+
+// State and effect for loading real data
+const [sailorData, setSailorData] = useState<SailorData | null>(null);
+const [loading, setLoading] = useState(true);
+
+useEffect(() => {
+  const fetchSailorData = async () => {
+    try {
+      const token = localStorage.getItem("token"); // or however you store auth
+      const response = await axios.get('http://localhost:3000/api/sailor/dashboard', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setSailorData(response.data);
+    } catch (error) {
+      console.error("❌ Failed to fetch sailor dashboard data:", error);
+    } finally {
+      setLoading(false);
     }
-  });
+  };
+
+  fetchSailorData();
+}, []);
+
 
   const renderActiveSection = () => {
+    if (loading) return <div className="text-center mt-10">Loading dashboard...</div>;
+if (!sailorData) return <div className="text-center mt-10 text-red-500">Failed to load dashboard data.</div>;
+
     switch (activeSection) {
       case 'dashboard':
         return (
@@ -109,46 +105,60 @@ const SailorDashboard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      {/* Header */}
-      <DashboardHeader 
-        sailorData={sailorData}
-        onMenuClick={() => setSidebarOpen(!sidebarOpen)}
-      />
-
-      <div className="flex">
-        {/* Sidebar */}
-        <DashboardSidebar
-          activeSection={activeSection}
-          onSectionChange={setActiveSection}
-          isOpen={sidebarOpen}
-          onClose={() => setSidebarOpen(false)}
-        />
-
-        {/* Main Content */}
-        <main className="flex-1 lg:ml-64 pt-16">
-          <div className="p-6">
-            <motion.div
-              key={activeSection}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              {renderActiveSection()}
-            </motion.div>
-          </div>
-        </main>
+  <div className="min-h-screen bg-slate-50">
+    {/* Render nothing until sailorData is loaded */}
+    {!sailorData ? (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-slate-500 text-lg animate-pulse">Loading dashboard...</p>
       </div>
-
-      {/* Mobile sidebar overlay */}
-      {sidebarOpen && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
-          onClick={() => setSidebarOpen(false)}
+    ) : (
+      <>
+        {/* Header */}
+        <DashboardHeader 
+          sailorData={{
+            name: sailorData.name,
+            email: sailorData.email,
+            rating: sailorData.rating
+          }}
+          onMenuClick={() => setSidebarOpen(!sidebarOpen)}
         />
-      )}
-    </div>
-  );
+
+        <div className="flex">
+          {/* Sidebar */}
+          <DashboardSidebar
+            activeSection={activeSection}
+            onSectionChange={setActiveSection}
+            isOpen={sidebarOpen}
+            onClose={() => setSidebarOpen(false)}
+          />
+
+          {/* Main Content */}
+          <main className="flex-1 lg:ml-64 pt-16">
+            <div className="p-6">
+              <motion.div
+                key={activeSection}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                {renderActiveSection()}
+              </motion.div>
+            </div>
+          </main>
+        </div>
+
+        {/* Mobile sidebar overlay */}
+        {sidebarOpen && (
+          <div 
+            className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+      </>
+    )}
+  </div>
+);
+
 };
 
 export default SailorDashboard;

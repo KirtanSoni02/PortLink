@@ -32,11 +32,9 @@ const shipSchema = new mongoose.Schema({
   crew: [{
     sailorId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+      ref: 'Sailor',
       required: true,
-    },
-    role: String,
-    experience: String,
+    }
   }],
 
   jobReference: {

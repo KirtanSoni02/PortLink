@@ -21,7 +21,7 @@ const completedContractSchema = new mongoose.Schema({
   crew: [{
     sailorId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
+      ref: 'Sailor'
     },
     name: String,
     role: String,
