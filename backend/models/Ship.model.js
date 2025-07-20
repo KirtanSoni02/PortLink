@@ -8,11 +8,7 @@ const shipSchema = new mongoose.Schema({
   eta: { type: Date, required: true }, // Can be Date or duration //Estimated arrival time
 
   cargoType: { type: String, required: true },
-  weatherStatus: {
-    type: String,
-    enum: ['Clear', 'Cloudy', 'Stormy', 'Foggy'],
-    default: 'Clear',
-  },
+  weatherStatus: {type:String},
 
   //  Real-time location
   currentLocation: {

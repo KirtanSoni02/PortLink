@@ -22,7 +22,10 @@ export const getMyJobPosts = async (req, res, next) => {
 }
 
 import PortAuthority from "../models/PortAuthority.model.js";
-import { getWeatherStatus, calculateDistance, calculateETA } from "../utils/shipUtils.js";
+import {calculateSpeed,haversineDistance} from "../utils/calculateSpeed.js";
+import { getWeatherData } from '../utils/weatherAPI.js';
+import portLocation from "../portLocations.js"
+
 
 
 export const ConvertToShip = async (req, res) => {
@@ -42,14 +45,18 @@ export const ConvertToShip = async (req, res) => {
       const shipName = `Ship-${Date.now()}`; // Placeholder, frontend should provide dynamic name
 
       // Fetch weather info (mocked function or external API)
-      const weatherStatus = await getWeatherStatus(job.destinationPort); // Use OpenWeatherMap or similar
+      const weatherStatus = await getWeatherData(job.destinationPort); // Use OpenWeatherMap or similar
 
       // Assume source & destination have fixed coordinates for now (can be fetched from Port model)
-      const sourceCoords = { lat: 22.3072, lng: 73.1812 }; // example: Surat
-      const destinationCoords = { lat: 41.3851, lng: 2.1734 }; // example: Barcelona
+     
+const sourcePort = job.sourcePort; 
+const sourceCoords = portLocation[sourcePort]
+const destinationPort = job.destinationPort;
+const destinationCoords = portLocation[destinationPort]
 
-      const distance = calculateDistance(sourceCoords, destinationCoords); // in nautical miles
-      const estimatedSpeed = 20; // knots (20 knots = ~37 km/h)
+
+      const distance = haversineDistance(sourceCoords, destinationCoords); 
+      const estimatedSpeed = 0; // knots (20 knots = ~37 km/h)
       const eta = calculateETA(distance, estimatedSpeed); // in Date format
 
       const newShip = new Ship({

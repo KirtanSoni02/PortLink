@@ -19,13 +19,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ✅ Route mounting
+
 app.use('/api/auth', authRoutes);
 app.use('/api/protected', protectedRoutes);
-app.use('/api/port', portRoutes); // ✅ OK, assuming port.js is in protectedroutes.js
-// console.log("ENV JWT_SECRET:", process.env.JWT_SECRET); // ✅ This must print your secret
+app.use('/api/port', portRoutes); 
 app.use('/api/ship', shipRoutes)
-app.use('/api/activejob', activeJobRoutes); // ✅ OK, assuming activejobroute.js is in the same directory
+app.use('/api/activejob', activeJobRoutes); 
 
 app.use('/api/contract', completedContractRoutes);
 
@@ -35,6 +34,46 @@ app.get('/', (req, res) => {
   res.send('Welcome to the backend server!');
 });
 
-app.listen(process.env.PORT, () => {
-  console.log(`✅ Server is running on port http://localhost:${process.env.PORT}`);
+
+
+
+
+
+
+
+
+
+
+import http from 'http';
+import { Server } from 'socket.io';
+// import app from './app.js';
+import { updateSailorLocation } from './controllers/shipController.js'; // your location logic
+
+const server = http.createServer(app);
+
+const io = new Server(server, {
+  cors: {
+    origin: '*', // allow all or restrict as needed
+  },
 });
+
+io.on('connection', (socket) => {
+  console.log(`✅ Socket connected: ${socket.id}`);
+
+  socket.on('sailorLocationUpdate', async (data) => {
+    console.log("📡 Received location update:", data);
+    await updateSailorLocation(data); // controller logic
+    console.log("Update Done")
+  });
+
+  socket.on('disconnect', () => {
+    console.log(`❌ Socket disconnected: ${socket.id}`);
+  });
+});
+
+const PORT = process.env.PORT;
+server.listen(PORT, () => {
+  console.log(`🚀 Server with socket.io running at http://localhost:${PORT}`);
+});
+
+

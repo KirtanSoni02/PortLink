@@ -7,7 +7,10 @@ import AvailableShipments from './AvailableShipments';
 import ShipDetails from './ShipDetails';
 import ContractHistory from './ContractHistory';
 import ProfileSettings from './ProfileSettings';
-import axios from "axios";
+import axios from 'axios';
+import socket from '../../socket.ts';
+
+
 
 export type ActiveSection = 'dashboard' | 'contracts' | 'shipments' | 'profile';
 
@@ -31,11 +34,12 @@ interface SailorData {
     currentLocation: {
       lat: number;
       lng: number;
-      name: string;
+      region: string;
     };
     progress: number;
     salary: number;
     startDate: string;
+    
   };
   currentShip?: {
     id: string;
@@ -45,6 +49,7 @@ interface SailorData {
     capacity: string;
     departureTime: string;
     arrivalTime: string;
+    weatherStatus:string
   };
 }
 
@@ -53,6 +58,10 @@ const SailorDashboard: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Mock sailor data - replace with API call
+
+
+
+
 
 
 // State and effect for loading real data
@@ -68,6 +77,7 @@ useEffect(() => {
           Authorization: `Bearer ${token}`,
         },
       });
+      console.log("Sailor data: ",response.data)
       setSailorData(response.data);
     } catch (error) {
       console.error("❌ Failed to fetch sailor dashboard data:", error);
@@ -78,6 +88,28 @@ useEffect(() => {
 
   fetchSailorData();
 }, []);
+
+
+useEffect(() => {
+  if (sailorData?.currentShip?.id) {
+    const watchId = navigator.geolocation.watchPosition((position) => {
+      const { latitude, longitude } = position.coords;
+      console.log(position)
+      socket.emit("sailorLocationUpdate", {
+        shipId: sailorData.currentShip!.id, // '!' tells TypeScript you're sure it's not undefined
+        latitude,
+        longitude,
+      });
+    });
+
+    return () => {
+      navigator.geolocation.clearWatch(watchId);
+    };
+  }
+}, [sailorData]);
+
+
+
 
 
   const renderActiveSection = () => {

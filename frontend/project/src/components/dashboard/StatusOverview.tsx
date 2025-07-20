@@ -15,7 +15,7 @@ interface StatusOverviewProps {
       currentLocation: {
         lat: number;
         lng: number;
-        name: string;
+        region: string;
       };
       progress: number;
       salary: number;
@@ -55,6 +55,11 @@ const StatusOverview: React.FC<StatusOverviewProps> = ({ sailorData }) => {
   }
 
   const contract = sailorData.currentContract!;
+const sourceportCordiantes = contract.sourcePort;
+const destportCordiantes = contract.destinationPort;
+const currentCordinates = contract.currentLocation.lng.toFixed(4)
+
+
 
   return (
     <div className="space-y-6">
@@ -163,7 +168,7 @@ const StatusOverview: React.FC<StatusOverviewProps> = ({ sailorData }) => {
           <div className="space-y-4">
             <div>
               <div className="text-sm text-slate-600 mb-1">Position</div>
-              <div className="font-semibold text-slate-800">{contract.currentLocation.name}</div>
+              <div className="font-semibold text-slate-800">{contract.currentLocation.region}</div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -184,6 +189,38 @@ const StatusOverview: React.FC<StatusOverviewProps> = ({ sailorData }) => {
           </div>
         </motion.div>
       </div>
+
+
+
+
+
+
+{/* <ShipTrackerMap
+  sourceCoords={sourceportCordiantes}
+  destinationCoords={destportCordiantes}
+  currentCoords={"latitude":contract.currentLocation.lat.toFixed(4),"longitude":}  // Comes from socket update
+/> */}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
       {/* Map Placeholder */}
       <motion.div

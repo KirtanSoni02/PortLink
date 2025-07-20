@@ -2,6 +2,8 @@ import User from "../models/User.model.js"
 import Ship from "../models/Ship.model.js";
 import CompletedContract from "../models/CompletedContract.model.js";
 import SailorModel from "../models/Sailor.model.js";
+import mongoose from "mongoose";
+
 
 export const getSailorDashboardData = async (req, res) => {
   try {
@@ -19,10 +21,12 @@ export const getSailorDashboardData = async (req, res) => {
       "crew.sailorId": sailor._id,
     });
 
-    const activeShip = await Ship.findOne({
-      "crew.sailorId": sailor._id,
-      status: "active",
-    });
+    const sailorObjectId = new mongoose.Types.ObjectId(sailor._id);
+
+const activeShip = await Ship.findOne({
+  "crew.sailorId": sailorObjectId,
+  status: "active",
+});
 
     let currentContract = null;
     if (activeShip) {
@@ -36,10 +40,11 @@ export const getSailorDashboardData = async (req, res) => {
         currentLocation: {
           lat: activeShip.currentLocation?.lat || 0,
           lng: activeShip.currentLocation?.lng || 0,
-          name: activeShip.currentLocation?.region || "Unknown",
+          region: activeShip.currentLocation?.region || "Unknown",
         },
         progress: activeShip.progress,
         salary: activeShip.salary || 0,
+        
         startDate: activeShip.departureDate.toISOString(),
       };
     }
@@ -61,6 +66,7 @@ export const getSailorDashboardData = async (req, res) => {
         number: activeShip.number,
         cargoType: activeShip.cargoType,
         capacity: activeShip.capacity || 'N/A',
+        weather:activeShip.weatherStatus,
         departureTime: activeShip.departureDate.toISOString(),
         arrivalTime: activeShip.arrivalDate?.toISOString() || activeShip.eta.toISOString(),
       },

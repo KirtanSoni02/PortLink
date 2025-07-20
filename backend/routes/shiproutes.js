@@ -2,7 +2,6 @@ import express from 'express';
 import { getActiveShipsByPort } from '../controllers/shipController.js';
 import  verifyToken  from '../middlewares/authmiddleware.js' 
 import { getIncomingShipsToPort } from '../controllers/shipController.js'; 
-import { getUpdatedShips } from '../controllers/shipController.js'; 
 
 
 const router = express.Router();
