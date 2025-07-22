@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, User, Mail, Phone, FileText, MapPin, Calendar, Send, AlertCircle, CheckCircle } from 'lucide-react';
+import { X, User, FileText, MapPin, Calendar, Send, CheckCircle } from 'lucide-react';
 
 interface ShipmentApplicationModalProps {
   isOpen: boolean;
@@ -12,9 +12,9 @@ interface ShipmentApplicationModalProps {
     company: string;
     salary: number;
     estimatedTime: string;
-    crewRequired: number;
+    crewRequired?: number;
     cargoType: string;
-    urgency: string;
+    urgency?: string;
   };
   sailorData: {
     name: string;

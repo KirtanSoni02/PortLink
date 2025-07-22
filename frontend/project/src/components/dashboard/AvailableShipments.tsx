@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { MapPin, Clock, DollarSign, Users, Ship, Eye, Send, AlertCircle } from 'lucide-react';
+import { MapPin, Clock, Users, Ship, Eye, Send, AlertCircle } from 'lucide-react';
 import ShipmentApplicationModal from './ShipmentApplicationModal';
 import axios from 'axios';
 import { useEffect } from 'react';
@@ -47,22 +47,36 @@ const [AvailableShipmentsData, setAvailableShipmentsData] = useState(null);
   useEffect(() => {
   const fetchAvailableShipments = async () => {
     try {
-      const token = localStorage.getItem("token"); // or however you store auth
+      const token = localStorage.getItem("token");
       const response = await axios.get('http://localhost:3000/api/sailor/available-shipments', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("Available shipments data: ",response.data)
-      setAvailableShipmentsData(response.data);
-      (response.data);
+
+      const mappedData: Shipment[] = response.data.map((job: any) => ({
+        id: job._id,
+        sourcePort: job.sourcePort,
+        destinationPort: job.destinationPort,
+        estimatedTime: estimateDays(job.departureDate) + ' days',
+        salary: job.salaryOffered,
+        crewRequired: job.sailorsRequired,
+        cargoType: job.cargoType,
+        urgency: getUrgencyLevel(job.departureDate),
+        postedDate: new Date(job.createdDate).toISOString(),
+        company: job.createdBy?.companyName || "Unknown Shipping Co.",
+        description: `Sailing from ${job.sourcePort} to ${job.destinationPort} carrying ${job.cargoType}. Departure: ${new Date(job.departureDate).toLocaleDateString()}.`
+      }));
+
+      setAvailableShipmentsData(mappedData);
     } catch (error) {
-      console.error("❌ Failed to fetch sailor dashboard data:", error);
+      console.error("❌ Failed to fetch available shipments:", error);
     }
   };
 
   fetchAvailableShipments();
 }, []);
+
 
   // Mock sailor data if not provided
   const defaultSailorData = {
@@ -78,60 +92,21 @@ const [AvailableShipmentsData, setAvailableShipmentsData] = useState(null);
   const currentSailorData = sailorData || defaultSailorData;
 
   // Mock data - replace with API call
-  const shipments: Shipment[] = [
-    {
-      id: 'ship_001',
-      sourcePort: 'Port of Miami',
-      destinationPort: 'Port of Barcelona',
-      estimatedTime: '14 days',
-      salary: 18000,
-      crewRequired: 8,
-      cargoType: 'Container Cargo',
-      urgency: 'high',
-      postedDate: '2024-01-20',
-      company: 'Atlantic Shipping Co.',
-      description: 'Urgent container shipment to Barcelona. Experienced crew needed for transatlantic voyage.'
-    },
-    {
-      id: 'ship_002',
-      sourcePort: 'Port of Long Beach',
-      destinationPort: 'Port of Shanghai',
-      estimatedTime: '21 days',
-      salary: 22000,
-      crewRequired: 12,
-      cargoType: 'Bulk Cargo',
-      urgency: 'medium',
-      postedDate: '2024-01-19',
-      company: 'Pacific Maritime Ltd.',
-      description: 'Bulk cargo transport across the Pacific. Looking for experienced maritime professionals.'
-    },
-    {
-      id: 'ship_003',
-      sourcePort: 'Port of Rotterdam',
-      destinationPort: 'Port of New York',
-      estimatedTime: '12 days',
-      salary: 16000,
-      crewRequired: 6,
-      cargoType: 'General Cargo',
-      urgency: 'low',
-      postedDate: '2024-01-18',
-      company: 'Euro-American Shipping',
-      description: 'Regular cargo run between Rotterdam and New York. Standard voyage requirements.'
-    },
-    {
-      id: 'ship_004',
-      sourcePort: 'Port of Singapore',
-      destinationPort: 'Port of Dubai',
-      estimatedTime: '8 days',
-      salary: 12000,
-      crewRequired: 5,
-      cargoType: 'Liquid Cargo',
-      urgency: 'medium',
-      postedDate: '2024-01-17',
-      company: 'Middle East Maritime',
-      description: 'Liquid cargo transport in the Arabian Sea. Specialized handling experience preferred.'
-    }
-  ];
+  const shipments: Shipment[] = AvailableShipmentsData || [];
+
+function estimateDays(departureDate: string): number {
+  const now = new Date();
+  const departure = new Date(departureDate);
+  const diffMs = Math.abs(departure.getTime() - now.getTime());
+  return Math.max(1, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
+}
+
+function getUrgencyLevel(departureDate: string): 'low' | 'medium' | 'high' {
+  const daysUntilDeparture = estimateDays(departureDate);
+  if (daysUntilDeparture <= 3) return 'high';
+  if (daysUntilDeparture <= 7) return 'medium';
+  return 'low';
+}
 
   const getUrgencyColor = (urgency: string) => {
     switch (urgency) {

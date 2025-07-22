@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FileText, Calendar, DollarSign, MapPin, Star, Eye, Download } from 'lucide-react';
-
+import axios from 'axios';
+import { useEffect } from 'react';
 interface Contract {
   id: string;
   sourcePort: string;
@@ -22,75 +23,27 @@ interface ContractHistoryProps {
 
 const ContractHistory: React.FC<ContractHistoryProps> = ({ sailorId }) => {
   const [filter, setFilter] = useState<'all' | 'completed' | 'ongoing' | 'cancelled'>('all');
+ const [contracts, setContracts] = useState<Contract[]>([]);
 
+  useEffect(() => {
+    const fetchContracts = async () => {
+      try {
+        console.log("Fetching contract history for sailor ID:", sailorId); // Debugging line
+        const response = await axios.get(`http://localhost:3000/api/sailor/contractshistory/${sailorId}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+        setContracts(response.data);
+      } catch (error) {
+        console.error('Error fetching contract history:', error);
+      }
+    };
+
+    if (sailorId) fetchContracts();
+  }, [sailorId]);
   // Mock data - replace with API call
-  const contracts: Contract[] = [
-    {
-      id: 'contract_789',
-      sourcePort: 'Port of Los Angeles',
-      destinationPort: 'Port of Tokyo',
-      shipName: 'Ocean Navigator',
-      startDate: '2024-01-15',
-      endDate: '2024-01-28',
-      salary: 15000,
-      status: 'ongoing',
-      rating: 0,
-      company: 'Pacific Maritime Ltd.',
-      duration: '13 days'
-    },
-    {
-      id: 'contract_788',
-      sourcePort: 'Port of Miami',
-      destinationPort: 'Port of Barcelona',
-      shipName: 'Atlantic Star',
-      startDate: '2023-12-10',
-      endDate: '2023-12-24',
-      salary: 18000,
-      status: 'completed',
-      rating: 4.8,
-      company: 'Atlantic Shipping Co.',
-      duration: '14 days'
-    },
-    {
-      id: 'contract_787',
-      sourcePort: 'Port of Rotterdam',
-      destinationPort: 'Port of New York',
-      shipName: 'Euro Express',
-      startDate: '2023-11-20',
-      endDate: '2023-12-02',
-      salary: 16000,
-      status: 'completed',
-      rating: 4.9,
-      company: 'Euro-American Shipping',
-      duration: '12 days'
-    },
-    {
-      id: 'contract_786',
-      sourcePort: 'Port of Singapore',
-      destinationPort: 'Port of Dubai',
-      shipName: 'Arabian Pearl',
-      startDate: '2023-10-15',
-      endDate: '2023-10-23',
-      salary: 12000,
-      status: 'completed',
-      rating: 4.7,
-      company: 'Middle East Maritime',
-      duration: '8 days'
-    },
-    {
-      id: 'contract_785',
-      sourcePort: 'Port of Shanghai',
-      destinationPort: 'Port of Long Beach',
-      shipName: 'Pacific Dream',
-      startDate: '2023-09-01',
-      endDate: '2023-09-22',
-      salary: 22000,
-      status: 'completed',
-      rating: 4.6,
-      company: 'Trans-Pacific Shipping',
-      duration: '21 days'
-    }
-  ];
+  
 
   const filteredContracts = filter === 'all' 
     ? contracts 
@@ -258,23 +211,7 @@ const ContractHistory: React.FC<ContractHistoryProps> = ({ sailorId }) => {
                   </div>
 
                   <div className="flex space-x-2">
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="flex items-center space-x-2 px-3 py-2 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors"
-                    >
-                      <Eye className="w-4 h-4" />
-                      <span className="text-sm">View</span>
-                    </motion.button>
                     
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="flex items-center space-x-2 px-3 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition-colors"
-                    >
-                      <Download className="w-4 h-4" />
-                      <span className="text-sm">Receipt</span>
-                    </motion.button>
                   </div>
                 </div>
               </div>

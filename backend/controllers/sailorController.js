@@ -52,7 +52,7 @@ const activeShip = await Ship.findOne({
     }
 
     const dashboardData = {
-      id: user._id,
+      id: sailor._id,
       name: `${user.firstName} ${user.lastName}`,
       email: user.email,
       phone: user.phone,
@@ -114,5 +114,47 @@ export const getAvailableShipments = async (req, res) => {
   } catch (error) {
     console.error("Error fetching available shipments:", error);
     res.status(500).json({ message: "Server error" });
+  }
+};
+
+
+
+export const getContractHistory = async (req, res) => {
+  try {
+    const { sailorId } = req.params;
+console.log("Sailor ID:", sailorId); // Debugging line
+    // Find contracts where this sailor was part of the crew
+    const contracts = await CompletedContract.find({ 'crew.sailorId': sailorId })
+      .populate('portAuthority', 'name')
+      .lean();
+console.log("Contracts found:", contracts); // Debugging line
+    // Format response
+    const result = contracts.map(c => ({
+      id: c._id,
+      company: c.portAuthority?.name || 'Unknown',
+      shipName: c.shipName,
+      shipNumber: c.shipNumber,
+      sourcePort: c.route?.source,
+      destinationPort: c.route?.destination,
+      startDate: c.startDate,
+      endDate: c.endDate,
+      duration: c.duration,
+      salary: c.totalPayment,
+      status: 'completed',
+      completedAt: c.completedAt,
+      cargoType: c.cargoType,
+      sailorsCount: c.sailorsCount,
+      crew: c.crew.map(member => ({
+        sailorId: member.sailorId,
+        name: member.name,
+        role: member.role,
+        experience: member.experience
+      }))
+    }));
+
+    res.json(result);
+  } catch (err) {
+    console.error('GET /completed-contracts error:', err);
+    res.status(500).json({ error: 'Server error.' });
   }
 };
