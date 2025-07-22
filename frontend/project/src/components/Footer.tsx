@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Anchor, Mail, Phone, MapPin, Facebook, Twitter, Linkedin, Instagram } from 'lucide-react';
+import { HashLink } from 'react-router-hash-link';
 
 const Footer: React.FC = () => {
   return (
@@ -46,18 +47,22 @@ const Footer: React.FC = () => {
             viewport={{ once: true }}
           >
             <h3 className="text-xl font-bold mb-6">Quick Links</h3>
-            <ul className="space-y-3">
-              {['About Us', 'Features', 'How It Works', 'Pricing', 'Support', 'Blog'].map((link) => (
-                <li key={link}>
-                  <a
-                    href="#"
-                    className="text-slate-300 hover:text-sky-400 transition-colors duration-300 hover:translate-x-1 inline-block"
-                  >
-                    {link}
-                  </a>
-                </li>
-              ))}
-            </ul>
+        
+
+<ul className="space-y-3">
+  {['About Us', 'Features', 'How It Works', 'Statistics', 'Support', 'Blog'].map((link) => (
+    <li key={link}>
+      <HashLink
+        smooth
+        to={`/#${link.toLowerCase().replace(/\s+/g, '-')}`}
+        className="text-slate-300 hover:text-sky-400 transition-colors duration-300 hover:translate-x-1 inline-block"
+      >
+        {link}
+      </HashLink>
+    </li>
+  ))}
+</ul>
+
           </motion.div>
 
           {/* Services */}
@@ -69,17 +74,23 @@ const Footer: React.FC = () => {
           >
             <h3 className="text-xl font-bold mb-6">Services</h3>
             <ul className="space-y-3">
-              {['Port Management', 'Real-Time Tracking', 'Digital Contracts', 'Service Marketplace', 'Analytics', 'Mobile App'].map((service) => (
-                <li key={service}>
-                  <a
-                    href="#"
-                    className="text-slate-300 hover:text-sky-400 transition-colors duration-300 hover:translate-x-1 inline-block"
-                  >
-                    {service}
-                  </a>
-                </li>
-              ))}
-            </ul>
+  {[
+    'Port Management',
+    'Real-Time Tracking',
+    'Digital Contracts',
+    'Service Marketplace',
+    'Analytics',
+    'Mobile App'
+  ].map((service) => (
+    <li
+      key={service}
+      className="text-slate-300 hover:text-sky-400 transition-colors duration-300 hover:translate-x-1"
+    >
+      {service}
+    </li>
+  ))}
+</ul>
+
           </motion.div>
 
           {/* Contact Info */}
@@ -93,11 +104,11 @@ const Footer: React.FC = () => {
             <div className="space-y-4">
               <div className="flex items-center space-x-3">
                 <MapPin className="w-5 h-5 text-sky-400 flex-shrink-0" />
-                <span className="text-slate-300">123 Harbor Street, Maritime City, MC 12345</span>
+                <span className="text-slate-300">201, Vrajleela Appartment, Parivar Char Rasta, Waghodia Road, Vadodara, 390019</span>
               </div>
               <div className="flex items-center space-x-3">
                 <Phone className="w-5 h-5 text-sky-400 flex-shrink-0" />
-                <span className="text-slate-300">+1 (555) 123-4567</span>
+                <span className="text-slate-300">+91 12345 67890</span>
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="w-5 h-5 text-sky-400 flex-shrink-0" />

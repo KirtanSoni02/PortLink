@@ -68,6 +68,8 @@ const SailorDashboard: React.FC = () => {
 const [sailorData, setSailorData] = useState<SailorData | null>(null);
 const [loading, setLoading] = useState(true);
 
+
+
 useEffect(() => {
   const fetchSailorData = async () => {
     try {
@@ -107,6 +109,8 @@ useEffect(() => {
     };
   }
 }, [sailorData]);
+
+
 
 
 

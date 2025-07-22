@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Anchor, Menu, X } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
+import   {HashLink}  from 'react-router-hash-link';
+
 // import { useThemeToggle } from '../hooks/useTheme'
 // import { Sun, Moon } from 'lucide-react';
 const Header: React.FC = () => {
@@ -61,16 +63,17 @@ const Header: React.FC = () => {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
             {['Features', 'How It Works', 'About', 'Contact'].map((item) => (
-              <motion.a
-                key={item}
-                href={`#${item.toLowerCase().replace(' ', '-')}`}
-                whileHover={{ scale: 1.05 }}
-                className={`font-medium transition-colors duration-300 hover:text-sky-500 ${
-                  isScrolled ? 'text-slate-600' : 'text-white/90'
-                }`}
-              >
-                {item}
-              </motion.a>
+              <HashLink 
+  key={item}
+  smooth 
+  to={`/#${item.toLowerCase().replace(/\s+/g, '-')}`}
+  className={`font-medium transition-colors duration-300 hover:text-sky-500 ${
+    isScrolled ? 'text-slate-600' : 'text-white/90'
+  }`} 
+>
+  {item}
+</HashLink>
+
             ))}
           </nav>
 
@@ -131,14 +134,15 @@ const Header: React.FC = () => {
           >
             <div className="p-4 space-y-4">
               {['Features', 'How It Works', 'About', 'Contact'].map((item) => (
-                <a
-                  key={item}
-                  href={`#${item.toLowerCase().replace(' ', '-')}`}
-                  className="block text-slate-600 font-medium hover:text-sky-600 transition-colors"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  {item}
-                </a>
+                <HashLink
+  smooth
+  to={`/#${item.toLowerCase().replace(' ', '-')}`}
+  className="block text-slate-600 font-medium hover:text-sky-600 transition-colors"
+  onClick={() => setIsMobileMenuOpen(false)}
+>
+  {item}
+</HashLink>
+
               ))}
               <div className="flex space-x-4 pt-4 border-t border-slate-200">
                 <Link

@@ -23,6 +23,11 @@ const portLocation = {
     "latitude": "9.9667",
     "longitude": "76.2833"
   },
+  "Port of Colombo": {
+    "latitude": "6.9404",
+    "longitude": "79.8464"
+  },
+
   "Port of V.O. Chidambaranar (Tuticorin)": {
     "latitude": "8.8",
     "longitude": "78.1833"

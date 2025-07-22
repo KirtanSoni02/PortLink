@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { MapPin, Ship, Clock, Activity } from 'lucide-react';
+import axios from 'axios';
 
 interface VesselData {
   id: string;
   name: string;
   lat: number;
   lng: number;
-  status: 'sailing' | 'docked' | 'anchored';
+  status: string;
   speed: number;
 }
 
@@ -22,18 +23,29 @@ const RealTimeTracking: React.FC = () => {
   const [activeVessel, setActiveVessel] = useState(0);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setVessels(prev => prev.map(vessel => ({
-        ...vessel,
-        lat: vessel.lat + (Math.random() - 0.5) * 0.01,
-        lng: vessel.lng + (Math.random() - 0.5) * 0.01,
-        speed: vessel.status === 'sailing' ? Math.random() * 15 + 5 : 0
-      })));
-      setActiveVessel(prev => (prev + 1) % vessels.length);
-    }, 2000);
+  const fetchVesselData = async () => {
+    try {
+      const response = await axios.get('http://localhost:3000/api/ship/realtimetracking');
+      if (Array.isArray(response.data)) {
+        setVessels(response.data);
+      } else {
+        console.warn("Expected an array of vessels, got:", response.data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch vessel data:', error);
+    }
+  };
 
-    return () => clearInterval(interval);
-  }, [vessels.length]);
+  fetchVesselData();
+  
+  const interval = setInterval(() => {
+    fetchVesselData();
+    setActiveVessel(prev => (prev + 1) % Math.max(1, vessels.length));
+  }, 10000);
+
+  return () => clearInterval(interval);
+}, [vessels.length]);
+
 
   const getStatusColor = (status: string) => {
     switch (status) {

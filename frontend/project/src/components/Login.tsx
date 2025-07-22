@@ -27,21 +27,48 @@ const Login: React.FC = () => {
     { email: 'maria.santos@portofmiami.com', password: 'password', role: 'port-authority' }
   ];
 
+  const passwordPattern = /^[A-Za-z0-9]{8,}$/;
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  const tempEmailDomains = [
+  'tempmail.com',
+  '10minutemail.com',
+  'mailinator.com',
+  'dispostable.com',
+  'guerrillamail.com',
+  'yopmail.com',
+  'fakeinbox.com',
+  'trashmail.com',
+];
+  const isTempEmail = (email: string) => {
+  const domain = email.split('@')[1]?.toLowerCase();
+  return tempEmailDomains.includes(domain);
+};
+
   const validateForm = (): boolean => {
-    const newErrors: FormErrors = {};
+  const newErrors: FormErrors = {};
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const passwordPattern = /^[A-Za-z0-9]{8,}$/;
 
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email or username is required';
-    }
+  if (!formData.email.trim()) {
+    newErrors.email = 'Email is required';
+  } else if (!emailPattern.test(formData.email)) {
+    newErrors.email = 'Invalid email format';
+  } else if (isTempEmail(formData.email)) {
+    newErrors.email = 'Temporary/disposable emails are not allowed';
+  }
 
-    if (!formData.password.trim()) {
-      newErrors.password = 'Password is required';
-    }
+  if (!formData.password.trim()) {
+    newErrors.password = 'Password is required';
+  } else if (!passwordPattern.test(formData.password)) {
+    newErrors.password = 'Password must be at least 8 characters and contain only letters and numbers';
+  }
+ 
+  setErrors(newErrors);
+  return Object.keys(newErrors).length === 0;
+};
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
+ 
  const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
   if (!validateForm()) return;
@@ -84,14 +111,38 @@ const Login: React.FC = () => {
 
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    
-    // Clear error when user starts typing
-    if (errors[name as keyof FormErrors]) {
-      setErrors(prev => ({ ...prev, [name]: undefined }));
+  const { name, value } = e.target;
+  setFormData(prev => ({ ...prev, [name]: value }));
+
+  const newErrors: FormErrors = { ...errors };
+
+  // Real-time validation for email
+  if (name === 'email') {
+    if (!value.trim()) {
+      newErrors.email = 'Email is required';
+    } else if (!emailPattern.test(value)) {
+      newErrors.email = 'Invalid email format';
+    } else if (isTempEmail(value)) {
+      newErrors.email = 'Temporary/disposable emails are not allowed';
+    } else {
+      newErrors.email = undefined;
     }
-  };
+  }
+
+  // Real-time validation for password
+  if (name === 'password') {
+    if (!value.trim()) {
+      newErrors.password = 'Password is required';
+    } else if (!passwordPattern.test(value)) {
+      newErrors.password = 'Password must be at least 8 characters and contain only letters and numbers';
+    } else {
+      newErrors.password = undefined;
+    }
+  }
+
+  setErrors(newErrors);
+};
+
 
   return (
     <div className="min-h-screen flex">
@@ -118,7 +169,7 @@ const Login: React.FC = () => {
           </motion.div>
 
           {/* Demo Credentials */}
-          <motion.div
+          {/* <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
@@ -129,7 +180,7 @@ const Login: React.FC = () => {
               <div><strong>Sailor:</strong> sailor@websailor.com / sailor123</div>
               <div><strong>Port Authority:</strong> port@websailor.com / port123</div>
             </div>
-          </motion.div>
+          </motion.div> */}
 
           {/* Form */}
           <motion.form
@@ -255,11 +306,12 @@ const Login: React.FC = () => {
         transition={{ duration: 0.8 }}
         className="hidden lg:flex flex-1 relative overflow-hidden"
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-sky-900/20 to-emerald-900/20 z-10"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-sky-900/20 to-emerald-900/20 z-10"></div> 
         <motion.img
           whileHover={{ scale: 1.05 }}
           transition={{ duration: 0.8 }}
-          src="https://images.pexels.com/photos/1118873/pexels-photo-1118873.jpeg?auto=compress&cs=tinysrgb&w=1200"
+          src="../../../images/Login_Page_Image.png"
+          
           alt="Maritime scene"
           className="w-full h-full object-cover"
         />

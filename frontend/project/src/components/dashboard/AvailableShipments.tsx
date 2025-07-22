@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { MapPin, Clock, DollarSign, Users, Ship, Eye, Send, AlertCircle } from 'lucide-react';
 import ShipmentApplicationModal from './ShipmentApplicationModal';
+import axios from 'axios';
+import { useEffect } from 'react';
 
 interface Shipment {
   id: string;
@@ -37,6 +39,30 @@ const AvailableShipments: React.FC<AvailableShipmentsProps> = ({ sailorData }) =
   const [applicationModalOpen, setApplicationModalOpen] = useState(false);
   const [selectedShipmentForApplication, setSelectedShipmentForApplication] = useState<Shipment | null>(null);
   const [applications, setApplications] = useState<any[]>([]);
+
+
+const [AvailableShipmentsData, setAvailableShipmentsData] = useState(null);
+
+
+  useEffect(() => {
+  const fetchAvailableShipments = async () => {
+    try {
+      const token = localStorage.getItem("token"); // or however you store auth
+      const response = await axios.get('http://localhost:3000/api/sailor/available-shipments', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log("Available shipments data: ",response.data)
+      setAvailableShipmentsData(response.data);
+      (response.data);
+    } catch (error) {
+      console.error("❌ Failed to fetch sailor dashboard data:", error);
+    }
+  };
+
+  fetchAvailableShipments();
+}, []);
 
   // Mock sailor data if not provided
   const defaultSailorData = {

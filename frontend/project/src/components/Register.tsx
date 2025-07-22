@@ -126,16 +126,58 @@ const Register: React.FC = () => {
   }
 };
 
-  
+  const passwordPattern = /^[A-Za-z0-9]{8,}$/;
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const tempEmailDomains = [
+  'tempmail.com',
+  '10minutemail.com',
+  'mailinator.com',
+  'dispostable.com',
+  'guerrillamail.com',
+  'yopmail.com',
+  'fakeinbox.com',
+  'trashmail.com',
+];
+
+const isTempEmail = (email: string) => {
+  const domain = email.split('@')[1]?.toLowerCase();
+  return tempEmailDomains.includes(domain);
+};
+
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: "undefined" }));
+   const { name, value } = e.target;
+
+  // Update formData state
+  setFormData(prev => ({ ...prev, [name]: value }));
+
+  // Validate field in real-time
+  const newErrors = { ...errors };
+
+  if (name === 'email') {
+    if (!value.trim()) {
+      newErrors.email = 'Email is required';
+    } else if (!emailPattern.test(value)) {
+      newErrors.email = 'Invalid email format';
+    } else if (isTempEmail(value)) {
+      newErrors.email = 'Temporary/disposable emails are not allowed';
+    } else {
+      // newErrors.email = undefined;
     }
+  }
+
+  if (name === 'password') {
+    if (!value.trim()) {
+      newErrors.password = 'Password is required';
+    } else if (!passwordPattern.test(value)) {
+      newErrors.password = 'Password must be at least 8 characters and contain only letters and numbers';
+    } else {
+      // newErrors.password = undefined;
+    }
+  }
+
+  setErrors(newErrors);
   };
 
   const inputFields = [
@@ -428,7 +470,7 @@ const Register: React.FC = () => {
         <motion.img
           whileHover={{ scale: 1.05 }}
           transition={{ duration: 0.8 }}
-          src="https://images.pexels.com/photos/1117210/pexels-photo-1117210.jpeg?auto=compress&cs=tinysrgb&w=1200"
+          src="../../images/Register_Page_Image.jpg"
           alt="Port and maritime operations"
           className="w-full h-full object-cover"
         />

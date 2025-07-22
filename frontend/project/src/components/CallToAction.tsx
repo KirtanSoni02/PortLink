@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, BookOpen } from 'lucide-react';
-
+import { Link } from 'react-router-dom';
 const CallToAction: React.FC = () => {
   return (
     <section className="py-20 bg-gradient-to-br from-slate-900 via-blue-900 to-sky-700 relative overflow-hidden">
@@ -65,18 +65,18 @@ const CallToAction: React.FC = () => {
               whileTap={{ scale: 0.95 }}
               className="group flex items-center justify-center px-10 py-5 bg-gradient-to-r from-sky-500 to-emerald-500 text-white font-bold text-lg rounded-full shadow-2xl hover:shadow-3xl transition-all duration-300"
             >
-              Sign Up Now
+              <Link to="/register">Sign Up Now</Link>
               <ArrowRight className="ml-3 w-6 h-6 group-hover:translate-x-1 transition-transform" />
             </motion.button>
             
-            <motion.button
+            {/* <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="group flex items-center justify-center px-10 py-5 bg-white/10 backdrop-blur-md text-white font-bold text-lg rounded-full border-2 border-white/20 hover:bg-white/20 transition-all duration-300"
             >
               <BookOpen className="mr-3 w-6 h-6 group-hover:scale-110 transition-transform" />
               Learn More
-            </motion.button>
+            </motion.button> */}
           </motion.div>
 
           {/* Trust Indicators */}

@@ -19,14 +19,14 @@ const HomePage: React.FC = () => {
     <div className="min-h-screen">
       <Header />
       <Hero />
-      <Statistics />
-      <HowItWorks />
-      <Features />
-      <RealTimeTracking />
+      <div id="statistics"><Statistics /></div>
+      <div id="how-it-works"><HowItWorks /></div>
+      <div id="features"><Features /></div>
+      <div id="about"><RealTimeTracking /></div>
       <UserGrowthCharts />
       <CallToAction />
-      <Footer />
-    </div>
+      
+    <div id="contact"><Footer /></div></div>
   );
 };
 

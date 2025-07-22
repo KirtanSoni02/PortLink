@@ -91,32 +91,25 @@ const PortDashboardOverview: React.FC<PortDashboardOverviewProps> = ({ portData,
           transition={{ delay: 0.4 }}
           className="bg-white rounded-2xl p-6 shadow-lg border border-slate-200"
         >
-          <h3 className="text-xl font-bold text-slate-800 mb-6 flex items-center">
+          <h3 className="text-2xl font-bold text-slate-800 mb-11 flex items-center">
             <TrendingUp className="w-6 h-6 mr-3 text-blue-500" />
             Job Applications Overview
           </h3>
           
-          <div className="space-y-4">
+          <div className="space-y-8">
             <div className="flex justify-between items-center">
-              <span className="text-slate-600">Total Applications</span>
+              <span className="text-xl font-medium text-slate-800">Total Applications</span>
               <span className="text-xl font-bold text-blue-600">{totalApplications}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-slate-600">Active Job Posts</span>
-              <span className="text-xl font-semibold text-emerald-600">{activeJobs}</span>
+              <span className="text-xl font-medium text-slate-800">Active Job Posts</span>
+              <span className="text-xl font-bold text-emerald-600">{activeJobs}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-slate-600">Average Applications per Job</span>
-              <span className="text-xl font-semibold text-purple-600">
+              <span className="text-xl font-medium text-slate-800">Average Applications per Job</span>
+              <span className="text-xl font-bold text-purple-600">
                 {activeJobs > 0 ? Math.round(totalApplications / activeJobs) : 0}
               </span>
-            </div>
-          </div>
-
-          <div className="mt-6 pt-4 border-t border-slate-200">
-            <div className="flex items-center space-x-2 text-sm text-emerald-600">
-              <Activity className="w-4 h-4" />
-              <span>Applications are trending upward this month</span>
             </div>
           </div>
         </motion.div>

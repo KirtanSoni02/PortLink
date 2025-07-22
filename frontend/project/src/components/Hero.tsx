@@ -22,7 +22,7 @@ const Hero: React.FC = () => {
           className="absolute top-32 w-24 h-12 opacity-20"
         >
           <img 
-            src="https://images.pexels.com/photos/163236/luxury-yacht-boat-speed-water-163236.jpeg?auto=compress&cs=tinysrgb&w=400" 
+            src="https://images.pexels.com/photos/1117210/pexels-photo-1117210.jpeg?auto=compress&cs=tinysrgb&w=400" 
             alt="Ship" 
             className="w-full h-full object-cover rounded-lg filter brightness-0 invert"
           />

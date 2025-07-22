@@ -2,7 +2,9 @@ import User from "../models/User.model.js"
 import Ship from "../models/Ship.model.js";
 import CompletedContract from "../models/CompletedContract.model.js";
 import SailorModel from "../models/Sailor.model.js";
+import JobPost from "../models/JobPost.model.js";
 import mongoose from "mongoose";
+import JobPostModel from "../models/JobPost.model.js";
 
 
 export const getSailorDashboardData = async (req, res) => {
@@ -99,5 +101,18 @@ export const updateSailorProfile = async (req, res) => {
   } catch (error) {
     console.error('Update error:', error);
     res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+
+
+
+export const getAvailableShipments = async (req, res) => {
+  try {
+    const availableShipments = await JobPost.find({ status: "active" });
+    res.json(availableShipments);
+  } catch (error) {
+    console.error("Error fetching available shipments:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };

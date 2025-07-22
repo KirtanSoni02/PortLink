@@ -1,8 +1,10 @@
 import React from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Briefcase, MapPin, Users, DollarSign, Calendar, Eye, Edit, Trash2 } from 'lucide-react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
+import JobDetailsModal from './JobDetailModel';
 
 interface JobPost {
   id: string;
@@ -32,15 +34,36 @@ const JobPostsManagement: React.FC<JobPostsManagementProps> = ({ jobPosts, onDel
     }
   };
 
-  const handleViewApplications = (jobId: string) => {
-    console.log('Viewing applications for job:', jobId);
-    // Handle view applications logic
-  };
+
+
+const [selectedJob, setSelectedJob] = useState(null);
+
+const handleViewApplications = async (jobId: string) => {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await axios.get(`http://localhost:3000/api/activejob/view/${jobId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    console.log("Job post details:", response.data);
+    setSelectedJob(response.data);
+  } catch (err) {
+    console.error("Failed to fetch job post details", err);
+  }
+};
+
+const closeModal = () => setSelectedJob(null);
+
+
+
+
 
   const handleEditJob = (jobId: string) => {
     console.log('Editing job:', jobId);
     // Handle edit job logic
   };
+
 
    const handleDeleteJob = async (jobId: string) => {
     try {
@@ -112,7 +135,7 @@ const JobPostsManagement: React.FC<JobPostsManagementProps> = ({ jobPosts, onDel
                     </div>
                     <div className="flex items-center space-x-1">
                       <DollarSign className="w-3 h-3" />
-                      <span>${job.salaryOffered.toLocaleString()}</span>
+                      <span>{job.salaryOffered.toLocaleString()}</span>
                     </div>
                   </div>
                   
@@ -126,16 +149,17 @@ const JobPostsManagement: React.FC<JobPostsManagementProps> = ({ jobPosts, onDel
 
             <div className="flex space-x-2">
               <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => handleViewApplications(job.id)}
-                className="flex items-center space-x-1 px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors"
-              >
-                <Eye className="w-3 h-3" />
-                <span>View</span>
-              </motion.button>
-              
-              <motion.button
+  whileHover={{ scale: 1.05 }}
+  whileTap={{ scale: 0.95 }}
+  onClick={() => handleViewApplications(job.id)}
+  className="flex items-center space-x-1 px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors"
+>
+  <Eye className="w-3 h-3" />
+  <span>View</span>
+</motion.button>
+                {selectedJob && <JobDetailsModal job={selectedJob} onClose={closeModal} />}
+
+              {/* <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => handleEditJob(job.id)}
@@ -143,7 +167,7 @@ const JobPostsManagement: React.FC<JobPostsManagementProps> = ({ jobPosts, onDel
               >
                 <Edit className="w-3 h-3" />
                 <span>Edit</span>
-              </motion.button>
+              </motion.button> */}
               
               <motion.button
                 whileHover={{ scale: 1.05 }}
@@ -166,7 +190,9 @@ const JobPostsManagement: React.FC<JobPostsManagementProps> = ({ jobPosts, onDel
         </div>
       )}
     </motion.div>
+    
   );
+
 };
 
 export default JobPostsManagement;
