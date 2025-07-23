@@ -1,6 +1,8 @@
 import express from 'express';
 import JobPost from '../models/JobPost.model.js';
 import Ship from '../models/Ship.model.js';
+import axios from 'axios';
+
 export const getMyJobPosts = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -69,11 +71,7 @@ export const ConvertToShip = async (req, res, next) => {
 
       const shipName = `Ship-${Date.now()}`; 
 
-      const weatherResponse = await axios.get(
-      `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${process.env.WEATHER_API_KEY}`
-    );
-    const weather = weatherResponse.data.weather[0].description;
-    const region = weatherResponse.data.name
+   
      
 const rawSourceCoords = portLocation[job.sourcePort];
 const rawDestinationCoords = portLocation[job.destinationPort];
@@ -96,6 +94,13 @@ const destinationCoords = {
   lng: parseFloat(rawDestinationCoords.longitude),
 };
 
+const weatherResponse = await axios.get(
+      `https://api.openweathermap.org/data/2.5/weather?lat=${sourceCoords.lat}&lon=${sourceCoords.lng}&appid=${process.env.WEATHER_API_KEY}`
+    );
+
+       
+    const weather = weatherResponse.data.weather[0].description;
+    const region = weatherResponse.data.name
 
       const distance = haversineDistance(sourceCoords, destinationCoords); 
       const estimatedSpeed = 20; // knots (20 knots = ~37 km/h)

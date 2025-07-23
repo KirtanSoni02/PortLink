@@ -11,6 +11,7 @@ interface ShipDetailsProps {
     capacity: string;
     departureTime: string;
     arrivalTime: string;
+    weather: string;
   };
 }
 
@@ -127,8 +128,17 @@ const ShipDetails: React.FC<ShipDetailsProps> = ({ ship }) => {
                 <span className="text-slate-600">Load Status</span>
                 <span className="text-emerald-600 font-medium">Fully Loaded</span>
               </div>
+              
+              <div className="flex justify-between">
+                <span className="text-slate-600">Weather</span>
+                <span className="font-semibold text-slate-800">{ship.weather|| 'N/A'}</span>
+               </div>
             </div>
           </div>
+
+         
+
+
         </div>
       </div>
 

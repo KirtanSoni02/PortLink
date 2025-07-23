@@ -10,7 +10,7 @@ import ProfileSettings from './ProfileSettings';
 import axios from 'axios';
 import socket from '../../socket.ts';
 
-import LiveMap from '../../MapComponent.tsx';
+
 
 
 export type ActiveSection = 'dashboard' | 'contracts' | 'shipments' | 'profile';
@@ -50,7 +50,7 @@ interface SailorData {
     capacity: string;
     departureTime: string;
     arrivalTime: string;
-    weatherStatus:string
+    weather:string
   };
 }
 
@@ -128,11 +128,8 @@ if (!sailorData) return <div className="text-center mt-10 text-red-500">Failed t
         return (
           <div className="space-y-8">
             <StatusOverview sailorData={sailorData} />
-            <LiveMap
-              shipId={sailorData.currentShip?.id || ''}
-              sourceCoords={{ latitude: 21.1702, longitude: 72.8311 }} // Example coordinates for Surat
-              destinationCoords={{ latitude: 19.0760, longitude: 72.8777 }} // Example coordinates for Mumbai
-            />
+           
+
             <AvailableShipments sailorData={sailorData} />
             {sailorData.currentShip && <ShipDetails ship={sailorData.currentShip} />}
           </div>

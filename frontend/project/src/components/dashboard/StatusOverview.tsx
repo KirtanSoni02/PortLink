@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { MapPin, Clock, Ship, DollarSign, Navigation, Activity } from 'lucide-react';
+import LiveMap from '../../MapComponent.tsx';
+import PortLocation from "../../portLocations.ts"
 
 interface StatusOverviewProps {
   sailorData: {
@@ -54,10 +56,25 @@ const StatusOverview: React.FC<StatusOverviewProps> = ({ sailorData }) => {
     );
   }
 
-  const contract = sailorData.currentContract!;
-const sourceportCordiantes = contract.sourcePort;
-const destportCordiantes = contract.destinationPort;
+const contract = sailorData.currentContract!;
+const sourceportname = contract.sourcePort;
+const destportname = contract.destinationPort;
 const currentCordinates = contract.currentLocation.lng.toFixed(4)
+
+
+
+const getPortCoords = (portName: string) => {
+  const port = PortLocation[portName];
+  if (!port) {
+    console.warn(`Port not found: ${portName}`);
+    return { latitude: 0, longitude: 0 }; // fallback
+  }
+
+  return {
+    latitude: parseFloat(port.latitude),
+    longitude: parseFloat(port.longitude)
+  };
+};
 
 
 
@@ -224,97 +241,44 @@ const currentCordinates = contract.currentLocation.lng.toFixed(4)
 
       {/* Map Placeholder */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-        className="bg-white rounded-2xl p-6 shadow-lg border border-slate-200"
-      >
-        <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center">
-          <Navigation className="w-6 h-6 mr-3 text-blue-500" />
-          Route Tracking
-        </h3>
-        
-        {/* Map Container */}
-        <div className="relative bg-gradient-to-br from-blue-50 to-sky-100 rounded-xl h-80 overflow-hidden">
-          {/* Grid Background */}
-          <div className="absolute inset-0 opacity-20">
-            <div className="w-full h-full" style={{
-              backgroundImage: `
-                linear-gradient(rgba(59, 130, 246, 0.3) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(59, 130, 246, 0.3) 1px, transparent 1px)
-              `,
-              backgroundSize: '30px 30px'
-            }}></div>
-          </div>
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ delay: 0.4 }}
+  className="bg-white rounded-2xl p-6 shadow-lg border border-slate-200"
+>
+  <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center">
+    <Navigation className="w-6 h-6 mr-3 text-blue-500" />
+    Route Tracking
+  </h3>
 
-          {/* Route Path */}
-          <svg className="absolute inset-0 w-full h-full">
-            <motion.path
-              d="M50,250 Q200,100 350,150 Q500,200 650,120"
-              stroke="#3B82F6"
-              strokeWidth="3"
-              fill="none"
-              strokeDasharray="8,4"
-              initial={{ pathLength: 0 }}
-              animate={{ pathLength: contract.progress / 100 }}
-              transition={{ duration: 2 }}
-            />
-          </svg>
+  {/* Leaflet Map Container */}
+  <div className="rounded-xl overflow-hidden border border-blue-100 shadow-inner">
+    <LiveMap
+      shipId={sailorData.currentContract?.id || ''}
+      sourceCoords={getPortCoords(sailorData.currentContract?.sourcePort || '')}
+  destinationCoords={getPortCoords(sailorData.currentContract?.destinationPort || '')}
+    />
+  </div>
 
-          {/* Source Port */}
-          <div className="absolute left-12 bottom-16 flex items-center space-x-2">
-            <div className="w-4 h-4 bg-emerald-500 rounded-full"></div>
-            <span className="text-sm font-medium text-slate-700">{contract.sourcePort}</span>
-          </div>
-
-          {/* Current Position */}
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 1 }}
-            className="absolute"
-            style={{
-              left: `${50 + (contract.progress / 100) * 550}px`,
-              top: `${250 - Math.sin((contract.progress / 100) * Math.PI) * 100}px`
-            }}
-          >
-            <div className="relative">
-              <div className="w-6 h-6 bg-red-500 rounded-full border-2 border-white shadow-lg"></div>
-              <motion.div
-                animate={{ scale: [1, 1.5, 1], opacity: [0.7, 0, 0.7] }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className="absolute inset-0 w-6 h-6 bg-red-400 rounded-full"
-              />
-            </div>
-          </motion.div>
-
-          {/* Destination Port */}
-          <div className="absolute right-12 top-16 flex items-center space-x-2">
-            <div className="w-4 h-4 bg-blue-500 rounded-full"></div>
-            <span className="text-sm font-medium text-slate-700">{contract.destinationPort}</span>
-          </div>
-        </div>
-
-        <div className="flex justify-between items-center mt-4 text-sm text-slate-600">
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 bg-emerald-500 rounded-full"></div>
-              <span>Source</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-              <span>Current Position</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-              <span>Destination</span>
-            </div>
-          </div>
-          <div className="text-emerald-600 font-medium">
-            Real-time tracking active
-          </div>
-        </div>
-      </motion.div>
+  {/* Legend and Status */}
+  <div className="flex justify-between items-center mt-4 text-sm text-slate-600">
+    <div className="flex items-center space-x-4">
+      <div className="flex items-center space-x-2">
+        <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+        <span>Source</span>
+      </div>
+      <div className="flex items-center space-x-2">
+        <div className="w-3 h-3 bg-red-500 rounded-full animate-ping-fast"></div>
+        <span>Live Position</span>
+      </div>
+      <div className="flex items-center space-x-2">
+        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+        <span>Destination</span>
+      </div>
+    </div>
+    <div className="text-emerald-600 font-medium">Real-time tracking active</div>
+  </div>
+</motion.div>
     </div>
   );
 };

@@ -10,7 +10,7 @@ import portRoutes from './routes/portroutes.js'; // ✅ OK, assuming portroutes.
 import shipRoutes from './routes/shiproutes.js'; // ✅ OK, assuming shiproutes.js is in the same directory
 import activeJobRoutes from './routes/activejobroute.js'; 
 import completedContractRoutes from './routes/CompletedContractroutes.js' // ✅ OK, assuming CompletedContractroutes.js is in the same directory
-import sailorRoutes from './routes/sailorRoutes.js';
+import sailorRoutes from './routes/sailorroutes.js';
 
 await connectDB();
 
@@ -64,6 +64,7 @@ io.on('connection', (socket) => {
     console.log("📡 Received location update:", data);
     await updateSailorLocation(data); // controller logic
     console.log("Update Done")
+    io.emit("shipLocationUpdate", data)
   });
 
   socket.on('disconnect', () => {
