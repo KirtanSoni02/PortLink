@@ -9,7 +9,7 @@ import ContractHistory from './ContractHistory';
 import ProfileSettings from './ProfileSettings';
 import axios from 'axios';
 import socket from '../../socket.ts';
-
+import mongoose from 'mongoose';
 
 
 
@@ -50,7 +50,9 @@ interface SailorData {
     capacity: string;
     departureTime: string;
     arrivalTime: string;
-    weather:string
+    weather:string;
+    createdBy : string;
+    ContactdetailsOfPortAuthority: string;
   };
 }
 
@@ -130,7 +132,7 @@ if (!sailorData) return <div className="text-center mt-10 text-red-500">Failed t
             <StatusOverview sailorData={sailorData} />
            
 
-            <AvailableShipments sailorData={sailorData} />
+            <AvailableShipments sailorData={sailorData} limit={2} />
             {sailorData.currentShip && <ShipDetails ship={sailorData.currentShip} />}
           </div>
         );

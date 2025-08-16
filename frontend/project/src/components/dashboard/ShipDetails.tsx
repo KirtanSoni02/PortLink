@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Ship, Package, Calendar, Clock, Anchor, Navigation } from 'lucide-react';
-
+import { useState } from 'react';
 interface ShipDetailsProps {
   ship: {
     id: string;
@@ -12,10 +12,13 @@ interface ShipDetailsProps {
     departureTime: string;
     arrivalTime: string;
     weather: string;
+    ContactdetailsOfPortAuthority: string;
+    createdBy: string;
   };
 }
 
 const ShipDetails: React.FC<ShipDetailsProps> = ({ ship }) => {
+  const [showContact, setShowContact] = useState(false);
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -149,25 +152,19 @@ const ShipDetails: React.FC<ShipDetailsProps> = ({ ship }) => {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-          >
-            View Full Route
-          </motion.button>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
             className="px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors"
+            onClick={() => setShowContact(!showContact)}
           >
             Contact Port Authority
           </motion.button>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors"
-          >
-            Download Manifest
-          </motion.button>
+    
         </div>
+        {showContact && (
+          <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200 text-slate-800">
+            <div><span className="font-semibold">Created By:</span> {ship.createdBy}</div>
+            <div><span className="font-semibold">Port Authority Phone:</span> {ship.ContactdetailsOfPortAuthority}</div>
+          </div>
+        )}
       </div>
     </motion.div>
   );

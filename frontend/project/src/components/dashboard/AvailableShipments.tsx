@@ -9,7 +9,7 @@ interface Shipment {
   id: string;
   sourcePort: string;
   destinationPort: string;
-  estimatedTime: string;
+  DepartureDate: Date;
   salary: number;
   crewRequired: number;
   cargoType: string;
@@ -17,10 +17,12 @@ interface Shipment {
   postedDate: string;
   company: string;
   description: string;
+  alreadyAssigned: boolean;
 }
 
 interface AvailableShipmentsProps {
   sailorData?: {
+    id: string;
     name: string;
     email: string;
     phone: string;
@@ -30,11 +32,13 @@ interface AvailableShipmentsProps {
     currentContract?: {
       progress: number;
       destinationPort: string;
+      estimatedArrival: string;
     };
   };
+  limit?: number;
 }
 
-const AvailableShipments: React.FC<AvailableShipmentsProps> = ({ sailorData }) => {
+const AvailableShipments: React.FC<AvailableShipmentsProps> = ({ sailorData, limit }) => {
   const [selectedShipment, setSelectedShipment] = useState<string | null>(null);
   const [applicationModalOpen, setApplicationModalOpen] = useState(false);
   const [selectedShipmentForApplication, setSelectedShipmentForApplication] = useState<Shipment | null>(null);
@@ -42,7 +46,7 @@ const AvailableShipments: React.FC<AvailableShipmentsProps> = ({ sailorData }) =
 
 
 const [AvailableShipmentsData, setAvailableShipmentsData] = useState(null);
-
+const [hasAlreadyApplied, setHasAlreadyApplied] = useState(false);
 
   useEffect(() => {
   const fetchAvailableShipments = async () => {
@@ -53,22 +57,28 @@ const [AvailableShipmentsData, setAvailableShipmentsData] = useState(null);
           Authorization: `Bearer ${token}`,
         },
       });
+      console.log("📦 Available Shipments Data:", response.data);
+      const { shipments, hasAlreadyApplied } = response.data;
+      const sailorId = sailorData?.id
 
-      const mappedData: Shipment[] = response.data.map((job: any) => ({
+
+      const mappedData: Shipment[] = shipments.map((job: any) => ({
         id: job._id,
         sourcePort: job.sourcePort,
         destinationPort: job.destinationPort,
-        estimatedTime: estimateDays(job.departureDate) + ' days',
+        DepartureDate: new Date(job.departureDate),
         salary: job.salaryOffered,
         crewRequired: job.sailorsRequired,
         cargoType: job.cargoType,
         urgency: getUrgencyLevel(job.departureDate),
         postedDate: new Date(job.createdDate).toISOString(),
         company: job.createdBy?.companyName || "Unknown Shipping Co.",
-        description: `Sailing from ${job.sourcePort} to ${job.destinationPort} carrying ${job.cargoType}. Departure: ${new Date(job.departureDate).toLocaleDateString()}.`
+        description: `Sailing from ${job.sourcePort} to ${job.destinationPort} carrying ${job.cargoType}. Departure: ${new Date(job.departureDate).toLocaleDateString()}.`,
+        alreadyAssigned: job.crewAssigned?.includes(sailorId),
       }));
 
       setAvailableShipmentsData(mappedData);
+      setHasAlreadyApplied(hasAlreadyApplied);
     } catch (error) {
       console.error("❌ Failed to fetch available shipments:", error);
     }
@@ -93,6 +103,7 @@ const [AvailableShipmentsData, setAvailableShipmentsData] = useState(null);
 
   // Mock data - replace with API call
   const shipments: Shipment[] = AvailableShipmentsData || [];
+ const displayedShipments = limit ? shipments.slice(0, limit) : shipments;
 
 function estimateDays(departureDate: string): number {
   const now = new Date();
@@ -119,9 +130,17 @@ function getUrgencyLevel(departureDate: string): 'low' | 'medium' | 'high' {
 
   const canApplyToShipment = (shipment: Shipment): { canApply: boolean; reason?: string } => {
     // Check if sailor has no ongoing contract
+     if (hasAlreadyApplied) {
+    return { canApply: false, reason: "You have already applied to a shipment. You cannot apply to others." };
+  }
+
+
     if (!currentSailorData.hasOngoingContract) {
       return { canApply: true };
     }
+      if (shipment.alreadyAssigned) {
+    return { canApply: false, reason: "You are already assigned to this shipment." };
+  }
 
     // Check if current contract is near completion (90% or more)
     if (currentSailorData.currentContract && currentSailorData.currentContract.progress >= 90) {
@@ -129,10 +148,16 @@ function getUrgencyLevel(departureDate: string): 'low' | 'medium' | 'high' {
     }
 
     // Check if the new shipment starts from the current destination
-    if (currentSailorData.currentContract && 
-        shipment.sourcePort === currentSailorData.currentContract.destinationPort) {
-      return { canApply: true };
-    }
+    if (
+  currentSailorData.currentContract &&
+  new Date(currentSailorData.currentContract.estimatedArrival) <new Date(shipment.DepartureDate)
+) {
+  return { canApply: true };
+}
+
+
+    
+
 
     return { 
       canApply: false, 
@@ -162,6 +187,7 @@ function getUrgencyLevel(departureDate: string): 'low' | 'medium' | 'high' {
     return applications.some(app => app.shipmentId === shipmentId);
   };
 
+
   return (
     <>
       <motion.div
@@ -190,7 +216,7 @@ function getUrgencyLevel(departureDate: string): 'low' | 'medium' | 'high' {
                   You currently have an ongoing contract. You can only apply for new shipments that:
                 </p>
                 <ul className="text-sm text-blue-700 mt-2 ml-4 list-disc">
-                  <li>Start from your current destination ({currentSailorData.currentContract?.destinationPort})</li>
+                  <li>Start from your current destination ({currentSailorData.currentContract?.destinationPort}) and ETA of current ship is less than shipment departure time</li>
                   <li>Begin after your current contract is 90% complete</li>
                 </ul>
                 {currentSailorData.currentContract && (
@@ -204,7 +230,7 @@ function getUrgencyLevel(departureDate: string): 'low' | 'medium' | 'high' {
         )}
 
         <div className="space-y-4">
-          {shipments.map((shipment, index) => {
+          {displayedShipments.map((shipment, index) => {
             const { canApply, reason } = canApplyToShipment(shipment);
             const applied = hasApplied(shipment.id);
 
@@ -256,10 +282,10 @@ function getUrgencyLevel(departureDate: string): 'low' | 'medium' | 'high' {
                       <div className="flex items-center space-x-2">
                         <Clock className="w-4 h-4 text-amber-500" />
                         <div>
-                          <div className="text-xs text-slate-500">Duration</div>
-                          <div className="text-sm font-medium text-slate-800">{shipment.estimatedTime}</div>
+                          <div className="text-xs text-slate-500">Departure Date</div>
+                          <div className="text-sm font-medium text-slate-800">{shipment.DepartureDate.toString().slice(0, 10)}</div>
                         </div>
-                      </div>
+                      </div> 
                       <div className="flex items-center space-x-2">
                         <Users className="w-4 h-4 text-purple-500" />
                         <div>
@@ -337,7 +363,7 @@ function getUrgencyLevel(departureDate: string): 'low' | 'medium' | 'high' {
                         <div className="space-y-2 text-sm text-slate-600">
                           <div>Departure: {shipment.sourcePort}</div>
                           <div>Destination: {shipment.destinationPort}</div>
-                          <div>Estimated voyage time: {shipment.estimatedTime}</div>
+                          <div>Departure Date: {shipment.DepartureDate.toLocaleDateString()}</div>
                           <div>Cargo type: {shipment.cargoType}</div>
                         </div>
                       </div>

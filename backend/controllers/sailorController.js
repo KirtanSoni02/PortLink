@@ -5,7 +5,7 @@ import SailorModel from "../models/Sailor.model.js";
 import JobPost from "../models/JobPost.model.js";
 import mongoose from "mongoose";
 import JobPostModel from "../models/JobPost.model.js";
-
+import portAuthority from "../models/PortAuthority.model.js";
 
 export const getSailorDashboardData = async (req, res) => {
   try {
@@ -30,6 +30,9 @@ const activeShip = await Ship.findOne({
   status: "active",
 });
 
+const portauthorityid = await portAuthority.findById(activeShip.createdBy);
+const portAuthoritydetails = await User.findById(portauthorityid.user);
+
     let currentContract = null;
     if (activeShip) {
       currentContract = {
@@ -46,7 +49,6 @@ const activeShip = await Ship.findOne({
         },
         progress: activeShip.progress,
         salary: activeShip.salary || 0,
-        
         startDate: activeShip.departureDate.toISOString(),
       };
     }
@@ -71,6 +73,8 @@ const activeShip = await Ship.findOne({
         weather:activeShip.weatherStatus,
         departureTime: activeShip.departureDate.toISOString(),
         arrivalTime: activeShip.arrivalDate?.toISOString() || activeShip.eta.toISOString(),
+        createdBy: portAuthoritydetails.firstName+" "+portAuthoritydetails.lastName,
+        ContactdetailsOfPortAuthority: portAuthoritydetails.phone,
       },
     };
 
@@ -109,8 +113,12 @@ export const updateSailorProfile = async (req, res) => {
 
 export const getAvailableShipments = async (req, res) => {
   try {
+    const sailor = await SailorModel.findOne({ user: req.user.id });
+const hasAlreadyApplied = await JobPost.exists({ crewAssigned: sailor._id });
+
+
     const availableShipments = await JobPost.find({ status: "active" });
-    res.json(availableShipments);
+    res.json({ shipments: availableShipments, hasAlreadyApplied });
   } catch (error) {
     console.error("Error fetching available shipments:", error);
     res.status(500).json({ message: "Server error" });

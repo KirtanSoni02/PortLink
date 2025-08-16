@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, User, FileText, MapPin, Calendar, Send, CheckCircle } from 'lucide-react';
+import axios from 'axios';
+
 
 interface ShipmentApplicationModalProps {
   isOpen: boolean;
@@ -11,7 +13,7 @@ interface ShipmentApplicationModalProps {
     destinationPort: string;
     company: string;
     salary: number;
-    estimatedTime: string;
+    DepartureDate: Date;
     crewRequired?: number;
     cargoType: string;
     urgency?: string;
@@ -29,7 +31,7 @@ interface ShipmentApplicationModalProps {
 interface ApplicationFormData {
   personalMessage: string;
   availabilityDate: string;
-  expectedSalary: string;
+  // expectedSalary: string;
   relevantExperience: string;
   certifications: string;
   emergencyContact: string;
@@ -53,7 +55,7 @@ const ShipmentApplicationModal: React.FC<ShipmentApplicationModalProps> = ({
   const [formData, setFormData] = useState<ApplicationFormData>({
     personalMessage: '',
     availabilityDate: '',
-    expectedSalary: shipment.salary.toString(),
+    // expectedSalary: shipment.salary.toString(),
     relevantExperience: '',
     certifications: '',
     emergencyContact: '',
@@ -83,16 +85,16 @@ const ShipmentApplicationModal: React.FC<ShipmentApplicationModalProps> = ({
       const selectedDate = new Date(formData.availabilityDate);
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-      if (selectedDate < today) {
-        newErrors.availabilityDate = 'Availability date cannot be in the past';
+      if (selectedDate < today || selectedDate > shipment.DepartureDate) {
+        newErrors.availabilityDate = 'Availability date cannot be in the past or after the shipment departure date';
       }
     }
 
-    if (!formData.expectedSalary.trim()) {
-      newErrors.expectedSalary = 'Expected salary is required';
-    } else if (parseInt(formData.expectedSalary) < 1000) {
-      newErrors.expectedSalary = 'Expected salary must be at least $1,000';
-    }
+    // if (!formData.expectedSalary.trim()) {
+    //   newErrors.expectedSalary = 'Expected salary is required';
+    // } else if (parseInt(formData.expectedSalary) < 1000) {
+    //   newErrors.expectedSalary = 'Expected salary must be at least $1,000';
+    // }
 
     if (!formData.relevantExperience.trim()) {
       newErrors.relevantExperience = 'Relevant experience description is required';
@@ -126,53 +128,102 @@ const ShipmentApplicationModal: React.FC<ShipmentApplicationModalProps> = ({
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
     
-    if (!validateForm()) {
-      return;
-    }
+  //   if (!validateForm()) {
+  //     return;
+  //   }
 
-    setIsSubmitting(true);
+  //   setIsSubmitting(true);
 
-    // Simulate API call
+  //   // Simulate API call
+  //   setTimeout(() => {
+  //     const applicationData = {
+  //       shipmentId: shipment.id,
+  //       sailorId: 'sailor_001', // This would come from auth context
+  //       sailorName: sailorData.name,
+  //       sailorEmail: sailorData.email,
+  //       sailorPhone: sailorData.phone,
+  //       sailorRating: sailorData.rating,
+  //       applicationDate: new Date().toISOString(),
+  //       ...formData,
+  //       status: 'pending'
+  //     };
+
+  //     onSubmitApplication(applicationData);
+  //     setSubmitSuccess(true);
+  //     setIsSubmitting(false);
+
+  //     // Close modal after success message
+  //     setTimeout(() => {
+  //       setSubmitSuccess(false);
+  //       onClose();
+  //       // Reset form
+  //       setFormData({
+  //         personalMessage: '',
+  //         availabilityDate: '',
+  //         relevantExperience: '',
+  //         certifications: '',
+  //         emergencyContact: '',
+  //         emergencyPhone: '',
+  //         medicalCertification: '',
+  //         passportNumber: '',
+  //         visaStatus: ''
+  //       });
+  //     }, 2000);
+  //   }, 2000);
+  // };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  if (!validateForm()) {
+    return;
+  }
+
+  setIsSubmitting(true);
+
+  try {
+    const token = localStorage.getItem("token");
+    // Build the application payload
+    const applicationData = {
+      shipmentId: shipment.id
+    };
+
+    await axios.post(
+      "http://localhost:3000/api/sailor/jobposts/assign-crew",
+      applicationData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      }
+    );
+
+    setSubmitSuccess(true);
+    setIsSubmitting(false);
+
     setTimeout(() => {
-      const applicationData = {
-        shipmentId: shipment.id,
-        sailorId: 'sailor_001', // This would come from auth context
-        sailorName: sailorData.name,
-        sailorEmail: sailorData.email,
-        sailorPhone: sailorData.phone,
-        sailorRating: sailorData.rating,
-        applicationDate: new Date().toISOString(),
-        ...formData,
-        status: 'pending'
-      };
-
-      onSubmitApplication(applicationData);
-      setSubmitSuccess(true);
-      setIsSubmitting(false);
-
-      // Close modal after success message
-      setTimeout(() => {
-        setSubmitSuccess(false);
-        onClose();
-        // Reset form
-        setFormData({
-          personalMessage: '',
-          availabilityDate: '',
-          expectedSalary: shipment.salary.toString(),
-          relevantExperience: '',
-          certifications: '',
-          emergencyContact: '',
-          emergencyPhone: '',
-          medicalCertification: '',
-          passportNumber: '',
-          visaStatus: ''
-        });
-      }, 2000);
-    }, 2000);
-  };
+      setSubmitSuccess(false);
+      onClose();
+      setFormData({
+        personalMessage: '',
+        availabilityDate: '',
+        relevantExperience: '',
+        certifications: '',
+        emergencyContact: '',
+        emergencyPhone: '',
+        medicalCertification: '',
+        passportNumber: '',
+        visaStatus: ''
+      });
+    }, 1500);
+  } catch (error) {
+    setIsSubmitting(false);
+    alert("Failed to submit application. Please try again.");
+  }
+};
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -251,7 +302,7 @@ const ShipmentApplicationModal: React.FC<ShipmentApplicationModalProps> = ({
                     <div className="flex items-center space-x-2">
                       <Calendar className="w-4 h-4 text-blue-500" />
                       <span className="text-sm text-slate-600">Duration:</span>
-                      <span className="text-sm font-medium text-slate-800">{shipment.estimatedTime}</span>
+                      <span className="text-sm font-medium text-slate-800">{shipment.DepartureDate.toLocaleDateString()}</span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <User className="w-4 h-4 text-purple-500" />
@@ -316,27 +367,7 @@ const ShipmentApplicationModal: React.FC<ShipmentApplicationModalProps> = ({
                   </div>
 
                   {/* Expected Salary */}
-                  <div>
-                    <label htmlFor="expectedSalary" className="block text-sm font-medium text-slate-700 mb-2">
-                      Expected Salary (USD) *
-                    </label>
-                    <input
-                      type="number"
-                      id="expectedSalary"
-                      name="expectedSalary"
-                      value={formData.expectedSalary}
-                      onChange={handleInputChange}
-                      min="1000"
-                      step="100"
-                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300 ${
-                        errors.expectedSalary ? 'border-red-500 bg-red-50' : 'border-slate-300'
-                      }`}
-                      placeholder="e.g., 18000"
-                    />
-                    {errors.expectedSalary && (
-                      <p className="mt-1 text-sm text-red-600">{errors.expectedSalary}</p>
-                    )}
-                  </div>
+                  
 
                   {/* Relevant Experience */}
                   <div className="lg:col-span-2">

@@ -23,7 +23,9 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ sailorData, onMenuCli
   const unreadCount = notifications.filter(n => n.unread).length;
 
   return (
-    <header className="fixed top-0 left-0 right-0 bg-white border-b border-slate-200 z-50">
+    
+    <header className="fixed top-0 left-0 right-0 bg-white border-b border-slate-200 z-50" style={{ pointerEvents: "auto", zIndex: 9999 }}>
+      
       <div className="flex items-center justify-between h-16 px-6">
         {/* Left side - Logo and Menu */}
         <div className="flex items-center space-x-4">
@@ -45,7 +47,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ sailorData, onMenuCli
         {/* Right side - Notifications and Profile */}
         <div className="flex items-center space-x-4">
           {/* Notifications */}
-          <div className="relative">
+          {/* <div className="relative">
             <button className="relative p-2 rounded-lg hover:bg-slate-100 transition-colors">
               <Bell className="w-6 h-6 text-slate-600" />
               {unreadCount > 0 && (
@@ -54,7 +56,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ sailorData, onMenuCli
                 </span>
               )}
             </button>
-          </div>
+          </div> */}
 
           {/* Profile Dropdown */}
           <div className="relative">
@@ -85,10 +87,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ sailorData, onMenuCli
                   </div>
                   
                   <div className="py-2">
-                    <button className="flex items-center space-x-3 w-full px-4 py-2 text-left hover:bg-slate-50 transition-colors">
-                      <Settings className="w-4 h-4 text-slate-500" />
-                      <span className="text-sm text-slate-700">Profile Settings</span>
-                    </button>
+                    
                     <Link
                       to="/"
                       className="flex items-center space-x-3 w-full px-4 py-2 text-left hover:bg-slate-50 transition-colors"

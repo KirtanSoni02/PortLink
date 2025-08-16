@@ -116,7 +116,7 @@ const getPortCoords = (portName: string) => {
             <Clock className="w-6 h-6 text-sky-200" />
             <div>
               <div className="text-sm text-sky-200">ETA</div>
-              <div className="font-semibold">{contract.estimatedArrival}</div>
+              <div className="font-semibold">{new Date(contract.estimatedArrival).toLocaleDateString()}</div>
             </div>
           </div>
         </div>
@@ -252,7 +252,7 @@ const getPortCoords = (portName: string) => {
   </h3>
 
   {/* Leaflet Map Container */}
-  <div className="rounded-xl overflow-hidden border border-blue-100 shadow-inner">
+  <div className="rounded-xl overflow-hidden border border-blue-100 shadow-inner z-10">
     <LiveMap
       shipId={sailorData.currentContract?.id || ''}
       sourceCoords={getPortCoords(sailorData.currentContract?.sourcePort || '')}

@@ -28,7 +28,7 @@ const PortDashboardHeader: React.FC<PortDashboardHeaderProps> = ({ portData, onM
   const unreadCount = notifications.filter(n => n.unread).length;
 
   return (
-    <header className="fixed top-0 left-0 right-0 bg-white border-b border-slate-200 z-50">
+    <header className="fixed top-0 left-0 right-0 bg-white border-b border-slate-200 z-50" style={{ pointerEvents: "auto", zIndex: 9999 }}>
       <div className="flex items-center justify-between h-16 px-6">
         {/* Left side - Logo and Menu */}
         <div className="flex items-center space-x-4">
