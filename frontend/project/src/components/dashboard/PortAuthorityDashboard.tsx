@@ -170,6 +170,7 @@ useEffect(() => {
           Authorization: `Bearer ${token}`
         }
       });
+      console.log("Active Ships API Response:", res.data); // Debugging line
       setActiveShips(res.data);
     } catch (err) {
       console.error("Error fetching active ships:", err);

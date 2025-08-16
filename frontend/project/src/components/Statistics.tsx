@@ -68,7 +68,7 @@ const Statistics: React.FC = () => {
             Trusted by Maritime Professionals
           </h2>
           <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-            Join thousands of sailors, ports, and service providers already using Web Sailor
+            Join thousands of sailors, ports, and service providers already using PortLink
           </p>
         </motion.div>
 

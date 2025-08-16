@@ -55,7 +55,7 @@ const Header: React.FC = () => {
               <span className={`text-xl font-bold transition-colors duration-300 ${
                 isScrolled ? 'text-slate-800' : 'text-white'
               }`}>
-                Web Sailor
+                PortLink
               </span>
             </Link>
           </motion.div>

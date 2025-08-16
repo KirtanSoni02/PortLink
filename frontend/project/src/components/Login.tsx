@@ -164,7 +164,7 @@ const Login: React.FC = () => {
             <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-sky-500 to-emerald-500 rounded-full">
               <Anchor className="w-8 h-8 text-white" />
             </div>
-            <h1 className="text-3xl font-bold text-slate-800 mb-2">Login to Web Sailor</h1>
+            <h1 className="text-3xl font-bold text-slate-800 mb-2">Login to PortLink</h1>
             <p className="text-slate-600">Welcome back to your maritime platform</p>
           </motion.div>
 

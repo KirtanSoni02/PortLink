@@ -211,7 +211,7 @@ const isTempEmail = (email: string) => {
             <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-sky-500 to-emerald-500 rounded-full">
               <Anchor className="w-8 h-8 text-white" />
             </div>
-            <h1 className="text-3xl font-bold text-slate-800 mb-2">Create Your Web Sailor Account</h1>
+            <h1 className="text-3xl font-bold text-slate-800 mb-2">Create Your PortLink Account</h1>
             <p className="text-slate-600">Join the maritime digital revolution</p>
           </motion.div>
 

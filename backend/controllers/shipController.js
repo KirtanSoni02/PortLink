@@ -17,7 +17,7 @@ export const getActiveShipsByPort = async (req, res,next) => {
 
     // Step 2: Find all ships created by this port
     const ships = await Ship.find({
-  createdBy: portAuthority._id,
+  createdBy: portId,
   source: portAuthority.portName, // Assuming portName is the field in Ship model
   status: 'active',
 }).populate({

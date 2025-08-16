@@ -56,7 +56,7 @@ const HowItWorks: React.FC = () => {
             How It Works
           </h2>
           <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-            Get started with Web Sailor in three simple steps
+            Get started with PortLink in three simple steps
           </p>
         </motion.div>
 

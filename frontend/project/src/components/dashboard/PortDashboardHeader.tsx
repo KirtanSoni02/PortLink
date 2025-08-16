@@ -44,7 +44,7 @@ const PortDashboardHeader: React.FC<PortDashboardHeaderProps> = ({ portData, onM
               <Anchor className="w-6 h-6 text-white" />
             </div>
             <div className="hidden sm:block">
-              <span className="text-xl font-bold text-slate-800">Web Sailor</span>
+              <span className="text-xl font-bold text-slate-800">PortLink</span>
               <div className="text-xs text-slate-500">Port Authority</div>
             </div>
           </Link>
@@ -64,7 +64,7 @@ const PortDashboardHeader: React.FC<PortDashboardHeaderProps> = ({ portData, onM
         {/* Right side - Notifications and Profile */}
         <div className="flex items-center space-x-4">
           {/* Notifications */}
-          <div className="relative">
+          {/* <div className="relative">
             <button className="relative p-2 rounded-lg hover:bg-slate-100 transition-colors">
               <Bell className="w-6 h-6 text-slate-600" />
               {unreadCount > 0 && (
@@ -73,7 +73,7 @@ const PortDashboardHeader: React.FC<PortDashboardHeaderProps> = ({ portData, onM
                 </span>
               )}
             </button>
-          </div>
+          </div> */}
 
           {/* Profile Dropdown */}
           <div className="relative">

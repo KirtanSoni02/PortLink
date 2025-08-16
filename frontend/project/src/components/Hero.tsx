@@ -151,7 +151,7 @@ const Hero: React.FC = () => {
           <div className="flex items-center justify-center w-20 h-20 mx-auto mb-4 bg-white/10 backdrop-blur-md rounded-full border border-white/20">
             <Anchor className="w-10 h-10 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-white">Web Sailor</h1>
+          <h1 className="text-3xl font-bold text-white">PortLink</h1>
         </motion.div>
 
         {/* Main Headlines */}

@@ -101,7 +101,7 @@ export const getPortOverview = async (req, res) => {
 
     const port = await PortAuthority.findById(portId).lean();
     const jobs = await JobPost.find({ createdBy: portId }).lean();
-    const ships = await Ship.find({}).lean();
+    const ships = await Ship.find({createdBy: portId,source: portId.portName}).lean();
     const contracts = await CompletedContract.find({ portAuthority: portId }).lean();
 
     res.status(200).json({
@@ -137,7 +137,7 @@ export const getPortDashboardProfile = async (req, res) => {
       return res.status(404).json({ message: 'User or port authority not found' });
     }
 
-    const totalShipsInTransit = await Ship.countDocuments({ createdBy: portData._id, status: 'active' });
+    const totalShipsInTransit = await Ship.countDocuments({ createdBy: portData._id, source: portData.portName, status: 'active' });
     const totalContractsCompleted = await CompletedContract.countDocuments({ portAuthority: portData._id });
     const activeJobPosts = await JobPost.countDocuments({ createdBy: portData._id, status: 'active' });
     const registeredSailors = await User.countDocuments({ role: 'sailor', location: portData.portName });

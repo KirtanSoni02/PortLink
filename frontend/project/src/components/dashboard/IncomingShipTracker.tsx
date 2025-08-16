@@ -1,6 +1,38 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Ship, MapPin, Clock, Users, Package, Cloud, Eye, ChevronDown, ChevronUp } from 'lucide-react';
+import { Ship, MapPin, Clock, Users, Package, Cloud, Eye, ChevronDown, ChevronUp , Navigation} from 'lucide-react';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import L from 'leaflet';
+import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
+import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+import 'leaflet/dist/leaflet.css';
+import portLocations from '../../portLocations.ts';
+
+
+
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: markerIcon2x,
+  iconUrl: markerIcon,
+  shadowUrl: markerShadow,
+});
+const createCustomIcon = (color: string, withPulse = false) =>
+  L.divIcon({
+    className: 'custom-div-icon',
+    html: `
+      <div class="marker-wrapper">
+        <div class="marker-dot ${color} ${withPulse ? 'pulse' : ''}"></div>
+      </div>`,
+    iconSize: [20, 20],
+    iconAnchor: [10, 10],
+  });
+
+const shipIcon = createCustomIcon('bg-red-500',true);
+const sourceIcon = createCustomIcon('bg-blue-500',true);
+const destinationIcon = createCustomIcon('bg-green-500',true);
+
+
+
 
 interface CrewMember {
   id: string;
@@ -117,7 +149,13 @@ const IncomingShipTracker: React.FC<IncomingShipTrackerProps> = ({ ships }) => {
                       <Clock className="w-4 h-4 text-amber-500" />
                       <div>
                         <div className="text-xs text-slate-500">ETA</div>
-                        <div className="text-sm font-medium text-slate-800">{ship.eta}</div>
+                        <div className="text-sm font-medium text-slate-800">{new Date(ship.eta).toLocaleString("en-IN", {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      })}</div>
                       </div>
                     </div>
                     <div className="flex items-center space-x-2">
@@ -242,68 +280,92 @@ const IncomingShipTracker: React.FC<IncomingShipTrackerProps> = ({ ships }) => {
                     </div>
 
                     {/* Map Placeholder */}
-                    <div className="mt-8">
-                      <h4 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
-                        <MapPin className="w-5 h-5 mr-2 text-emerald-500" />
-                        Current Position
-                      </h4>
-                      <div className="relative bg-gradient-to-br from-blue-50 to-sky-100 rounded-xl h-64 overflow-hidden">
-                        {/* Grid Background */}
-                        <div className="absolute inset-0 opacity-20">
-                          <div className="w-full h-full" style={{
-                            backgroundImage: `
-                              linear-gradient(rgba(59, 130, 246, 0.3) 1px, transparent 1px),
-                              linear-gradient(90deg, rgba(59, 130, 246, 0.3) 1px, transparent 1px)
-                            `,
-                            backgroundSize: '30px 30px'
-                          }}></div>
-                        </div>
+                    
 
-                        {/* Ship Position */}
-                        <motion.div
-                          animate={{
-                            x: [200, 220, 200],
-                            y: [100, 120, 100]
-                          }}
-                          transition={{
-                            duration: 4,
-                            repeat: Infinity,
-                            ease: "easeInOut"
-                          }}
-                          className="absolute"
-                        >
-                          <div className="relative">
-                            <div className="w-6 h-6 bg-red-500 rounded-full border-2 border-white shadow-lg"></div>
-                            <motion.div
-                              animate={{ scale: [1, 1.5, 1], opacity: [0.7, 0, 0.7] }}
-                              transition={{ duration: 2, repeat: Infinity }}
-                              className="absolute inset-0 w-6 h-6 bg-red-400 rounded-full"
-                            />
-                          </div>
-                        </motion.div>
 
-                        {/* Route Path */}
-                        <svg className="absolute inset-0 w-full h-full">
-                          <motion.path
-                            d="M50,200 Q200,100 350,150 Q500,120 650,100"
-                            stroke="#3B82F6"
-                            strokeWidth="3"
-                            fill="none"
-                            strokeDasharray="8,4"
-                            initial={{ pathLength: 0 }}
-                            animate={{ pathLength: ship.progress / 100 }}
-                            transition={{ duration: 2 }}
-                          />
-                        </svg>
+                    <h3 className="text-xl font-semibold text-slate-800 mb-4 mt-6 flex items-center">
+    <Navigation className="w-6 h-6 mr-3 text-blue-500" />
+    Route Tracking
+  </h3>
 
-                        <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg p-3">
-                          <div className="text-sm font-medium text-slate-800">{ship.currentLocation.region}</div>
-                          <div className="text-xs text-slate-600">
-                            {ship.currentLocation.lat.toFixed(4)}°, {ship.currentLocation.lng.toFixed(4)}°
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+  {/* Leaflet Map Container */}
+  <div className="rounded-xl overflow-hidden border border-blue-100 shadow-inner">
+
+
+
+
+
+
+
+   {/* <LiveMap
+  shipId={ship._id}
+  sourceCoords={getPortCoords(ship.source || '')}
+  destinationCoords={getPortCoords(ship.destination || '')}
+/> */}
+
+
+
+<MapContainer
+          center={[20, 0]} // Initial map center
+          zoom={2}
+          style={{ height: '500px', width: '100%' }}
+        >
+          <TileLayer
+            attribution='&copy; OpenStreetMap contributors'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+
+{ship.source && portLocations[ship.source] && (
+    <Marker
+      position={[
+        parseFloat(portLocations[ship.source].latitude),
+        parseFloat(portLocations[ship.source].longitude)
+      ]}
+      icon={sourceIcon} // you can create a green icon for source
+    />
+  )}
+         
+            <Marker
+              key={ship.id}
+              position={[ship.currentLocation.lat, ship.currentLocation.lng]}
+              icon={shipIcon}
+            >
+            </Marker>
+           {ship.destination && portLocations[ship.destination] && (
+    <Marker
+      position={[
+        parseFloat(portLocations[ship.destination].latitude),
+        parseFloat(portLocations[ship.destination].longitude)
+      ]}
+      icon={destinationIcon} // you can create a red icon for destination
+    />
+  )}
+          
+        </MapContainer>
+
+  </div>
+
+  {/* Legend and Status */}
+  <div className="flex justify-between items-center mt-4 text-sm text-slate-600">
+    <div className="flex items-center space-x-4">
+      <div className="flex items-center space-x-2">
+        <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+        <span>Source</span>
+      </div>
+      <div className="flex items-center space-x-2">
+        <div className="w-3 h-3 bg-red-500 rounded-full animate-ping-fast"></div>
+        <span>Live Position</span>
+      </div>
+      <div className="flex items-center space-x-2">
+        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+        <span>Destination</span>
+      </div>
+    </div>
+    <div className="text-emerald-600 font-medium">Real-time tracking active</div>
+  </div>
+
+
+
                   </div>
                 </motion.div>
               )}

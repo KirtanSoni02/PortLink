@@ -19,7 +19,7 @@ const Footer: React.FC = () => {
               <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-sky-500 to-emerald-500 rounded-full">
                 <Anchor className="w-7 h-7 text-white" />
               </div>
-              <span className="text-2xl font-bold">Web Sailor</span>
+              <span className="text-2xl font-bold">PortLink</span>
             </div>
             <p className="text-slate-300 mb-6 leading-relaxed">
               Connecting sailors, ports, and services through a real-time digital platform. 
@@ -127,7 +127,7 @@ const Footer: React.FC = () => {
           className="border-t border-slate-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center"
         >
           <p className="text-slate-400 text-sm">
-            © 2025 Web Sailor. All rights reserved.
+            © 2025 PortLink. All rights reserved.
           </p>
           <div className="flex space-x-6 mt-4 md:mt-0">
             <a href="#" className="text-slate-400 hover:text-sky-400 text-sm transition-colors">

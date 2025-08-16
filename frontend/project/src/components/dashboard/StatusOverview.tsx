@@ -257,7 +257,7 @@ const getPortCoords = (portName: string) => {
       shipId={sailorData.currentContract?.id || ''}
       sourceCoords={getPortCoords(sailorData.currentContract?.sourcePort || '')}
   destinationCoords={getPortCoords(sailorData.currentContract?.destinationPort || '')}
-    />
+    /> 
   </div>
 
   {/* Legend and Status */}

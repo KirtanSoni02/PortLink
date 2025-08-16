@@ -38,7 +38,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ sailorData, onMenuCli
             <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-sky-500 to-emerald-500 rounded-full">
               <Anchor className="w-6 h-6 text-white" />
             </div>
-            <span className="text-xl font-bold text-slate-800 hidden sm:block">Web Sailor</span>
+            <span className="text-xl font-bold text-slate-800 hidden sm:block">PortLink</span>
           </Link>
         </div>
 

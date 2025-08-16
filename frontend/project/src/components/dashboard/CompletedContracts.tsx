@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FileText, Calendar, MapPin, Ship, Users, DollarSign, Download, Trash2, Filter } from 'lucide-react';
+import axios from 'axios';
 
 interface CompletedContract {
   id: string;
@@ -24,9 +25,14 @@ interface CompletedContractsProps {
 
 const CompletedContracts: React.FC<CompletedContractsProps> = ({ contracts }) => {
   const [filter, setFilter] = useState<'all' | 'recent' | 'high-value'>('all');
+  const [localContracts, setLocalContracts] = useState(contracts);
 
+  // Update localContracts if parent contracts prop changes
+  React.useEffect(() => {
+    setLocalContracts(contracts);
+  }, [contracts]);
 
-  const filteredContracts = contracts.filter(contract => {
+  const filteredContracts = localContracts.filter(contract => {
     switch (filter) {
       case 'recent':
         const threeMonthsAgo = new Date();
@@ -39,16 +45,71 @@ const CompletedContracts: React.FC<CompletedContractsProps> = ({ contracts }) =>
     }
   });
 
-  const totalRevenue = contracts.reduce((sum, contract) => sum + contract.totalPayment, 0);
-  const averageContractValue = totalRevenue / contracts.length;
+  const totalRevenue = localContracts.reduce((sum, contract) => sum + contract.totalPayment, 0);
+  const averageContractValue = localContracts.length ? totalRevenue / localContracts.length : 0;
 
-  const handleDeleteContract = (contractId: string) => {
-    console.log('Deleting contract:', contractId);
-    // Handle delete logic
+  const handleDeleteContract = async (contractId: string) => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.delete(`http://localhost:3000/api/contract/delete/${contractId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      // Remove from local state
+      setLocalContracts(prev => prev.filter(contract => contract.id !== contractId));
+    } catch (error) {
+      console.error("Failed to delete contract:", error);
+      alert("Failed to delete contract. Please try again.");
+    }
   };
 
   const handleExportCSV = () => {
     console.log('Exporting contracts to CSV');
+      const headers = [
+    "Ship Name",
+    "Ship Number",
+    "Source Port",
+    "Destination Port",
+    "Start Date",
+    "End Date",
+    "Duration",
+    "Crew",
+    "Cargo Type",
+    "Total Payment"
+  ];
+
+  // Build CSV rows
+  const rows = filteredContracts.map(contract => [
+    contract.shipName,
+    contract.shipNumber,
+    contract.route.source,
+    contract.route.destination,
+    contract.startDate,
+    contract.endDate,
+    contract.duration,
+    contract.sailorsCount,
+    contract.cargoType,
+    contract.totalPayment
+  ]);
+
+  // Combine headers and rows
+  const csvContent = [
+    headers.join(","),
+    ...rows.map(row => row.map(String).map(val => `"${val.replace(/"/g, '""')}"`).join(","))
+  ].join("\n");
+
+  // Create a Blob and trigger download
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "completed_contracts.csv";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
     // Handle CSV export logic
   };
 

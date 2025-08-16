@@ -14,6 +14,7 @@ interface PortDashboardOverviewProps {
     status: string;
     applicationsCount: number;
   }>;
+  
 }
 
 const PortDashboardOverview: React.FC<PortDashboardOverviewProps> = ({ portData, jobPosts }) => {
@@ -123,7 +124,7 @@ const PortDashboardOverview: React.FC<PortDashboardOverviewProps> = ({ portData,
         >
           <h3 className="text-xl font-bold text-slate-800 mb-6 flex items-center">
             <Activity className="w-6 h-6 mr-3 text-emerald-500" />
-            Recent Activity (We will use the Web Sockets API to update this in real-time)
+            Recent Activity 
           </h3>
           
           <div className="space-y-4">

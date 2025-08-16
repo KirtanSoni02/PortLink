@@ -45,7 +45,7 @@ const CallToAction: React.FC = () => {
             <h2 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
               Start your journey with
               <span className="block bg-gradient-to-r from-sky-400 to-emerald-400 bg-clip-text text-transparent">
-                Web Sailor today
+                PortLink today
               </span>
             </h2>
             <p className="text-xl md:text-2xl text-sky-100 max-w-2xl mx-auto leading-relaxed">
