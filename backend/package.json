@@ -3,10 +3,12 @@
   "version": "1.0.0",
   "main": "server.js",
   "type": "module",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server.js"
-  },
+"scripts": {
+  "test": "echo \"Error: no test specified\" && exit 1",
+  "start": "node server.js",
+  "dev": "nodemon server.js",
+  "build": "echo \"Building the project...\""
+},
   "author": "Kirtan Soni",
   "license": "ISC",
   "description": "",
