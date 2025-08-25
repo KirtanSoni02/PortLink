@@ -52,7 +52,7 @@ const [hasAlreadyApplied, setHasAlreadyApplied] = useState(false);
   const fetchAvailableShipments = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get('http://localhost:3000/api/sailor/available-shipments', {
+      const response = await axios.get('https://portlink-ml31.onrender.com/api/sailor/available-shipments', {
         headers: {
           Authorization: `Bearer ${token}`,
         },

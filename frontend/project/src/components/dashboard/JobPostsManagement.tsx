@@ -41,7 +41,7 @@ const [selectedJob, setSelectedJob] = useState(null);
 const handleViewApplications = async (jobId: string) => {
   try {
     const token = localStorage.getItem("token");
-    const response = await axios.get(`http://localhost:3000/api/activejob/view/${jobId}`, {
+    const response = await axios.get(`https://portlink-ml31.onrender.com/api/activejob/view/${jobId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -68,7 +68,7 @@ const closeModal = () => setSelectedJob(null);
    const handleDeleteJob = async (jobId: string) => {
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`http://localhost:3000/api/activejob/delete/${jobId}`, {
+      await axios.delete(`https://portlink-ml31.onrender.com/api/activejob/delete/${jobId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

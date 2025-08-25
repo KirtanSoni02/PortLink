@@ -77,7 +77,7 @@ useEffect(() => {
   const fetchSailorData = async () => {
     try {
       const token = localStorage.getItem("token"); // or however you store auth
-      const response = await axios.get('http://localhost:3000/api/sailor/dashboard', {
+      const response = await axios.get('https://portlink-ml31.onrender.com/api/sailor/dashboard', {
         headers: {
           Authorization: `Bearer ${token}`,
         },

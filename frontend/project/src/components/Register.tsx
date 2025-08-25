@@ -173,7 +173,7 @@ const handleCityInput = (e: React.ChangeEvent<HTMLInputElement>) => {
 //   setIsLoading(true);
 // console.log("Form Data:", formData);
 //   try {
-//     // const response = await axios.post("http://localhost:3000/api/auth/register", {
+//     // const response = await axios.post("https://portlink-ml31.onrender.com/api/auth/register", {
 //     //   firstName: formData.firstName,
 //     //   lastName: formData.lastName,
 //     //   email: formData.email,
@@ -188,7 +188,7 @@ const handleCityInput = (e: React.ChangeEvent<HTMLInputElement>) => {
 //     //   selectedport: formData.selectedPort   
 //     // });
 
-//     const response = await axios.post("http://localhost:3000/api/auth/register", {
+//     const response = await axios.post("https://portlink-ml31.onrender.com/api/auth/register", {
 //   ...formData, // includes all necessary fields including selectedPort
 // });
 
@@ -228,7 +228,7 @@ const handleSubmit = async (e: React.FormEvent) => {
   setIsLoading(true);
 
   try {
-    const response = await axios.post("http://localhost:3000/api/auth/register", {
+    const response = await axios.post("https://portlink-ml31.onrender.com/api/auth/register", {
       ...formData,
     });
 

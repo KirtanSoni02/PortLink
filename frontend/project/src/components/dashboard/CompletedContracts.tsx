@@ -51,7 +51,7 @@ const CompletedContracts: React.FC<CompletedContractsProps> = ({ contracts }) =>
   const handleDeleteContract = async (contractId: string) => {
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`http://localhost:3000/api/contract/delete/${contractId}`, {
+      await axios.delete(`https://portlink-ml31.onrender.com/api/contract/delete/${contractId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

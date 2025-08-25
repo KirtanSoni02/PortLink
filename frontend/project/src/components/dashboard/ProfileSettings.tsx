@@ -31,7 +31,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ sailorData }) => {
  const handleSave = async () => {
   try {
     const token = localStorage.getItem('token');
-    const response = await axios.put('http://localhost:3000/api/sailor/edit-profile',{
+    const response = await axios.put('https://portlink-ml31.onrender.com/api/sailor/edit-profile',{
       name: formData.name,
       email: formData.email,
       phone: formData.phone,

@@ -192,7 +192,7 @@ const ShipmentApplicationModal: React.FC<ShipmentApplicationModalProps> = ({
     };
 
     await axios.post(
-      "http://localhost:3000/api/sailor/jobposts/assign-crew",
+      "https://portlink-ml31.onrender.com/api/sailor/jobposts/assign-crew",
       applicationData,
       {
         headers: {

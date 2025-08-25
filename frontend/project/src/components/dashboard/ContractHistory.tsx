@@ -29,7 +29,7 @@ const ContractHistory: React.FC<ContractHistoryProps> = ({ sailorId }) => {
     const fetchContracts = async () => {
       try {
         console.log("Fetching contract history for sailor ID:", sailorId); // Debugging line
-        const response = await axios.get(`http://localhost:3000/api/sailor/contractshistory/${sailorId}`, {
+        const response = await axios.get(`https://portlink-ml31.onrender.com/api/sailor/contractshistory/${sailorId}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },

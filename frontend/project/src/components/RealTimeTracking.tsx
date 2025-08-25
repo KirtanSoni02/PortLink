@@ -57,7 +57,7 @@ const RealTimeTracking: React.FC = () => {
   useEffect(() => {
   const fetchVesselData = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/api/ship/realtimetracking');
+      const response = await axios.get('https://portlink-ml31.onrender.com/api/ship/realtimetracking');
       console.log('Fetched vessel data:', response.data);
       if (Array.isArray(response.data)) {
         setVessels(response.data);
