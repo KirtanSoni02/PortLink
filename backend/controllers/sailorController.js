@@ -30,8 +30,22 @@ const activeShip = await Ship.findOne({
   status: "active",
 });
 
-const portauthorityid = await portAuthority.findById(activeShip.createdBy);
-const portAuthoritydetails = await User.findById(portauthorityid.user);
+if(!activeShip) {
+  return res.json({ 
+      id: sailor._id,
+      name: `${user.firstName} ${user.lastName}`,
+      email: user.email,
+      phone: user.phone,
+      experience: user.experience,
+      rating: sailor.rating || 0,
+      completedContracts: completedContracts.length,
+      location:user.location,
+      hasOngoingContract: !!activeShip,
+    });
+}
+
+  const portauthorityid = await portAuthority.findById(activeShip.createdBy);
+  const portAuthoritydetails = await User.findById(portauthorityid.user);
 
     let currentContract = null;
     if (activeShip) {

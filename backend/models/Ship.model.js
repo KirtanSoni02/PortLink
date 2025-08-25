@@ -39,6 +39,8 @@ const shipSchema = new mongoose.Schema({
   required: true
 },
 
+  contractvalue: { type: Number, required: true },
+
 
   departureDate: { type: Date, required: true },
   arrivalDate: { type: Date } ,// Can be null until completed

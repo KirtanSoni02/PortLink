@@ -31,6 +31,7 @@ router.post("/jobposts/assign-crew", verifyToken, async (req, res) => {
 
     // Add sailor to crewAssigned
     jobPost.crewAssigned.push(sailor._id);
+    jobPost.applicationsCount += 1;
     await jobPost.save();
 
     res.status(200).json({ message: "Sailor assigned successfully" });

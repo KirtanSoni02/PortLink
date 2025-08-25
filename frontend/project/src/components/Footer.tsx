@@ -104,11 +104,11 @@ const Footer: React.FC = () => {
             <div className="space-y-4">
               <div className="flex items-center space-x-3">
                 <MapPin className="w-5 h-5 text-sky-400 flex-shrink-0" />
-                <span className="text-slate-300">201, Vrajleela Appartment, Parivar Char Rasta, Waghodia Road, Vadodara, 390019</span>
+                <span className="text-slate-300">Vrajleela Society, Parivar Char Rasta, Waghodia Road, Vadodara, 390019</span>
               </div>
               <div className="flex items-center space-x-3">
                 <Phone className="w-5 h-5 text-sky-400 flex-shrink-0" />
-                <span className="text-slate-300">+91 12345 67890</span>
+                <span className="text-slate-300">+91 9427447965</span>
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="w-5 h-5 text-sky-400 flex-shrink-0" />

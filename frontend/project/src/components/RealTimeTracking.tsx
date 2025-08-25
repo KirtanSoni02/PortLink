@@ -134,7 +134,7 @@ const RealTimeTracking: React.FC = () => {
             </div>
 
             {/* Map Container */}
-            <div className="relative bg-gradient-to-br from-blue-50 to-sky-100 rounded-xl h-80 overflow-hidden">
+            <div className="relative bg-gradient-to-br from-blue-50 to-sky-100 rounded-xl h-80 overflow-hidden z-0">
               <section className="py-20 bg-gradient-to-b from-slate-50 to-white">
       <div className="container mx-auto px-4">
         
@@ -181,7 +181,7 @@ const RealTimeTracking: React.FC = () => {
             <div className="bg-white rounded-2xl p-6 shadow-xl border border-slate-200">
               <h3 className="text-2xl font-bold text-slate-800 mb-6">Active Vessels</h3>
               
-              <div className="space-y-4 max-h-74 overflow-y-auto pr-2">
+              <div className="space-y-4 max-h-96 overflow-y-auto pr-2">
                 {vessels.map((vessel, index) => (
                   <motion.div
                     key={vessel.id}

@@ -112,7 +112,7 @@ export const getIncomingShipsToPort = async (req, res, next) => {
             destination: ship.destination
           },
           cargoType: ship.cargoType,
-          totalPayment: ship.salary * ship.crewCount || 0,
+          totalPayment: ship.contractvalue * ship.crewCount || 0,
           duration: `${Math.ceil((Date.now() - new Date(ship.departureDate).getTime()) / (1000 * 60 * 60 * 24))} days`,
         };
 

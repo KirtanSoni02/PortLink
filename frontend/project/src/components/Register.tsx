@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Anchor, Eye, EyeOff, User, Mail, Phone, MapPin, Globe, Briefcase } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { Country, State, City } from 'country-state-city';
 
 interface FormData {
   firstName: string;
@@ -49,71 +50,190 @@ const Register: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  const [allCountries, setAllCountries] = useState(Country.getAllCountries());
+  const [allStates, setAllStates] = useState<any[]>([]);
+  const [allCities, setAllCities] = useState<any[]>([]);
+  
+  const [filteredCountries, setFilteredCountries] = useState<any[]>([]);
+  const [filteredStates, setFilteredStates] = useState<any[]>([]);
+  const [filteredCities, setFilteredCities] = useState<any[]>([]);
+
+  const [countryInput, setCountryInput] = useState('');
+  const [stateInput, setStateInput] = useState('');
+  const [cityInput, setCityInput] = useState('');
+  
+  const [showCountryDropdown, setShowCountryDropdown] = useState(false);
+  const [showStateDropdown, setShowStateDropdown] = useState(false);
+  const [showCityDropdown, setShowCityDropdown] = useState(false);
+
+
+  const handleCountrySelect = (country: any) => {
+  setFormData(prev => ({ ...prev, country: country.name, state: '', city: '' }));
+  setCountryInput(country.name);
+  setAllStates(State.getStatesOfCountry(country.isoCode));
+  setAllCities([]);
+  setShowCountryDropdown(false);
+};
+
+const handleStateSelect = (state: any) => {
+  setFormData(prev => ({ ...prev, state: state.name, city: '' }));
+  setStateInput(state.name);
+  const countryCode = allCountries.find(c => c.name === formData.country)?.isoCode;
+  if (countryCode) {
+    setAllCities(City.getCitiesOfState(countryCode, state.isoCode));
+  }
+  setShowStateDropdown(false);
+};
+
+const handleCitySelect = (city: any) => {
+  setFormData(prev => ({ ...prev, city: city.name }));
+  setCityInput(city.name);
+  setShowCityDropdown(false);
+};
+
+const handleCountryInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const value = e.target.value;
+  setCountryInput(value);
+  setFilteredCountries(
+    allCountries.filter(country =>
+      country.name.toLowerCase().includes(value.toLowerCase())
+    )
+  );
+  setShowCountryDropdown(true);
+};
+
+const handleStateInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const value = e.target.value;
+  setStateInput(value);
+  setFilteredStates(
+    allStates.filter(state =>
+      state.name.toLowerCase().includes(value.toLowerCase())
+    )
+  );
+  setShowStateDropdown(true);
+};
+
+const handleCityInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const value = e.target.value;
+  setCityInput(value);
+  setFilteredCities(
+    allCities.filter(city =>
+      city.name.toLowerCase().includes(value.toLowerCase())
+    )
+  );
+  setShowCityDropdown(true);
+};
+
   const validateForm = (): boolean => {
-    const newErrors: FormErrors = {};
+  const newErrors: FormErrors = {};
 
-    Object.keys(formData).forEach(key => {
-      if (!formData[key as keyof FormData].trim()) {
-        newErrors[key] = 'This field cannot be empty';
-      }
-    });
-
-    // Email validation
-    if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email address';
+  // Common fields validation
+  Object.keys(formData).forEach(key => {
+    if (
+      key !== "selectedPort" && // skip selectedPort here (we’ll handle role-specific later)
+      !formData[key as keyof FormData]?.trim()
+    ) {
+      newErrors[key] = "This field cannot be empty";
     }
+  });
 
-    // Phone validation
-    if (formData.phone && !/^\+?[\d\s-()]+$/.test(formData.phone)) {
-      newErrors.phone = 'Please enter a valid phone number';
-    }
-
-    // Password validation
-    if (formData.password && formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters long';
-    }
-
-    if (formData.role === "port" && !formData.selectedPort) {
-    newErrors.selectedPort = "Please select your port";
+  // Email validation
+  if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    newErrors.email = "Please enter a valid email address";
   }
 
+  // Password validation (example: min 6 chars)
+  if (formData.password && formData.password.length < 6) {
+    newErrors.password = "Password must be at least 6 characters long";
+  }
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  // Phone validation
+  if (formData.phone && !/^\+?[\d\s-()]+$/.test(formData.phone)) {
+    newErrors.phone = "Please enter a valid phone number";
+  }
+
+  // Role-specific validation
+  if (formData.role === "port") {
+    if (!formData.selectedPort || !formData.selectedPort.trim()) {
+      newErrors.selectedPort = "Please select your port";
+    }
+  }
+
+  setErrors(newErrors);
+  return Object.keys(newErrors).length === 0;
+};
 
 
-  const handleSubmit = async (e: React.FormEvent) => {
+//   const handleSubmit = async (e: React.FormEvent) => {
+//   e.preventDefault();
+
+//   if (!validateForm()) return;
+
+
+//   setIsLoading(true);
+// console.log("Form Data:", formData);
+//   try {
+//     // const response = await axios.post("http://localhost:3000/api/auth/register", {
+//     //   firstName: formData.firstName,
+//     //   lastName: formData.lastName,
+//     //   email: formData.email,
+//     //   phone: formData.phone,
+//     //   password: formData.password,
+//     //   role: formData.role,               // e.g., "sailor"
+//     //   location: formData.location,
+//     //   city: formData.city,
+//     //   state: formData.state,
+//     //   country: formData.country,
+//     //   experience: formData.experience,
+//     //   selectedport: formData.selectedPort   
+//     // });
+
+//     const response = await axios.post("http://localhost:3000/api/auth/register", {
+//   ...formData, // includes all necessary fields including selectedPort
+// });
+
+
+//     alert("✅ Registration successful!");
+//     console.log("Registration response:", response.data);
+//     // You can navigate to login page here, e.g., navigate("/login")
+//   } catch (error: any) {
+//     console.error("Registration error:", error);
+//     if (error.response?.status === 409) {
+//       alert("❗ User already exists");
+//     } else {
+//       alert("🚫 Registration failed");
+//     }
+//   } finally {
+//     setIsLoading(false);
+//   }
+// };
+
+
+
+
+
+
+
+
+const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
+  console.log("✅ Inside handleSubmit");
 
-  if (!validateForm()) return;
+  if (!validateForm()) {
+    console.log("❌ Validation failed");
+    return;
+  }
 
+  console.log("Form Data:", formData);
   setIsLoading(true);
 
   try {
-    // const response = await axios.post("http://localhost:3000/api/auth/register", {
-    //   firstName: formData.firstName,
-    //   lastName: formData.lastName,
-    //   email: formData.email,
-    //   phone: formData.phone,
-    //   password: formData.password,
-    //   role: formData.role,               // e.g., "sailor"
-    //   location: formData.location,
-    //   city: formData.city,
-    //   state: formData.state,
-    //   country: formData.country,
-    //   experience: formData.experience,
-    //   selectedport: formData.selectedPort   
-    // });
-
     const response = await axios.post("http://localhost:3000/api/auth/register", {
-  ...formData, // includes all necessary fields including selectedPort
-});
-
+      ...formData,
+    });
 
     alert("✅ Registration successful!");
     console.log("Registration response:", response.data);
-    // You can navigate to login page here, e.g., navigate("/login")
   } catch (error: any) {
     console.error("Registration error:", error);
     if (error.response?.status === 409) {
@@ -163,7 +283,7 @@ const isTempEmail = (email: string) => {
     } else if (isTempEmail(value)) {
       newErrors.email = 'Temporary/disposable emails are not allowed';
     } else {
-      // newErrors.email = undefined;
+      delete newErrors.email;
     }
   }
 
@@ -173,7 +293,7 @@ const isTempEmail = (email: string) => {
     } else if (!passwordPattern.test(value)) {
       newErrors.password = 'Password must be at least 8 characters and contain only letters and numbers';
     } else {
-      // newErrors.password = undefined;
+      delete newErrors.password;
     }
   }
 
@@ -186,9 +306,9 @@ const isTempEmail = (email: string) => {
     { name: 'email', label: 'Email', type: 'email', icon: Mail, placeholder: 'Enter your email address' },
     { name: 'phone', label: 'Phone Number', type: 'tel', icon: Phone, placeholder: 'Enter your phone number' },
     { name: 'location', label: 'Location', type: 'text', icon: MapPin, placeholder: 'Enter your location' },
-    { name: 'city', label: 'City', type: 'text', icon: MapPin, placeholder: 'Enter your city' },
-    { name: 'state', label: 'State', type: 'text', icon: MapPin, placeholder: 'Enter your state' },
-    { name: 'country', label: 'Country', type: 'text', icon: Globe, placeholder: 'Enter your country' }
+    // { name: 'city', label: 'City', type: 'text', icon: MapPin, placeholder: 'Enter your city' },
+    // { name: 'state', label: 'State', type: 'text', icon: MapPin, placeholder: 'Enter your state' },
+    // { name: 'country', label: 'Country', type: 'text', icon: Globe, placeholder: 'Enter your country' }
   ];
 
   return (
@@ -262,6 +382,176 @@ const isTempEmail = (email: string) => {
               </motion.div>
             ))}
 
+            {/*Country Field*/}
+<motion.div
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.5, delay: 0.7 }}
+>
+  <label htmlFor="country" className="block text-sm font-medium text-slate-700 mb-2">
+    Country
+  </label>
+  <div className="relative">
+    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+      <Globe className="h-5 w-5 text-slate-400" />
+    </div>
+    <input
+      type="text"
+      id="country"
+      name="country"
+      autoComplete="off"
+      value={countryInput}
+      onChange={handleCountryInput}
+      onFocus={() => setShowCountryDropdown(true)}
+      className={`block w-full pl-10 pr-3 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300 ${
+        errors.country ? 'border-red-500 bg-red-50' : 'border-slate-300 bg-white'
+      }`}
+      placeholder="Type to search country"
+    />
+    {showCountryDropdown && countryInput.length > 0 && (
+      <ul className="absolute z-10 w-full bg-white border border-slate-200 rounded-lg mt-1 max-h-40 overflow-y-auto shadow">
+        {filteredCountries.map((country, idx) => (
+          <li
+            key={idx}
+            className="px-4 py-2 hover:bg-sky-100 cursor-pointer"
+            onClick={() => handleCountrySelect(country)}
+          >
+            {country.name}
+          </li>
+        ))}
+        {filteredCountries.length === 0 && (
+          <li className="px-4 py-2 text-slate-400">No countries found</li>
+        )}
+      </ul>
+    )}
+  </div>
+  {errors.country && (
+    <motion.p
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="mt-2 text-sm text-red-600"
+    >
+      {errors.country}
+    </motion.p>
+  )}
+</motion.div>
+
+{/* Conditional State Dropdown */}
+{formData.country && (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.5, delay: 0.8 }}
+  >
+    <label htmlFor="state" className="block text-sm font-medium text-slate-700 mb-2">
+      State
+    </label>
+    <div className="relative">
+      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+        <MapPin className="h-5 w-5 text-slate-400" />
+      </div>
+      <input
+        type="text"
+        id="state"
+        name="state"
+        autoComplete="off"
+        value={stateInput}
+        onChange={handleStateInput}
+        onFocus={() => setShowStateDropdown(true)}
+        className={`block w-full pl-10 pr-3 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300 ${
+          errors.state ? 'border-red-500 bg-red-50' : 'border-slate-300 bg-white'
+        }`}
+        placeholder="Type to search state"
+      />
+      {showStateDropdown && stateInput.length > 0 && (
+        <ul className="absolute z-10 w-full bg-white border border-slate-200 rounded-lg mt-1 max-h-40 overflow-y-auto shadow">
+          {filteredStates.map((state, idx) => (
+            <li
+              key={idx}
+              className="px-4 py-2 hover:bg-sky-100 cursor-pointer"
+              onClick={() => handleStateSelect(state)}
+            >
+              {state.name}
+            </li>
+          ))}
+          {filteredStates.length === 0 && (
+            <li className="px-4 py-2 text-slate-400">No states found</li>
+          )}
+        </ul>
+      )}
+    </div>
+    {errors.state && (
+      <motion.p
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="mt-2 text-sm text-red-600"
+      >
+        {errors.state}
+      </motion.p>
+    )}
+  </motion.div>
+)}
+
+{/* Conditional City Dropdown */}
+{formData.country && formData.state && (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.5, delay: 0.5 }}
+  >
+    <label htmlFor="city" className="block text-sm font-medium text-slate-700 mb-2">
+      City
+    </label>
+    <div className="relative">
+      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+        <MapPin className="h-5 w-5 text-slate-400" />
+      </div>
+      <input
+        type="text"
+        id="city"
+        name="city"
+        autoComplete="off"
+        value={cityInput}
+        onChange={handleCityInput}
+        onFocus={() => setShowCityDropdown(true)}
+        className={`block w-full pl-10 pr-3 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300 ${
+          errors.city ? 'border-red-500 bg-red-50' : 'border-slate-300 bg-white'
+        }`}
+        placeholder="Type to search city"
+      />
+      {showCityDropdown && cityInput.length > 0 && (
+        <ul className="absolute z-10 w-full bg-white border border-slate-200 rounded-lg mt-1 max-h-40 overflow-y-auto shadow">
+          {filteredCities.map((city, idx) => (
+            <li
+              key={idx}
+              className="px-4 py-2 hover:bg-sky-100 cursor-pointer"
+              onClick={() => handleCitySelect(city)}
+            >
+              {city.name}
+            </li>
+          ))}
+          {filteredCities.length === 0 && (
+            <li className="px-4 py-2 text-slate-400">No cities found</li>
+          )}
+        </ul>
+      )}
+    </div>
+    {errors.city && (
+      <motion.p
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="mt-2 text-sm text-red-600"
+      >
+        {errors.city}
+      </motion.p>
+    )}
+  </motion.div>
+)}
+
+
+
+
+
             {/* Password Field */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -334,7 +624,6 @@ const isTempEmail = (email: string) => {
                   <option value="">Select your role</option>
                   <option value="sailor">Sailor</option>
                   <option value="port">Port Authority</option>
-                  <option value="service-provider">Service Provider</option>
                 </select>
               </div>
 

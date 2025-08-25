@@ -68,11 +68,8 @@ export const ConvertToShip = async (req, res, next) => {
   const crewFilled = job.crewAssigned.length === job.sailorsRequired;
 
   if (!crewFilled && !isDepartureDue) continue;
+const shipName = `Ship-${job.sourcePort}-${job.destinationPort}`;
 
-      const shipName = `Ship-${Date.now()}`; 
-
-   
-     
 const rawSourceCoords = portLocation[job.sourcePort];
 const rawDestinationCoords = portLocation[job.destinationPort];
 
@@ -116,6 +113,7 @@ if (!eta || isNaN(eta.getTime())) {
         number: `SHIP-${Date.now()}`,
         source: job.sourcePort, 
         destination: job.destinationPort,
+        contractvalue: job.salaryOffered,
         eta,
         cargoType: job.cargoType, 
         weatherStatus:weather,

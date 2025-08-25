@@ -40,7 +40,7 @@ const JobDetailsModal = ({ job, onClose }: { job: any, onClose: () => void }) =>
               <strong>Crew Assigned:</strong>
               <ul className="list-disc list-inside">
                 {job.crewAssigned.map((sailor: any) => (
-                  <li key={sailor._id}>{sailor.name || sailor._id}</li>
+                  <li key={sailor._id}>{sailor._id}</li>
                 ))}
               </ul>
             </div>

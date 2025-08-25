@@ -45,7 +45,7 @@ const ShipDetails: React.FC<ShipDetailsProps> = ({ ship }) => {
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-600">Registration Number</span>
-                <span className="font-mono text-slate-800">{ship.number}</span>
+                <span className="font-semibold text-slate-800">{ship.number}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-600">Cargo Type</span>

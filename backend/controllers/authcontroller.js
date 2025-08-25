@@ -4,6 +4,7 @@ import PortAuthority from "../models/PortAuthority.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import Sailor from "../models/Sailor.model.js";
 import { randomFill, randomInt } from "crypto";
 dotenv.config(); // Load environment variables from .env file
 const jwtt = process.env.JWT_SECRET; // Ensure this matches your .env file
@@ -77,7 +78,7 @@ const RegisterUser = async (req, res) => {
  if (role === 'sailor') {
       await Sailor.create({
         user: newUser._id,
-        rating: randomFill(1,5)
+        rating: randomInt(1,5)
       });
     }
         await newUser.save();

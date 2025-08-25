@@ -135,33 +135,22 @@ function getUrgencyLevel(departureDate: string): 'low' | 'medium' | 'high' {
   }
 
 
-    if (!currentSailorData.hasOngoingContract) {
-      return { canApply: true };
-    }
+    // if (!currentSailorData.hasOngoingContract) {
+    //   return { canApply: true };
+    // }
       if (shipment.alreadyAssigned) {
     return { canApply: false, reason: "You are already assigned to this shipment." };
   }
 
     // Check if current contract is near completion (90% or more)
-    if (currentSailorData.currentContract && currentSailorData.currentContract.progress >= 90) {
-      return { canApply: true };
-    }
-
-    // Check if the new shipment starts from the current destination
-    if (
-  currentSailorData.currentContract &&
-  new Date(currentSailorData.currentContract.estimatedArrival) <new Date(shipment.DepartureDate)
-) {
-  return { canApply: true };
-}
-
-
-    
-
-
-    return { 
+    if (currentSailorData.currentContract && (currentSailorData.currentContract.progress < 90)) {
+      return { 
       canApply: false, 
-      reason: 'You can only apply for new shipments when you have no ongoing contract, are near completion (90%+), or the new shipment starts from your current destination.' 
+      reason: 'You can only apply for new shipments when you have no ongoing contract, are near completion (90%+).' 
+    };
+  }
+    else return { 
+      canApply: true,  
     };
   };
 

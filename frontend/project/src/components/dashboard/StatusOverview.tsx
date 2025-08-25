@@ -190,11 +190,11 @@ const getPortCoords = (portName: string) => {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <div className="text-sm text-slate-600 mb-1">Latitude</div>
-                <div className="font-mono text-slate-800">{contract.currentLocation.lat.toFixed(4)}°</div>
+                <div className="font-semibold text-slate-800">{contract.currentLocation.lat.toFixed(4)}°</div>
               </div>
               <div>
                 <div className="text-sm text-slate-600 mb-1">Longitude</div>
-                <div className="font-mono text-slate-800">{contract.currentLocation.lng.toFixed(4)}°</div>
+                <div className="font-semibold text-slate-800">{contract.currentLocation.lng.toFixed(4)}°</div>
               </div>
             </div>
             <div className="pt-2">
