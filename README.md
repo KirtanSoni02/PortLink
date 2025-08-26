@@ -2,6 +2,7 @@
 
 **PortLink** is a real-time vessel tracking and sailor contract management platform. It empowers port authorities and sailors to interact through a seamless web interface to manage contracts, assign crews, monitor ships, and track live ship movements with real-time location updates and weather intelligence.
 
+🌐 **Live Website:** [Visit PortLink]("https://portlink-realtime-marine-operations-and.onrender.com")
 
 ---
 
@@ -52,8 +53,8 @@
 **Other Tools:**
 - JWT (Authentication)
 - Axios (HTTP requests)
-- Vercel / Netlify (Frontend Deployment)
-- Render / Railway / Fly.io (Backend Deployment)
+- Render (Frontend Deployment)
+- Render (Backend Deployment)
 
 ---
 
@@ -96,7 +97,7 @@ cd backend
 npm install
 cp .env.example .env
 # Fill in the environment variables
-npm run dev
+npm start
 ```
 
 3. **Frontend Setup:**
@@ -104,7 +105,7 @@ npm run dev
 ```bash
 cd ../frontend
 npm install
-npm start
+npm run dev
 ```
 
 ---
