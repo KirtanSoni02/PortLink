@@ -16,9 +16,12 @@ await connectDB();
 
 const app = express();
 
-app.use(cors());
 app.use(express.json());
-
+app.use(cors({
+  origin: "https://portlink-realtime-marine-operations-and.onrender.com",
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
+}));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/protected', protectedRoutes);
