@@ -24,12 +24,12 @@ interface ContractHistoryProps {
 const ContractHistory: React.FC<ContractHistoryProps> = ({ sailorId }) => {
   const [filter, setFilter] = useState<'all' | 'completed' | 'ongoing' | 'cancelled'>('all');
  const [contracts, setContracts] = useState<Contract[]>([]);
-
+const API_URL = import.meta.env.VITE_API_URL;
   useEffect(() => {
     const fetchContracts = async () => {
       try {
         console.log("Fetching contract history for sailor ID:", sailorId); // Debugging line
-        const response = await axios.get(`https://portlink-ml31.onrender.com/api/sailor/contractshistory/${sailorId}`, {
+        const response = await axios.get(`${API_URL}/api/sailor/contractshistory/${sailorId}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },

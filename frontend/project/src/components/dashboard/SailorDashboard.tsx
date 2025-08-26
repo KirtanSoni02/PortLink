@@ -70,14 +70,14 @@ const SailorDashboard: React.FC = () => {
 // State and effect for loading real data
 const [sailorData, setSailorData] = useState<SailorData | null>(null);
 const [loading, setLoading] = useState(true);
-
+const API_URL = import.meta.env.VITE_API_URL;
 
 
 useEffect(() => {
   const fetchSailorData = async () => {
     try {
       const token = localStorage.getItem("token"); // or however you store auth
-      const response = await axios.get('https://portlink-ml31.onrender.com/api/sailor/dashboard', {
+      const response = await axios.get(`${API_URL}/api/sailor/dashboard`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

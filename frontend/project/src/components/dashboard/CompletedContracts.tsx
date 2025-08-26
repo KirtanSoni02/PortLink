@@ -47,11 +47,11 @@ const CompletedContracts: React.FC<CompletedContractsProps> = ({ contracts }) =>
 
   const totalRevenue = localContracts.reduce((sum, contract) => sum + contract.totalPayment, 0);
   const averageContractValue = localContracts.length ? totalRevenue / localContracts.length : 0;
-
+  const API_URL = import.meta.env.VITE_API_URL;
   const handleDeleteContract = async (contractId: string) => {
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`https://portlink-ml31.onrender.com/api/contract/delete/${contractId}`, {
+      await axios.delete(`${API_URL}/api/contract/delete/${contractId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

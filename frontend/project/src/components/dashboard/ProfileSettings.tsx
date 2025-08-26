@@ -27,11 +27,12 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ sailorData }) => {
     certifications: 'STCW Basic Safety Training, Advanced Firefighting, Medical First Aid',
     languages: 'English (Native), Spanish (Fluent), Portuguese (Conversational)'
   });
+  const API_URL = import.meta.env.VITE_API_URL;
 
  const handleSave = async () => {
   try {
     const token = localStorage.getItem('token');
-    const response = await axios.put('https://portlink-ml31.onrender.com/api/sailor/edit-profile',{
+    const response = await axios.put(`${API_URL}/api/sailor/edit-profile`,{
       name: formData.name,
       email: formData.email,
       phone: formData.phone,

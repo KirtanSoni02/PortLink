@@ -37,11 +37,11 @@ const JobPostsManagement: React.FC<JobPostsManagementProps> = ({ jobPosts, onDel
 
 
 const [selectedJob, setSelectedJob] = useState(null);
-
+const API_URL = import.meta.env.VITE_API_URL;
 const handleViewApplications = async (jobId: string) => {
   try {
     const token = localStorage.getItem("token");
-    const response = await axios.get(`https://portlink-ml31.onrender.com/api/activejob/view/${jobId}`, {
+    const response = await axios.get(`${API_URL}/api/activejob/view/${jobId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -68,7 +68,7 @@ const closeModal = () => setSelectedJob(null);
    const handleDeleteJob = async (jobId: string) => {
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`https://portlink-ml31.onrender.com/api/activejob/delete/${jobId}`, {
+      await axios.delete(`${API_URL}/api/activejob/delete/${jobId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

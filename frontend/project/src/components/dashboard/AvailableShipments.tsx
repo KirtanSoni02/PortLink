@@ -47,12 +47,13 @@ const AvailableShipments: React.FC<AvailableShipmentsProps> = ({ sailorData, lim
 
 const [AvailableShipmentsData, setAvailableShipmentsData] = useState(null);
 const [hasAlreadyApplied, setHasAlreadyApplied] = useState(false);
+const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
   const fetchAvailableShipments = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get('https://portlink-ml31.onrender.com/api/sailor/available-shipments', {
+      const response = await axios.get(`${API_URL}/api/sailor/available-shipments`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

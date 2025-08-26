@@ -50,7 +50,7 @@ const PortAuthorityDashboard: React.FC = () => {
   const [activeShips, setActiveShips] = useState([]);
   const [incomingShips, setIncomingShips] = useState([]);
   const [completedContracts, setCompletedContracts] = useState([]);
-
+  const API_URL = import.meta.env.VITE_API_URL;
 
   // Mock port authority data - replace with API call
   // const [portData] = useState<PortAuthorityData>({
@@ -88,7 +88,7 @@ const [portData, setPortData] = useState<PortAuthorityData>({
   const fetchPortData = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get('https://portlink-ml31.onrender.com/api/port/profile', {
+      const response = await axios.get(`${API_URL}/api/port/profile`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -121,7 +121,7 @@ useEffect(() => {
   const fetchJobPosts = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get('https://portlink-ml31.onrender.com/api/activejob/activejobpost', {
+      const res = await axios.get(`${API_URL}/api/activejob/activejobpost`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -165,7 +165,7 @@ useEffect(() => {
   const fetchActiveShips = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("https://portlink-ml31.onrender.com/api/ship/active", {
+      const res = await axios.get(`${API_URL}/api/ship/active`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -191,7 +191,7 @@ useEffect(() => {
     try {
       const token = localStorage.getItem("token"); // or from context if you use AuthProvider
 
-      const res = await axios.get("https://portlink-ml31.onrender.com/api/ship/incoming", {
+      const res = await axios.get(`${API_URL}/api/ship/incoming`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -216,7 +216,7 @@ useEffect(() => {
   const fetchCompletedContracts = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("https://portlink-ml31.onrender.com/api/contract/completed", {
+      const res = await axios.get(`${API_URL}/api/contract/completed`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
