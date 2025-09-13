@@ -147,7 +147,7 @@ const Register: React.FC = () => {
     // Common fields validation
     Object.keys(formData).forEach(key => {
       if (
-        key !== "selectedPort" && 
+        key !== "selectedPort" &&
         key !== "password" && // Password might be empty for Google users
         !formData[key as keyof FormData]?.trim()
       ) {
@@ -240,7 +240,7 @@ const Register: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       console.log("❌ Validation failed");
       return;
@@ -256,7 +256,7 @@ const Register: React.FC = () => {
 
     try {
       let response;
-      
+
       if (authMethod === 'google') {
         // Complete Google user registration
         response = await axios.post(`${API_URL}/api/auth/complete-google-profile`, {
@@ -271,15 +271,15 @@ const Register: React.FC = () => {
         });
       }
 
-      
-    if (response.data.success) {
-      alert("✅ Registration successful!");
-      localStorage.setItem('token', response.data.token);
-      navigate('/dashboard');
-    } else {
-      throw new Error(response.data.error || 'Registration failed');
-    }
-      
+
+      if (response.data.success) {
+        alert("✅ Registration successful!");
+        localStorage.setItem('token', response.data.token);
+        navigate('/dashboard');
+      } else {
+        throw new Error(response.data.error || 'Registration failed');
+      }
+
     } catch (error: any) {
       console.error("Registration error:", error);
       if (error.response?.status === 409) {
@@ -349,7 +349,7 @@ const Register: React.FC = () => {
 
   const handleGoogleSuccess = (response: any) => {
     console.log("Google response received:", response);
-    
+
     if (response.profileComplete) {
       // Existing user - log them in
       localStorage.setItem('token', response.token);
@@ -358,7 +358,7 @@ const Register: React.FC = () => {
       // New user - store Google data for profile completion
       setGoogleData(response.googleData);
       setIsFormUnlocked(true);
-      
+
       // Pre-fill basic info from Google
       setFormData(prev => ({
         ...prev,
@@ -366,7 +366,7 @@ const Register: React.FC = () => {
         firstName: response.googleData.firstName || '',
         lastName: response.googleData.lastName || '',
       }));
-      
+
       setIsEmailVerified(true);
     } else {
       console.error('Unexpected response format:', response);
@@ -475,7 +475,7 @@ const Register: React.FC = () => {
               </motion.div>
             ))}
 
-           
+
 
             {/* Email Field */}
             <motion.div
@@ -571,10 +571,10 @@ const Register: React.FC = () => {
                 onClick={sendOTP}
                 disabled={isSendingOTP || !!errors.email || !formData.email || isEmailVerified}
                 className={`w-full py-3 px-4 border rounded-lg shadow-sm font-medium transition-all duration-300 mb-4 ${isEmailVerified
-                    ? 'bg-green-100 text-green-700 border-green-300'
-                    : isSendingOTP || errors.email || !formData.email
-                      ? 'bg-gray-100 text-gray-500 border-gray-300 cursor-not-allowed'
-                      : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50 hover:shadow-md'
+                  ? 'bg-green-100 text-green-700 border-green-300'
+                  : isSendingOTP || errors.email || !formData.email
+                    ? 'bg-gray-100 text-gray-500 border-gray-300 cursor-not-allowed'
+                    : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50 hover:shadow-md'
                   }`}
               >
                 {isSendingOTP ? (
@@ -621,9 +621,9 @@ const Register: React.FC = () => {
             {googleData && (
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
                 <div className="flex items-center">
-                  <img 
-                    src={googleData.profilePicture} 
-                    alt="Google profile" 
+                  <img
+                    src={googleData.profilePicture}
+                    alt="Google profile"
                     className="w-8 h-8 rounded-full mr-3"
                   />
                   <div>
@@ -641,169 +641,169 @@ const Register: React.FC = () => {
             {/* Country, State, City Fields */}
             {/* ... (keep your existing country, state, city fields code) */}
 
-              {/*Country Field*/}
-                        <motion.div
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.5, delay: 0.7 }}
+            {/*Country Field*/}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.7 }}
+            >
+              <label htmlFor="country" className="block text-sm font-medium text-slate-700 mb-2">
+                Country
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Globe className="h-5 w-5 text-slate-400" />
+                </div>
+                <input
+                  type="text"
+                  id="country"
+                  name="country"
+                  autoComplete="off"
+                  value={countryInput}
+                  onChange={handleCountryInput}
+                  onFocus={() => setShowCountryDropdown(true)}
+                  className={`block w-full pl-10 pr-3 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300 ${errors.country ? 'border-red-500 bg-red-50' : 'border-slate-300 bg-white'
+                    }`}
+                  placeholder="Type to search country"
+                />
+                {showCountryDropdown && countryInput.length > 0 && (
+                  <ul className="absolute z-10 w-full bg-white border border-slate-200 rounded-lg mt-1 max-h-40 overflow-y-auto shadow">
+                    {filteredCountries.map((country, idx) => (
+                      <li
+                        key={idx}
+                        className="px-4 py-2 hover:bg-sky-100 cursor-pointer"
+                        onClick={() => handleCountrySelect(country)}
+                      >
+                        {country.name}
+                      </li>
+                    ))}
+                    {filteredCountries.length === 0 && (
+                      <li className="px-4 py-2 text-slate-400">No countries found</li>
+                    )}
+                  </ul>
+                )}
+              </div>
+              {errors.country && (
+                <motion.p
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mt-2 text-sm text-red-600"
+                >
+                  {errors.country}
+                </motion.p>
+              )}
+            </motion.div>
+
+            {/* Conditional State Dropdown */}
+            {formData.country && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.8 }}
+              >
+                <label htmlFor="state" className="block text-sm font-medium text-slate-700 mb-2">
+                  State
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <MapPin className="h-5 w-5 text-slate-400" />
+                  </div>
+                  <input
+                    type="text"
+                    id="state"
+                    name="state"
+                    autoComplete="off"
+                    value={stateInput}
+                    onChange={handleStateInput}
+                    onFocus={() => setShowStateDropdown(true)}
+                    className={`block w-full pl-10 pr-3 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300 ${errors.state ? 'border-red-500 bg-red-50' : 'border-slate-300 bg-white'
+                      }`}
+                    placeholder="Type to search state"
+                  />
+                  {showStateDropdown && stateInput.length > 0 && (
+                    <ul className="absolute z-10 w-full bg-white border border-slate-200 rounded-lg mt-1 max-h-40 overflow-y-auto shadow">
+                      {filteredStates.map((state, idx) => (
+                        <li
+                          key={idx}
+                          className="px-4 py-2 hover:bg-sky-100 cursor-pointer"
+                          onClick={() => handleStateSelect(state)}
                         >
-                          <label htmlFor="country" className="block text-sm font-medium text-slate-700 mb-2">
-                            Country
-                          </label>
-                          <div className="relative">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                              <Globe className="h-5 w-5 text-slate-400" />
-                            </div>
-                            <input
-                              type="text"
-                              id="country"
-                              name="country"
-                              autoComplete="off"
-                              value={countryInput}
-                              onChange={handleCountryInput}
-                              onFocus={() => setShowCountryDropdown(true)}
-                              className={`block w-full pl-10 pr-3 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300 ${errors.country ? 'border-red-500 bg-red-50' : 'border-slate-300 bg-white'
-                                }`}
-                              placeholder="Type to search country"
-                            />
-                            {showCountryDropdown && countryInput.length > 0 && (
-                              <ul className="absolute z-10 w-full bg-white border border-slate-200 rounded-lg mt-1 max-h-40 overflow-y-auto shadow">
-                                {filteredCountries.map((country, idx) => (
-                                  <li
-                                    key={idx}
-                                    className="px-4 py-2 hover:bg-sky-100 cursor-pointer"
-                                    onClick={() => handleCountrySelect(country)}
-                                  >
-                                    {country.name}
-                                  </li>
-                                ))}
-                                {filteredCountries.length === 0 && (
-                                  <li className="px-4 py-2 text-slate-400">No countries found</li>
-                                )}
-                              </ul>
-                            )}
-                          </div>
-                          {errors.country && (
-                            <motion.p
-                              initial={{ opacity: 0, y: -10 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              className="mt-2 text-sm text-red-600"
-                            >
-                              {errors.country}
-                            </motion.p>
-                          )}
-                        </motion.div>
-            
-                        {/* Conditional State Dropdown */}
-                        {formData.country && (
-                          <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.5, delay: 0.8 }}
-                          >
-                            <label htmlFor="state" className="block text-sm font-medium text-slate-700 mb-2">
-                              State
-                            </label>
-                            <div className="relative">
-                              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <MapPin className="h-5 w-5 text-slate-400" />
-                              </div>
-                              <input
-                                type="text"
-                                id="state"
-                                name="state"
-                                autoComplete="off"
-                                value={stateInput}
-                                onChange={handleStateInput}
-                                onFocus={() => setShowStateDropdown(true)}
-                                className={`block w-full pl-10 pr-3 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300 ${errors.state ? 'border-red-500 bg-red-50' : 'border-slate-300 bg-white'
-                                  }`}
-                                placeholder="Type to search state"
-                              />
-                              {showStateDropdown && stateInput.length > 0 && (
-                                <ul className="absolute z-10 w-full bg-white border border-slate-200 rounded-lg mt-1 max-h-40 overflow-y-auto shadow">
-                                  {filteredStates.map((state, idx) => (
-                                    <li
-                                      key={idx}
-                                      className="px-4 py-2 hover:bg-sky-100 cursor-pointer"
-                                      onClick={() => handleStateSelect(state)}
-                                    >
-                                      {state.name}
-                                    </li>
-                                  ))}
-                                  {filteredStates.length === 0 && (
-                                    <li className="px-4 py-2 text-slate-400">No states found</li>
-                                  )}
-                                </ul>
-                              )}
-                            </div>
-                            {errors.state && (
-                              <motion.p
-                                initial={{ opacity: 0, y: -10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className="mt-2 text-sm text-red-600"
-                              >
-                                {errors.state}
-                              </motion.p>
-                            )}
-                          </motion.div>
-                        )}
-            
-                        {/* Conditional City Dropdown */}
-                        {formData.country && formData.state && (
-                          <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.5, delay: 0.5 }}
-                          >
-                            <label htmlFor="city" className="block text-sm font-medium text-slate-700 mb-2">
-                              City
-                            </label>
-                            <div className="relative">
-                              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <MapPin className="h-5 w-5 text-slate-400" />
-                              </div>
-                              <input
-                                type="text"
-                                id="city"
-                                name="city"
-                                autoComplete="off"
-                                value={cityInput}
-                                onChange={handleCityInput}
-                                onFocus={() => setShowCityDropdown(true)}
-                                className={`block w-full pl-10 pr-3 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300 ${errors.city ? 'border-red-500 bg-red-50' : 'border-slate-300 bg-white'
-                                  }`}
-                                placeholder="Type to search city"
-                              />
-                              {showCityDropdown && cityInput.length > 0 && (
-                                <ul className="absolute z-10 w-full bg-white border border-slate-200 rounded-lg mt-1 max-h-40 overflow-y-auto shadow">
-                                  {filteredCities.map((city, idx) => (
-                                    <li
-                                      key={idx}
-                                      className="px-4 py-2 hover:bg-sky-100 cursor-pointer"
-                                      onClick={() => handleCitySelect(city)}
-                                    >
-                                      {city.name}
-                                    </li>
-                                  ))}
-                                  {filteredCities.length === 0 && (
-                                    <li className="px-4 py-2 text-slate-400">No cities found</li>
-                                  )}
-                                </ul>
-                              )}
-                            </div>
-                            {errors.city && (
-                              <motion.p
-                                initial={{ opacity: 0, y: -10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className="mt-2 text-sm text-red-600"
-                              >
-                                {errors.city}
-                              </motion.p>
-                            )}
-                          </motion.div>
-                        )}
-            
+                          {state.name}
+                        </li>
+                      ))}
+                      {filteredStates.length === 0 && (
+                        <li className="px-4 py-2 text-slate-400">No states found</li>
+                      )}
+                    </ul>
+                  )}
+                </div>
+                {errors.state && (
+                  <motion.p
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mt-2 text-sm text-red-600"
+                  >
+                    {errors.state}
+                  </motion.p>
+                )}
+              </motion.div>
+            )}
+
+            {/* Conditional City Dropdown */}
+            {formData.country && formData.state && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.5 }}
+              >
+                <label htmlFor="city" className="block text-sm font-medium text-slate-700 mb-2">
+                  City
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <MapPin className="h-5 w-5 text-slate-400" />
+                  </div>
+                  <input
+                    type="text"
+                    id="city"
+                    name="city"
+                    autoComplete="off"
+                    value={cityInput}
+                    onChange={handleCityInput}
+                    onFocus={() => setShowCityDropdown(true)}
+                    className={`block w-full pl-10 pr-3 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300 ${errors.city ? 'border-red-500 bg-red-50' : 'border-slate-300 bg-white'
+                      }`}
+                    placeholder="Type to search city"
+                  />
+                  {showCityDropdown && cityInput.length > 0 && (
+                    <ul className="absolute z-10 w-full bg-white border border-slate-200 rounded-lg mt-1 max-h-40 overflow-y-auto shadow">
+                      {filteredCities.map((city, idx) => (
+                        <li
+                          key={idx}
+                          className="px-4 py-2 hover:bg-sky-100 cursor-pointer"
+                          onClick={() => handleCitySelect(city)}
+                        >
+                          {city.name}
+                        </li>
+                      ))}
+                      {filteredCities.length === 0 && (
+                        <li className="px-4 py-2 text-slate-400">No cities found</li>
+                      )}
+                    </ul>
+                  )}
+                </div>
+                {errors.city && (
+                  <motion.p
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mt-2 text-sm text-red-600"
+                  >
+                    {errors.city}
+                  </motion.p>
+                )}
+              </motion.div>
+            )}
+
 
             {/* Role Dropdown */}
             <motion.div

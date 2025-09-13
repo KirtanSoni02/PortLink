@@ -4,7 +4,7 @@ const jobPostSchema = new mongoose.Schema({
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "PortAuthority",
-    required: true
+    required: true,
   },
   sourcePort: { type: String, required: true },
   destinationPort: { type: String, required: true },
@@ -14,12 +14,12 @@ const jobPostSchema = new mongoose.Schema({
   cargoType: { type: String, required: true },
   status: {
     type: String,
-    enum: ['active', 'filled', 'expired'],
-    default: 'active'
+    enum: ["active", "filled", "expired"],
+    default: "active",
   },
-  crewAssigned: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Sailor' }],
+  crewAssigned: [{ type: mongoose.Schema.Types.ObjectId, ref: "Sailor" }],
   applicationsCount: { type: Number, default: 0 },
-  createdDate: { type: Date, default: Date.now }
+  createdDate: { type: Date, default: Date.now },
 });
 
 export default mongoose.model("JobPost", jobPostSchema);

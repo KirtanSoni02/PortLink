@@ -14,7 +14,7 @@ interface PortDashboardOverviewProps {
     status: string;
     applicationsCount: number;
   }>;
-  
+
 }
 
 const PortDashboardOverview: React.FC<PortDashboardOverviewProps> = ({ portData, jobPosts }) => {
@@ -96,7 +96,7 @@ const PortDashboardOverview: React.FC<PortDashboardOverviewProps> = ({ portData,
             <TrendingUp className="w-6 h-6 mr-3 text-blue-500" />
             Job Applications Overview
           </h3>
-          
+
           <div className="space-y-8">
             <div className="flex justify-between items-center">
               <span className="text-xl font-medium text-slate-800">Total Applications</span>
@@ -124,9 +124,9 @@ const PortDashboardOverview: React.FC<PortDashboardOverviewProps> = ({ portData,
         >
           <h3 className="text-xl font-bold text-slate-800 mb-6 flex items-center">
             <Activity className="w-6 h-6 mr-3 text-emerald-500" />
-            Recent Activity 
+            Recent Activity
           </h3>
-          
+
           <div className="space-y-4">
             <div className="flex items-start space-x-3">
               <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>

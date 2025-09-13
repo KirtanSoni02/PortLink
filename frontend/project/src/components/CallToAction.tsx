@@ -68,7 +68,7 @@ const CallToAction: React.FC = () => {
               <Link to="/register">Sign Up Now</Link>
               <ArrowRight className="ml-3 w-6 h-6 group-hover:translate-x-1 transition-transform" />
             </motion.button>
-            
+
             {/* <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}

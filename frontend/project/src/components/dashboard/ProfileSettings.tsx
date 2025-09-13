@@ -29,31 +29,31 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ sailorData }) => {
   });
   const API_URL = import.meta.env.VITE_API_URL;
 
- const handleSave = async () => {
-  try {
-    const token = localStorage.getItem('token');
-    const response = await axios.put(`${API_URL}/api/sailor/edit-profile`,{
-      name: formData.name,
-      email: formData.email,
-      phone: formData.phone,
-      location: formData.location,
-    }, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+  const handleSave = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.put(`${API_URL}/api/sailor/edit-profile`, {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        location: formData.location,
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    if (response.data.success) {
-      alert('Profile updated successfully. Please log out and log in again to see changes reflected.');
-      setIsEditing(false);
-    } else {
-      alert('Failed to update profile.');
+      if (response.data.success) {
+        alert('Profile updated successfully. Please log out and log in again to see changes reflected.');
+        setIsEditing(false);
+      } else {
+        alert('Failed to update profile.');
+      }
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      alert('Something went wrong while updating your profile.');
     }
-  } catch (error) {
-    console.error('Error updating profile:', error);
-    alert('Something went wrong while updating your profile.');
-  }
-};
+  };
 
   const handleCancel = () => {
     setFormData({
@@ -148,7 +148,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ sailorData }) => {
         {/* Personal Information */}
         <div className="bg-white rounded-2xl p-6 shadow-lg border border-slate-200">
           <h2 className="text-xl font-bold text-slate-800 mb-6">Personal Information</h2>
-          
+
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">Full Name</label>
@@ -223,7 +223,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ sailorData }) => {
         {/* Professional Information */}
         <div className="bg-white rounded-2xl p-6 shadow-lg border border-slate-200">
           <h2 className="text-xl font-bold text-slate-800 mb-6">Professional Information</h2>
-          
+
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">Bio</label>
@@ -278,7 +278,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ sailorData }) => {
       {/* Statistics */}
       <div className="bg-white rounded-2xl p-6 shadow-lg border border-slate-200">
         <h2 className="text-xl font-bold text-slate-800 mb-6">Performance Statistics</h2>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="text-center">
             <div className="text-3xl font-bold text-sky-500 mb-2">{sailorData.completedContracts}</div>

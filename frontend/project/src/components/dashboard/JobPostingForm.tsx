@@ -54,9 +54,9 @@ const JobPostingForm: React.FC<JobPostingFormProps> = ({ onCreateJob, portData }
     'Automotive',
     'Machinery'
   ];
-const popularPorts = [
-  "Port of Deendayal (Kandla)", "Port of Mumbai", "Port of Jawaharlal Nehru (Nhava Sheva)", "Port of Mormugao", "Port of New Mangalore", "Port of Cochin (Kochi)", "Port of V.O. Chidambaranar (Tuticorin)", "Port of Chennai", "Port of Kamarajar (Ennore)", "Port of Visakhapatnam", "Port of Paradip", "Port of Syama Prasad Mookerjee (Kolkata)", "Port of Port Blair", "Port of Vadhavan", "Port of Porbandar", "Port of Veraval", "Port of Bhavnagar", "Port of Bharuch", "Port of Surat", "Port of Mandvi", "Port of Navlakhi", "Port of Bedi", "Port of Sikka", "Port of Jafarabad", "Port of Okha", "Port of Magdalla", "Port of Mundra", "Port of Pipavav", "Port of Dahej", "Port of Hazira", "Port of Tuna", "Port of Ratnagiri", "Port of Dahanu", "Port of Tarapur", "Port of Satpati", "Port of Kellwa-Mahim", "Port of Arnala", "Port of Uttan", "Port of Bassein", "Port of Bhiwandi", "Port of Manori", "Port of Kalyan", "Port of Thane", "Port of Versova", "Port of Bandra", "Port of Trombay", "Port of Ulwa-Belapur", "Port of Panvel", "Port of More", "Port of Mandwa", "Port of Karanja", "Port of Thal", "Port of Rewas", "Port of Alibag", "Port of Dharamtar", "Port of Revdanda", "Port of Borli/Mandla", "Port of Nandgaon", "Port of Murud-Janjira", "Port of Rajpuri", "Port of Mandad", "Port of Dighi", "Port of Panaji", "Port of Chapora", "Port of Betul", "Port of Talpona", "Port of Tiracol", "Port of Mangalore", "Port of Malpe", "Port of Hangarkatta", "Port of Kundapur", "Port of Bhatkal", "Port of Honavar", "Port of Tadri", "Port of Belekeri", "Port of Karwar", "Port of Padubidri", "Port of Alappuzha", "Port of Vadakara", "Port of Kannur", "Port of Kasargode", "Port of Kodungallore", "Port of Ponnani", "Port of Thalassery", "Port of Thiruvananthapuram", "Port of Kollam (Quilon)", "Port of Kozhikode/Beypore", "Port of Neendakara", "Port of Azhikkal", "Port of Vizhinjam", "Port of Nagapattinam", "Port of Kattupalli", "Port of Karaikal", "Port of Cuddalore", "Port of Thirukkadaiyur", "Port of Koondankulam", "Port of Machilipatnam", "Port of Kakinada", "Port of Krishnapatnam", "Port of Gangavaram", "Port of Bhavanapadu", "Port of Calingapatnam", "Port of Bheemunipatnam", "Port of Narsapur", "Port of Vadarevu", "Port of Nizampatnam", "Port of Gopalpur", "Port of Dhamra", "Port of Kulpi", "Port of Durgachak", "Port of Farakka", "Port of Sahebganj"
-]
+  const popularPorts = [
+    "Port of Deendayal (Kandla)", "Port of Mumbai", "Port of Jawaharlal Nehru (Nhava Sheva)", "Port of Mormugao", "Port of New Mangalore", "Port of Cochin (Kochi)", "Port of V.O. Chidambaranar (Tuticorin)", "Port of Chennai", "Port of Kamarajar (Ennore)", "Port of Visakhapatnam", "Port of Paradip", "Port of Syama Prasad Mookerjee (Kolkata)", "Port of Port Blair", "Port of Vadhavan", "Port of Porbandar", "Port of Veraval", "Port of Bhavnagar", "Port of Bharuch", "Port of Surat", "Port of Mandvi", "Port of Navlakhi", "Port of Bedi", "Port of Sikka", "Port of Jafarabad", "Port of Okha", "Port of Magdalla", "Port of Mundra", "Port of Pipavav", "Port of Dahej", "Port of Hazira", "Port of Tuna", "Port of Ratnagiri", "Port of Dahanu", "Port of Tarapur", "Port of Satpati", "Port of Kellwa-Mahim", "Port of Arnala", "Port of Uttan", "Port of Bassein", "Port of Bhiwandi", "Port of Manori", "Port of Kalyan", "Port of Thane", "Port of Versova", "Port of Bandra", "Port of Trombay", "Port of Ulwa-Belapur", "Port of Panvel", "Port of More", "Port of Mandwa", "Port of Karanja", "Port of Thal", "Port of Rewas", "Port of Alibag", "Port of Dharamtar", "Port of Revdanda", "Port of Borli/Mandla", "Port of Nandgaon", "Port of Murud-Janjira", "Port of Rajpuri", "Port of Mandad", "Port of Dighi", "Port of Panaji", "Port of Chapora", "Port of Betul", "Port of Talpona", "Port of Tiracol", "Port of Mangalore", "Port of Malpe", "Port of Hangarkatta", "Port of Kundapur", "Port of Bhatkal", "Port of Honavar", "Port of Tadri", "Port of Belekeri", "Port of Karwar", "Port of Padubidri", "Port of Alappuzha", "Port of Vadakara", "Port of Kannur", "Port of Kasargode", "Port of Kodungallore", "Port of Ponnani", "Port of Thalassery", "Port of Thiruvananthapuram", "Port of Kollam (Quilon)", "Port of Kozhikode/Beypore", "Port of Neendakara", "Port of Azhikkal", "Port of Vizhinjam", "Port of Nagapattinam", "Port of Kattupalli", "Port of Karaikal", "Port of Cuddalore", "Port of Thirukkadaiyur", "Port of Koondankulam", "Port of Machilipatnam", "Port of Kakinada", "Port of Krishnapatnam", "Port of Gangavaram", "Port of Bhavanapadu", "Port of Calingapatnam", "Port of Bheemunipatnam", "Port of Narsapur", "Port of Vadarevu", "Port of Nizampatnam", "Port of Gopalpur", "Port of Dhamra", "Port of Kulpi", "Port of Durgachak", "Port of Farakka", "Port of Sahebganj"
+  ]
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
@@ -99,72 +99,72 @@ const popularPorts = [
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-const API_URL = import.meta.env.VITE_API_URL;
- const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
+  const API_URL = import.meta.env.VITE_API_URL;
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-  if (!validateForm()) {
-    return;
-  }
+    if (!validateForm()) {
+      return;
+    }
 
-  setIsSubmitting(true);
+    setIsSubmitting(true);
 
-  try {
-    const token = localStorage.getItem("token");
+    try {
+      const token = localStorage.getItem("token");
 
-    const response = await axios.post(
-      `${API_URL}/api/port/jobs`,
-      {
-        sourcePort: formData.sourcePort,
-        destinationPort: formData.destinationPort,
-        sailorsRequired: parseInt(formData.sailorsRequired),
-        salaryOffered: parseInt(formData.salaryOffered),
-        departureDate: formData.departureDate,
-        cargoType: formData.cargoType,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
+      const response = await axios.post(
+        `${API_URL}/api/port/jobs`,
+        {
+          sourcePort: formData.sourcePort,
+          destinationPort: formData.destinationPort,
+          sailorsRequired: parseInt(formData.sailorsRequired),
+          salaryOffered: parseInt(formData.salaryOffered),
+          departureDate: formData.departureDate,
+          cargoType: formData.cargoType,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
         }
-      }
-    );
-    
-    // Optional: Log or toast success
-    console.log("✅ Job created:", response.data);
+      );
 
-    // Add to local state
-    onCreateJob({
-      ...response.data,
-      id: response.data._id, // Assuming _id from MongoDB
-      status: response.data.status || "active",
-      applicationsCount: 0,
-      createdDate: new Date().toISOString().split('T')[0]
-    });
+      // Optional: Log or toast success
+      console.log("✅ Job created:", response.data);
 
-    // Reset form
-    setFormData({
-      sourcePort: portData.portName,
-      destinationPort: '',
-      sailorsRequired: '',
-      salaryOffered: '',
-      departureDate: '',
-      cargoType: ''
-    });
+      // Add to local state
+      onCreateJob({
+        ...response.data,
+        id: response.data._id, // Assuming _id from MongoDB
+        status: response.data.status || "active",
+        applicationsCount: 0,
+        createdDate: new Date().toISOString().split('T')[0]
+      });
 
-  } catch (error) {
-    console.error("❌ Failed to create job:", error);
-    // Optionally show an alert or toast
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+      // Reset form
+      setFormData({
+        sourcePort: portData.portName,
+        destinationPort: '',
+        sailorsRequired: '',
+        salaryOffered: '',
+        departureDate: '',
+        cargoType: ''
+      });
+
+    } catch (error) {
+      console.error("❌ Failed to create job:", error);
+      // Optionally show an alert or toast
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    
+
     // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: undefined }));
@@ -189,39 +189,38 @@ const API_URL = import.meta.env.VITE_API_URL;
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Source Port */}
           {/* Source Port (as a dropdown like Destination Port) */}
-<div>
-  <label htmlFor="sourcePort" className="block text-sm font-medium text-slate-700 mb-2">
-    Source Port
-  </label>
-  <div className="relative">
-    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-      <MapPin className="h-5 w-5 text-emerald-500" />
-    </div>
-    <select
-      id="sourcePort"
-      name="sourcePort"
-      value={formData.sourcePort}
-      onChange={handleInputChange}
-      className={`block w-full pl-10 pr-3 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 ${
-        errors.sourcePort ? 'border-red-500 bg-red-50' : 'border-slate-300 bg-white'
-      }`}
-    >
-      <option value="">Select source port</option>
-      {popularPorts.map((port) => (
-        <option key={port} value={port}>{port}</option>
-      ))}
-    </select>
-  </div>
-  {errors.sourcePort && (
-    <motion.p
-      initial={{ opacity: 0, y: -10 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="mt-2 text-sm text-red-600"
-    >
-      {errors.sourcePort}
-    </motion.p>
-  )}
-</div>
+          <div>
+            <label htmlFor="sourcePort" className="block text-sm font-medium text-slate-700 mb-2">
+              Source Port
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <MapPin className="h-5 w-5 text-emerald-500" />
+              </div>
+              <select
+                id="sourcePort"
+                name="sourcePort"
+                value={formData.sourcePort}
+                onChange={handleInputChange}
+                className={`block w-full pl-10 pr-3 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 ${errors.sourcePort ? 'border-red-500 bg-red-50' : 'border-slate-300 bg-white'
+                  }`}
+              >
+                <option value="">Select source port</option>
+                {popularPorts.map((port) => (
+                  <option key={port} value={port}>{port}</option>
+                ))}
+              </select>
+            </div>
+            {errors.sourcePort && (
+              <motion.p
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-2 text-sm text-red-600"
+              >
+                {errors.sourcePort}
+              </motion.p>
+            )}
+          </div>
 
 
           {/* Destination Port */}
@@ -238,9 +237,8 @@ const API_URL = import.meta.env.VITE_API_URL;
                 name="destinationPort"
                 value={formData.destinationPort}
                 onChange={handleInputChange}
-                className={`block w-full pl-10 pr-3 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 ${
-                  errors.destinationPort ? 'border-red-500 bg-red-50' : 'border-slate-300 bg-white'
-                }`}
+                className={`block w-full pl-10 pr-3 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 ${errors.destinationPort ? 'border-red-500 bg-red-50' : 'border-slate-300 bg-white'
+                  }`}
               >
                 <option value="">Select destination port</option>
                 {popularPorts.map((port) => (
@@ -276,9 +274,8 @@ const API_URL = import.meta.env.VITE_API_URL;
                 onChange={handleInputChange}
                 min="1"
                 max="50"
-                className={`block w-full pl-10 pr-3 py-3 border rounded-lg shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 ${
-                  errors.sailorsRequired ? 'border-red-500 bg-red-50' : 'border-slate-300 bg-white'
-                }`}
+                className={`block w-full pl-10 pr-3 py-3 border rounded-lg shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 ${errors.sailorsRequired ? 'border-red-500 bg-red-50' : 'border-slate-300 bg-white'
+                  }`}
                 placeholder="e.g., 8"
               />
             </div>
@@ -310,9 +307,8 @@ const API_URL = import.meta.env.VITE_API_URL;
                 onChange={handleInputChange}
                 min="1000"
                 step="100"
-                className={`block w-full pl-10 pr-3 py-3 border rounded-lg shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 ${
-                  errors.salaryOffered ? 'border-red-500 bg-red-50' : 'border-slate-300 bg-white'
-                }`}
+                className={`block w-full pl-10 pr-3 py-3 border rounded-lg shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 ${errors.salaryOffered ? 'border-red-500 bg-red-50' : 'border-slate-300 bg-white'
+                  }`}
                 placeholder="e.g., 18000"
               />
             </div>
@@ -343,9 +339,8 @@ const API_URL = import.meta.env.VITE_API_URL;
                 value={formData.departureDate}
                 onChange={handleInputChange}
                 min={new Date().toISOString().split('T')[0]}
-                className={`block w-full pl-10 pr-3 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 ${
-                  errors.departureDate ? 'border-red-500 bg-red-50' : 'border-slate-300 bg-white'
-                }`}
+                className={`block w-full pl-10 pr-3 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 ${errors.departureDate ? 'border-red-500 bg-red-50' : 'border-slate-300 bg-white'
+                  }`}
               />
             </div>
             {errors.departureDate && (
@@ -373,9 +368,8 @@ const API_URL = import.meta.env.VITE_API_URL;
                 name="cargoType"
                 value={formData.cargoType}
                 onChange={handleInputChange}
-                className={`block w-full pl-10 pr-3 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 ${
-                  errors.cargoType ? 'border-red-500 bg-red-50' : 'border-slate-300 bg-white'
-                }`}
+                className={`block w-full pl-10 pr-3 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 ${errors.cargoType ? 'border-red-500 bg-red-50' : 'border-slate-300 bg-white'
+                  }`}
               >
                 <option value="">Select cargo type</option>
                 {cargoTypes.map((type) => (

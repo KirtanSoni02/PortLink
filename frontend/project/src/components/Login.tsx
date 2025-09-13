@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Anchor, Eye, EyeOff, Mail, Lock } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import GoogleAuthButton from './GoogleAuthButton';
 
 interface FormErrors {
   email?: string;
@@ -21,130 +22,142 @@ const Login: React.FC = () => {
 
   const API_URL = import.meta.env.VITE_API_URL;
 
-  // Mock user data for demonstration
-  const mockUsers = [
-    { email: 'sailor@websailor.com', password: 'sailor123', role: 'sailor' },
-    { email: 'port@websailor.com', password: 'port123', role: 'port-authority' },
-    { email: 'james.rodriguez@websailor.com', password: 'password', role: 'sailor' },
-    { email: 'maria.santos@portofmiami.com', password: 'password', role: 'port-authority' }
-  ];
-
   const passwordPattern = /^[A-Za-z0-9]{8,}$/;
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   const tempEmailDomains = [
-  'tempmail.com',
-  '10minutemail.com',
-  'mailinator.com',
-  'dispostable.com',
-  'guerrillamail.com',
-  'yopmail.com',
-  'fakeinbox.com',
-  'trashmail.com',
-];
+    'tempmail.com', '10minutemail.com', 'mailinator.com', 'dispostable.com',
+    'guerrillamail.com', 'yopmail.com', 'fakeinbox.com', 'trashmail.com',
+  ];
+
   const isTempEmail = (email: string) => {
-  const domain = email.split('@')[1]?.toLowerCase();
-  return tempEmailDomains.includes(domain);
-};
+    const domain = email.split('@')[1]?.toLowerCase();
+    return tempEmailDomains.includes(domain);
+  };
 
   const validateForm = (): boolean => {
-  const newErrors: FormErrors = {};
-  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const passwordPattern = /^[A-Za-z0-9]{8,}$/;
+    const newErrors: FormErrors = {};
 
-  if (!formData.email.trim()) {
-    newErrors.email = 'Email is required';
-  } else if (!emailPattern.test(formData.email)) {
-    newErrors.email = 'Invalid email format';
-  } else if (isTempEmail(formData.email)) {
-    newErrors.email = 'Temporary/disposable emails are not allowed';
-  }
-
-  if (!formData.password.trim()) {
-    newErrors.password = 'Password is required';
-  } else if (!passwordPattern.test(formData.password)) {
-    newErrors.password = 'Password must be at least 8 characters and contain only letters and numbers';
-  }
- 
-  setErrors(newErrors);
-  return Object.keys(newErrors).length === 0;
-};
-
- 
- const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  if (!validateForm()) return;
-
-  setIsLoading(true);
-
-  try {
-    const response = await axios.post(`${API_URL}/api/auth/login`, {
-      email: formData.email,
-      password: formData.password
-    });
-
-    alert('Login Successful');
-    const role = response.data.role;
-
-    // ✅ Navigate based on role
-    if (role === 'sailor') {
-      navigate('/dashboard/sailor');
-    } else if (role === 'port') {
-      
-      navigate('/dashboard/port-authority');
-    } else if (role === 'service') {
-      navigate('/dashboard/service');
-    } else {
-      navigate('/dashboard'); // fallback
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required';
+    } else if (!emailPattern.test(formData.email)) {
+      newErrors.email = 'Invalid email format';
+    } else if (isTempEmail(formData.email)) {
+      newErrors.email = 'Temporary/disposable emails are not allowed';
     }
 
-    // ✅ Optional: Store token for auth
-    localStorage.setItem('token', response.data.token);
-    localStorage.setItem('user', JSON.stringify(response.data));
+    if (!formData.password.trim()) {
+      newErrors.password = 'Password is required';
+    } else if (!passwordPattern.test(formData.password)) {
+      newErrors.password = 'Password must be at least 8 characters and contain only letters and numbers';
+    }
 
-    console.log(response.data); // for debugging
-  } catch (err) {
-    alert('Login failed');
-    console.error(err);
-  } finally {
-    setIsLoading(false);
-  }
-};
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validateForm()) return;
+
+    setIsLoading(true);
+
+    try {
+      const response = await axios.post(`${API_URL}/api/auth/login`, {
+        email: formData.email,
+        password: formData.password
+      });
+
+      alert('Login Successful');
+      const role = response.data.role;
+
+      // Navigate based on role
+      if (role === 'sailor') {
+        navigate('/dashboard/sailor');
+      } else if (role === 'port') {
+        navigate('/dashboard/port-authority');
+      } else if (role === 'service') {
+        navigate('/dashboard/service');
+      } else {
+        navigate('/dashboard');
+      }
+
+      // Store token for auth
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data));
+
+      console.log(response.data);
+    } catch (err) {
+      alert('Login failed');
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  const { name, value } = e.target;
-  setFormData(prev => ({ ...prev, [name]: value }));
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
 
-  const newErrors: FormErrors = { ...errors };
+    const newErrors: FormErrors = { ...errors };
 
-  // Real-time validation for email
-  if (name === 'email') {
-    if (!value.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!emailPattern.test(value)) {
-      newErrors.email = 'Invalid email format';
-    } else if (isTempEmail(value)) {
-      newErrors.email = 'Temporary/disposable emails are not allowed';
-    } else {
-      newErrors.email = undefined;
+    // Real-time validation for email
+    if (name === 'email') {
+      if (!value.trim()) {
+        newErrors.email = 'Email is required';
+      } else if (!emailPattern.test(value)) {
+        newErrors.email = 'Invalid email format';
+      } else if (isTempEmail(value)) {
+        newErrors.email = 'Temporary/disposable emails are not allowed';
+      } else {
+        delete newErrors.email;
+      }
     }
-  }
 
-  // Real-time validation for password
-  if (name === 'password') {
-    if (!value.trim()) {
-      newErrors.password = 'Password is required';
-    } else if (!passwordPattern.test(value)) {
-      newErrors.password = 'Password must be at least 8 characters and contain only letters and numbers';
-    } else {
-      newErrors.password = undefined;
+    // Real-time validation for password
+    if (name === 'password') {
+      if (!value.trim()) {
+        newErrors.password = 'Password is required';
+      } else if (!passwordPattern.test(value)) {
+        newErrors.password = 'Password must be at least 8 characters and contain only letters and numbers';
+      } else {
+        delete newErrors.password;
+      }
     }
-  }
 
-  setErrors(newErrors);
-};
+    setErrors(newErrors);
+  };
 
+  const handleGoogleSuccess = (response: any) => {
+    console.log("Google login response:", response);
+
+    if (response.success) {
+      alert('Google Login Successful');
+      const role = response.user.role;
+
+      // Navigate based on role
+      if (role === 'sailor') {
+        navigate('/dashboard/sailor');
+      } else if (role === 'port') {
+        navigate('/dashboard/port-authority');
+      } else if (role === 'service') {
+        navigate('/dashboard/service');
+      } else {
+        navigate('/dashboard');
+      }
+
+      // Store token for auth
+      localStorage.setItem('token', response.token);
+      localStorage.setItem('user', JSON.stringify(response.user));
+    } else {
+      alert('Google login failed: ' + (response.error || 'Unknown error'));
+    }
+  };
+
+  const handleGoogleError = (error: any) => {
+    console.error('Google authentication error:', error);
+    alert('Google authentication failed. Please try again.');
+  };
 
   return (
     <div className="min-h-screen flex">
@@ -170,20 +183,6 @@ const Login: React.FC = () => {
             <p className="text-slate-600">Welcome back to your maritime platform</p>
           </motion.div>
 
-          {/* Demo Credentials */}
-          {/* <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200"
-          >
-            <h3 className="text-sm font-semibold text-blue-800 mb-2">Demo Credentials:</h3>
-            <div className="text-xs text-blue-700 space-y-1">
-              <div><strong>Sailor:</strong> sailor@websailor.com / sailor123</div>
-              <div><strong>Port Authority:</strong> port@websailor.com / port123</div>
-            </div>
-          </motion.div> */}
-
           {/* Form */}
           <motion.form
             initial={{ opacity: 0, y: 30 }}
@@ -195,7 +194,7 @@ const Login: React.FC = () => {
             {/* Email Field */}
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-2">
-                Email or Username
+                Email
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -207,10 +206,9 @@ const Login: React.FC = () => {
                   name="email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className={`block w-full pl-10 pr-3 py-3 border rounded-lg shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300 ${
-                    errors.email ? 'border-red-500 bg-red-50' : 'border-slate-300 bg-white'
-                  }`}
-                  placeholder="Enter your email or username"
+                  className={`block w-full pl-10 pr-3 py-3 border rounded-lg shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300 ${errors.email ? 'border-red-500 bg-red-50' : 'border-slate-300 bg-white'
+                    }`}
+                  placeholder="Enter your email"
                 />
               </div>
               {errors.email && (
@@ -239,9 +237,8 @@ const Login: React.FC = () => {
                   name="password"
                   value={formData.password}
                   onChange={handleInputChange}
-                  className={`block w-full pl-10 pr-12 py-3 border rounded-lg shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300 ${
-                    errors.password ? 'border-red-500 bg-red-50' : 'border-slate-300 bg-white'
-                  }`}
+                  className={`block w-full pl-10 pr-12 py-3 border rounded-lg shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300 ${errors.password ? 'border-red-500 bg-red-50' : 'border-slate-300 bg-white'
+                    }`}
                   placeholder="Enter your password"
                 />
                 <button
@@ -285,6 +282,23 @@ const Login: React.FC = () => {
               )}
             </motion.button>
 
+            {/* Divider */}
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-white text-gray-500">Or continue with</span>
+              </div>
+            </div>
+
+            {/* Google Auth Button */}
+            <GoogleAuthButton
+              mode="login"
+              onSuccess={handleGoogleSuccess}
+              onError={handleGoogleError}
+            />
+
             {/* Register Link */}
             <div className="text-center">
               <p className="text-sm text-slate-600">
@@ -308,16 +322,15 @@ const Login: React.FC = () => {
         transition={{ duration: 0.8 }}
         className="hidden lg:flex flex-1 relative overflow-hidden"
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-sky-900/20 to-emerald-900/20 z-10"></div> 
+        <div className="absolute inset-0 bg-gradient-to-br from-sky-900/20 to-emerald-900/20 z-10"></div>
         <motion.img
           whileHover={{ scale: 1.05 }}
           transition={{ duration: 0.8 }}
           src="../../../images/Login_Page_Image.png"
-          
           alt="Maritime scene"
           className="w-full h-full object-cover"
         />
-        
+
         {/* Overlay Content */}
         <div className="absolute inset-0 z-20 flex items-end p-12">
           <div className="text-white">

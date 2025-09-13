@@ -1,11 +1,13 @@
-import jwt from 'jsonwebtoken';
+import jwt from "jsonwebtoken";
 
-const  verifyToken = (req, res, next) => {
+const verifyToken = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   // Check if token is present
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res.status(401).json({ message: "Access Denied: No token provided" });
+    return res
+      .status(401)
+      .json({ message: "Access Denied: No token provided" });
   }
 
   const token = authHeader.split(" ")[1];
@@ -15,7 +17,7 @@ const  verifyToken = (req, res, next) => {
 
     req.user = {
       id: decoded.id,
-      role: decoded.role
+      role: decoded.role,
     };
 
     next(); // continue to the route
@@ -24,7 +26,5 @@ const  verifyToken = (req, res, next) => {
     return res.status(403).json({ message: "Invalid or expired token" });
   }
 };
-
-
 
 export default verifyToken;

@@ -21,9 +21,9 @@ const Hero: React.FC = () => {
           }}
           className="absolute top-32 w-24 h-12 opacity-20"
         >
-          <img 
-            src="https://images.pexels.com/photos/1117210/pexels-photo-1117210.jpeg?auto=compress&cs=tinysrgb&w=400" 
-            alt="Ship" 
+          <img
+            src="https://images.pexels.com/photos/1117210/pexels-photo-1117210.jpeg?auto=compress&cs=tinysrgb&w=400"
+            alt="Ship"
             className="w-full h-full object-cover rounded-lg filter brightness-0 invert"
           />
         </motion.div>
@@ -41,9 +41,9 @@ const Hero: React.FC = () => {
           }}
           className="absolute top-20 right-20 w-16 h-16 opacity-30"
         >
-          <img 
-            src="https://images.pexels.com/photos/1117210/pexels-photo-1117210.jpeg?auto=compress&cs=tinysrgb&w=400" 
-            alt="Port" 
+          <img
+            src="https://images.pexels.com/photos/1117210/pexels-photo-1117210.jpeg?auto=compress&cs=tinysrgb&w=400"
+            alt="Port"
             className="w-full h-full object-cover rounded-full filter brightness-0 invert"
           />
         </motion.div>
@@ -61,9 +61,9 @@ const Hero: React.FC = () => {
           }}
           className="absolute bottom-40 left-20 w-12 h-20 opacity-25"
         >
-          <img 
-            src="https://images.pexels.com/photos/1532771/pexels-photo-1532771.jpeg?auto=compress&cs=tinysrgb&w=400" 
-            alt="Lighthouse" 
+          <img
+            src="https://images.pexels.com/photos/1532771/pexels-photo-1532771.jpeg?auto=compress&cs=tinysrgb&w=400"
+            alt="Lighthouse"
             className="w-full h-full object-cover rounded-lg filter brightness-0 invert"
           />
         </motion.div>

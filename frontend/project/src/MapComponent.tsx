@@ -28,37 +28,37 @@ const LiveMap: React.FC<LiveMapProps> = ({ sourceCoords, destinationCoords, ship
   const [currentCoords, setCurrentCoords] = useState<Coordinates | null>(null);
 
   useEffect(() => {
-  const handleLocationUpdate = (data: any) => {
-    if (data.shipId === shipId) {
-      console.log("📍 Map received live location:", data);
-      setCurrentCoords({ latitude: data.latitude, longitude: data.longitude });
-    }
-  };
+    const handleLocationUpdate = (data: any) => {
+      if (data.shipId === shipId) {
+        console.log("📍 Map received live location:", data);
+        setCurrentCoords({ latitude: data.latitude, longitude: data.longitude });
+      }
+    };
 
-  socket.on('shipLocationUpdate', handleLocationUpdate);
+    socket.on('shipLocationUpdate', handleLocationUpdate);
 
-  return () => {
-    socket.off('shipLocationUpdate', handleLocationUpdate);
-  };
-}, [shipId]);
+    return () => {
+      socket.off('shipLocationUpdate', handleLocationUpdate);
+    };
+  }, [shipId]);
 
 
   const center = currentCoords ?? sourceCoords;
 
-const createCustomIcon = (color: string, withPulse = false) =>
-  L.divIcon({
-    className: 'custom-div-icon',
-    html: `
+  const createCustomIcon = (color: string, withPulse = false) =>
+    L.divIcon({
+      className: 'custom-div-icon',
+      html: `
       <div class="marker-wrapper">
         <div class="marker-dot ${color} ${withPulse ? 'pulse' : ''}"></div>
       </div>`,
-    iconSize: [20, 20],
-    iconAnchor: [10, 10],
-  });
+      iconSize: [20, 20],
+      iconAnchor: [10, 10],
+    });
 
-const sourceIcon = createCustomIcon('bg-blue-500');
-const destinationIcon = createCustomIcon('bg-green-500');
-const liveIcon = createCustomIcon('bg-red-500', true); // pulsing for live
+  const sourceIcon = createCustomIcon('bg-blue-500');
+  const destinationIcon = createCustomIcon('bg-green-500');
+  const liveIcon = createCustomIcon('bg-red-500', true); // pulsing for live
 
 
 
@@ -78,8 +78,8 @@ const liveIcon = createCustomIcon('bg-red-500', true); // pulsing for live
 
       {currentCoords && (
         <Marker position={[currentCoords.latitude, currentCoords.longitude]} icon={liveIcon}>
-  <Popup>Live Ship Location</Popup>
-</Marker>
+          <Popup>Live Ship Location</Popup>
+        </Marker>
 
       )}
     </MapContainer>

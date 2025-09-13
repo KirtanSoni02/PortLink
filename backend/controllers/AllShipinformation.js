@@ -1,10 +1,10 @@
-import Ship from '../models/Ship.model.js'; // Adjust the import path as necessary
+import Ship from "../models/Ship.model.js";
 
 export const getAllShipInformation = async (req, res, next) => {
   try {
     const ships = await Ship.find({ status: "active" }); // Use find() for Mongoose
 
-    const data = ships.map(ship => ({
+    const data = ships.map((ship) => ({
       id: ship._id,
       name: ship.name,
       lat: ship.currentLocation?.lat ?? 0,

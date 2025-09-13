@@ -1,8 +1,10 @@
-import mongoose from 'mongoose';
-import Ship from '../models/Ship.model.js';
-import PortAuthority from '../models/PortAuthority.model.js'; // import this
+import Ship from "../models/Ship.model.js";
+import PortAuthority from "../models/PortAuthority.model.js"; // import this
+import portLocation from "../portLocations.js";
+import axios from "axios";
+import CompletedContract from "../models/CompletedContract.model.js";
 
-export const getActiveShipsByPort = async (req, res,next) => {
+export const getActiveShipsByPort = async (req, res, next) => {
   try {
     const userId = req.user.id;
 
@@ -17,17 +19,16 @@ export const getActiveShipsByPort = async (req, res,next) => {
 
     // Step 2: Find all ships created by this port
     const ships = await Ship.find({
-  createdBy: portId,
-  source: portAuthority.portName, // Assuming portName is the field in Ship model
-  status: 'active',
-}).populate({
-  path: 'crew.sailorId',
-  populate: {
-    path: 'user', // from sailor model
-    model: 'User', // explicitly mention if needed
-  }
-});
-
+      createdBy: portId,
+      source: portAuthority.portName, // Assuming portName is the field in Ship model
+      status: "active",
+    }).populate({
+      path: "crew.sailorId",
+      populate: {
+        path: "user", // from sailor model
+        model: "User", // explicitly mention if needed
+      },
+    });
 
     res.status(200).json(ships);
   } catch (error) {
@@ -35,8 +36,6 @@ export const getActiveShipsByPort = async (req, res,next) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
-
-
 
 // export const getIncomingShipsToPort = async (req, res, next) => {
 //   try {
@@ -66,11 +65,6 @@ export const getActiveShipsByPort = async (req, res,next) => {
 //   }
 // };
 
-
-
-import CompletedContract from "../models/CompletedContract.model.js";
-
-
 export const getIncomingShipsToPort = async (req, res, next) => {
   try {
     const userId = req.user.id;
@@ -85,7 +79,7 @@ export const getIncomingShipsToPort = async (req, res, next) => {
 
     const activeShips = await Ship.find({
       destination: portAuthority.portName,
-      status: "active"
+      status: "active",
     });
 
     console.log("Active Ships found:", activeShips);
@@ -101,19 +95,23 @@ export const getIncomingShipsToPort = async (req, res, next) => {
           startDate: ship.departureDate,
           endDate: new Date(), // or ship.arrivalDate if present
           sailorsCount: ship.crewCount,
-          crew: ship.crew?.map(c => ({
-            sailorId: c.sailorId,
-            name: c.name || "",
-            role: c.role || "",
-            experience: c.experience || ""
-          })) || [],
+          crew:
+            ship.crew?.map((c) => ({
+              sailorId: c.sailorId,
+              name: c.name || "",
+              role: c.role || "",
+              experience: c.experience || "",
+            })) || [],
           route: {
             source: ship.source,
-            destination: ship.destination
+            destination: ship.destination,
           },
           cargoType: ship.cargoType,
           totalPayment: ship.contractvalue * ship.crewCount || 0,
-          duration: `${Math.ceil((Date.now() - new Date(ship.departureDate).getTime()) / (1000 * 60 * 60 * 24))} days`,
+          duration: `${Math.ceil(
+            (Date.now() - new Date(ship.departureDate).getTime()) /
+              (1000 * 60 * 60 * 24)
+          )} days`,
         };
 
         // Save to completed contracts
@@ -129,7 +127,7 @@ export const getIncomingShipsToPort = async (req, res, next) => {
     // After archiving, get the fresh list again
     const remainingActiveShips = await Ship.find({
       destination: portAuthority.portName,
-      status: "active"
+      status: "active",
     });
 
     res.status(200).json(remainingActiveShips);
@@ -139,20 +137,7 @@ export const getIncomingShipsToPort = async (req, res, next) => {
   }
 };
 
-
-
-
-
-
-
-
-
-import portLocation from '../portLocations.js';
-
-import axios from "axios";
-import { parse } from 'path';
-
-export const updateSailorLocation = async ({ shipId, latitude, longitude}) => {
+export const updateSailorLocation = async ({ shipId, latitude, longitude }) => {
   try {
     // Fetch the ship from DB
     const ship = await Ship.findById(shipId);
@@ -177,42 +162,45 @@ export const updateSailorLocation = async ({ shipId, latitude, longitude}) => {
       `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${process.env.WEATHER_API_KEY}`
     );
     const weather = weatherResponse.data.weather[0].description;
-    const region = weatherResponse.data.name
+    const region = weatherResponse.data.name;
     // Update ship
-    ship.currentLocation = { lat: latitude, lng: longitude, region: region};
+    ship.currentLocation = { lat: latitude, lng: longitude, region: region };
     ship.speed = speed;
     ship.weatherStatus = weather;
     const rawSourceCoords = portLocation[ship.source];
     const rawDestinationCoords = portLocation[ship.destination];
-console.log("Raw source coordinates:", rawSourceCoords);
-console.log("Raw destination coordinates:", rawDestinationCoords);
+    console.log("Raw source coordinates:", rawSourceCoords);
+    console.log("Raw destination coordinates:", rawDestinationCoords);
 
-const sourceCoords = {
-  lat: parseFloat(rawSourceCoords.latitude),
-  lng: parseFloat(rawSourceCoords.longitude),
-};
+    const sourceCoords = {
+      lat: parseFloat(rawSourceCoords.latitude),
+      lng: parseFloat(rawSourceCoords.longitude),
+    };
 
-const destinationCoords = {
-  lat: parseFloat(rawDestinationCoords.latitude),
-  lng: parseFloat(rawDestinationCoords.longitude),
-};
+    const destinationCoords = {
+      lat: parseFloat(rawDestinationCoords.latitude),
+      lng: parseFloat(rawDestinationCoords.longitude),
+    };
 
     const totalDistance = calculateDistance(
-  sourceCoords.lat, sourceCoords.lng,
-  destinationCoords.lat, destinationCoords.lng
-);
+      sourceCoords.lat,
+      sourceCoords.lng,
+      destinationCoords.lat,
+      destinationCoords.lng
+    );
 
-if (totalDistance === 0) {
-  ship.progress = 100;
-} else {
-  const traveled = calculateDistance(
-    sourceCoords.lat, sourceCoords.lng,
-    latitude, longitude
-  );
-  ship.progress = (traveled / totalDistance) * 100;
-  ship.progress = Math.round(ship.progress * 10) / 10; // ✅ round to 1 decimal place
-}
-
+    if (totalDistance === 0) {
+      ship.progress = 100;
+    } else {
+      const traveled = calculateDistance(
+        sourceCoords.lat,
+        sourceCoords.lng,
+        latitude,
+        longitude
+      );
+      ship.progress = (traveled / totalDistance) * 100;
+      ship.progress = Math.round(ship.progress * 10) / 10; // ✅ round to 1 decimal place
+    }
 
     await ship.save();
     console.log("✅ Ship updated successfully.");

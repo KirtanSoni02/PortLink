@@ -1,35 +1,38 @@
-import express from 'express';
-import JobPost from '../models/JobPost.model.js';
-import Ship from '../models/Ship.model.js';
-import axios from 'axios';
+import express from "express";
+import JobPost from "../models/JobPost.model.js";
+import Ship from "../models/Ship.model.js";
+import axios from "axios";
+import PortAuthority from "../models/PortAuthority.model.js";
+import { haversineDistance } from "../utils/calculateSpeed.js";
+import portLocation from "../portLocations.js";
 
 export const getMyJobPosts = async (req, res) => {
   try {
     const userId = req.user.id;
     const portAuthority = await PortAuthority.findOne({ user: userId });
 
-        if (!portAuthority) {
-          return res.status(404).json({ error: "PortAuthority not found" });
-        }
-    
-        const portId = portAuthority._id;
-    const jobPosts = await JobPost.find({ createdBy: portId }).sort({ createdDate: -1 });
+    if (!portAuthority) {
+      return res.status(404).json({ error: "PortAuthority not found" });
+    }
+
+    const portId = portAuthority._id;
+    const jobPosts = await JobPost.find({ createdBy: portId }).sort({
+      createdDate: -1,
+    });
     res.status(200).json(jobPosts);
-    
   } catch (err) {
     console.error("Failed to fetch job posts:", err);
     res.status(500).json({ message: "Server error" });
   }
-}
-
-import PortAuthority from "../models/PortAuthority.model.js";
-import {calculateSpeed,haversineDistance} from "../utils/calculateSpeed.js";
-import { getWeatherData } from '../utils/weatherAPI.js';
-import portLocation from "../portLocations.js"
-
+};
 
 export function calculateETA(distanceInKm, speedInKnots = 20) {
-  if (!distanceInKm || isNaN(distanceInKm) || !speedInKnots || isNaN(speedInKnots)) {
+  if (
+    !distanceInKm ||
+    isNaN(distanceInKm) ||
+    !speedInKnots ||
+    isNaN(speedInKnots)
+  ) {
     console.error("Invalid distance or speed:", { distanceInKm, speedInKnots });
     return null;
   }
@@ -51,85 +54,93 @@ export function calculateETA(distanceInKm, speedInKnots = 20) {
   return eta;
 }
 
-
 export const ConvertToShip = async (req, res, next) => {
   try {
     const userId = req.user.id;
     const portAuthorityId = await PortAuthority.findOne({ user: userId });
-    console.log("Converting job posts to ships for Port Authority ID:", portAuthorityId);
-        const portId = portAuthorityId._id;
+    console.log(
+      "Converting job posts to ships for Port Authority ID:",
+      portAuthorityId
+    );
+    const portId = portAuthorityId._id;
 
-    const jobPosts = await JobPost.find({ createdBy: portId, status: 'active' }); 
- 
+    const jobPosts = await JobPost.find({
+      createdBy: portId,
+      status: "active",
+    });
+
     for (const job of jobPosts) {
       const departureDate = new Date(job.departureDate);
-  const now = new Date();
-  const isDepartureDue = departureDate <= now;
-  const crewFilled = job.crewAssigned.length === job.sailorsRequired;
+      const now = new Date();
+      const isDepartureDue = departureDate <= now;
+      const crewFilled = job.crewAssigned.length === job.sailorsRequired;
 
-  if (!crewFilled && !isDepartureDue) continue;
-const shipName = `Ship-${job.sourcePort}-${job.destinationPort}`;
+      if (!crewFilled && !isDepartureDue) continue;
+      const shipName = `Ship-${job.sourcePort}-${job.destinationPort}`;
 
-const rawSourceCoords = portLocation[job.sourcePort];
-const rawDestinationCoords = portLocation[job.destinationPort];
+      const rawSourceCoords = portLocation[job.sourcePort];
+      const rawDestinationCoords = portLocation[job.destinationPort];
 
-if (!rawSourceCoords || !rawDestinationCoords) {
-  console.error("Invalid source or destination port coordinates", {
-    rawSourceCoords,
-    rawDestinationCoords
-  });
-  continue;
-}
+      if (!rawSourceCoords || !rawDestinationCoords) {
+        console.error("Invalid source or destination port coordinates", {
+          rawSourceCoords,
+          rawDestinationCoords,
+        });
+        continue;
+      }
 
-const sourceCoords = {
-  lat: parseFloat(rawSourceCoords.latitude),
-  lng: parseFloat(rawSourceCoords.longitude),
-};
+      const sourceCoords = {
+        lat: parseFloat(rawSourceCoords.latitude),
+        lng: parseFloat(rawSourceCoords.longitude),
+      };
 
-const destinationCoords = {
-  lat: parseFloat(rawDestinationCoords.latitude),
-  lng: parseFloat(rawDestinationCoords.longitude),
-};
+      const destinationCoords = {
+        lat: parseFloat(rawDestinationCoords.latitude),
+        lng: parseFloat(rawDestinationCoords.longitude),
+      };
 
-const weatherResponse = await axios.get(
-      `https://api.openweathermap.org/data/2.5/weather?lat=${sourceCoords.lat}&lon=${sourceCoords.lng}&appid=${process.env.WEATHER_API_KEY}`
-    );
+      const weatherResponse = await axios.get(
+        `https://api.openweathermap.org/data/2.5/weather?lat=${sourceCoords.lat}&lon=${sourceCoords.lng}&appid=${process.env.WEATHER_API_KEY}`
+      );
 
-       
-    const weather = weatherResponse.data.weather[0].description;
-    const region = weatherResponse.data.name
+      const weather = weatherResponse.data.weather[0].description;
+      const region = weatherResponse.data.name;
 
-      const distance = haversineDistance(sourceCoords, destinationCoords); 
+      const distance = haversineDistance(sourceCoords, destinationCoords);
       const estimatedSpeed = 20; // knots (20 knots = ~37 km/h)
 
-const eta = calculateETA(distance, estimatedSpeed);
+      const eta = calculateETA(distance, estimatedSpeed);
 
-if (!eta || isNaN(eta.getTime())) {
-  console.error("Skipping ship creation due to invalid ETA:", { eta, distance, estimatedSpeed });
-  continue;
-}
+      if (!eta || isNaN(eta.getTime())) {
+        console.error("Skipping ship creation due to invalid ETA:", {
+          eta,
+          distance,
+          estimatedSpeed,
+        });
+        continue;
+      }
       const newShip = new Ship({
         name: shipName,
         number: `SHIP-${Date.now()}`,
-        source: job.sourcePort, 
+        source: job.sourcePort,
         destination: job.destinationPort,
         contractvalue: job.salaryOffered,
         eta,
-        cargoType: job.cargoType, 
-        weatherStatus:weather,
+        cargoType: job.cargoType,
+        weatherStatus: weather,
         createdBy: portId,
-        crew:job.crewAssigned.map(id => ({ sailorId: id })),
+        crew: job.crewAssigned.map((id) => ({ sailorId: id })),
         jobReference: job._id,
         departureDate: job.departureDate,
         arrivalDate: eta,
-        progress: 0, 
+        progress: 0,
         status: "active",
         currentspeed: estimatedSpeed,
         currentLocation: {
           lat: sourceCoords.lat,
           lng: sourceCoords.lng,
           region: job.sourcePort,
-        }
+        },
       });
 
       await newShip.save();
@@ -137,23 +148,14 @@ if (!eta || isNaN(eta.getTime())) {
       // Remove job post or mark as converted
       await JobPost.deleteOne({ _id: job._id });
 
-
-    
-
-
       console.log("Job converted to ship:", newShip.name);
     }
     next();
-
-   
   } catch (error) {
     console.error("Error in ConvertToShip middleware:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
-
-
-
 
 export const deleteJobPost = async (req, res) => {
   try {
@@ -171,23 +173,23 @@ export const deleteJobPost = async (req, res) => {
     }
 
     if (String(job.createdBy) !== String(portAuthority._id)) {
-      return res.status(403).json({ message: "Unauthorized - You didn't create this job" });
+      return res
+        .status(403)
+        .json({ message: "Unauthorized - You didn't create this job" });
     }
 
     await JobPost.findByIdAndDelete(jobId);
 
     await PortAuthority.findByIdAndUpdate(portAuthority._id, {
-      $inc: { activeJobPosts: -1 }
+      $inc: { activeJobPosts: -1 },
     });
 
     res.status(200).json({ message: "Job post deleted successfully" });
-
   } catch (error) {
     console.error("Error deleting job post:", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
-
 
 export const updateJobPost = async (req, res) => {
   try {
@@ -196,32 +198,28 @@ export const updateJobPost = async (req, res) => {
 
     const updatedJob = await JobPost.findByIdAndUpdate(jobId, updatedData, {
       new: true,
-      runValidators: true
+      runValidators: true,
     });
 
     if (!updatedJob) {
-      return res.status(404).json({ message: 'Job post not found' });
+      return res.status(404).json({ message: "Job post not found" });
     }
 
     res.status(200).json(updatedJob);
   } catch (error) {
     console.error("❌ Error updating job:", error);
-    res.status(500).json({ message: 'Internal Server Error' });
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
-
-
-
-
 
 export const viewJobPost = async (req, res) => {
   try {
     const { jobId } = req.params;
     const job = await JobPost.findById(jobId)
-      .populate('createdBy') // optional
-      .populate('crewAssigned')   // optional
+      .populate("createdBy") // optional
+      .populate("crewAssigned"); // optional
 
-    if (!job) return res.status(404).json({ message: 'Job not found' });
+    if (!job) return res.status(404).json({ message: "Job not found" });
     const data = {
       sourcePort: job.sourcePort,
       destinationPort: job.destinationPort,
@@ -232,11 +230,11 @@ export const viewJobPost = async (req, res) => {
       status: job.status,
       crewAssigned: job.crewAssigned,
       applicationsCount: job.applicationsCount,
-      createdDate: job.createdDate
-    }
+      createdDate: job.createdDate,
+    };
     res.json(job);
   } catch (error) {
     console.error("Error fetching job post:", error);
-    res.status(500).json({ message: 'Internal server error' });
+    res.status(500).json({ message: "Internal server error" });
   }
 };

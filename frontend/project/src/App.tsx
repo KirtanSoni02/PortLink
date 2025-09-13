@@ -25,8 +25,8 @@ const HomePage: React.FC = () => {
       <div id="about"><RealTimeTracking /></div>
       <UserGrowthCharts />
       <CallToAction />
-      
-    <div id="contact"><Footer /></div></div>
+
+      <div id="contact"><Footer /></div></div>
   );
 };
 

@@ -95,9 +95,9 @@ const ShipDetails: React.FC<ShipDetailsProps> = ({ ship }) => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="ml-4 border-l-2 border-dashed border-slate-300 h-8"></div>
-              
+
               <div className="flex items-start space-x-3">
                 <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
                   <Anchor className="w-4 h-4 text-white" />
@@ -131,15 +131,15 @@ const ShipDetails: React.FC<ShipDetailsProps> = ({ ship }) => {
                 <span className="text-slate-600">Load Status</span>
                 <span className="text-emerald-600 font-medium">Fully Loaded</span>
               </div>
-              
+
               <div className="flex justify-between">
                 <span className="text-slate-600">Weather</span>
-                <span className="font-semibold text-slate-800">{ship.weather|| 'N/A'}</span>
-               </div>
+                <span className="font-semibold text-slate-800">{ship.weather || 'N/A'}</span>
+              </div>
             </div>
           </div>
 
-         
+
 
 
         </div>
@@ -157,7 +157,7 @@ const ShipDetails: React.FC<ShipDetailsProps> = ({ ship }) => {
           >
             Contact Port Authority
           </motion.button>
-    
+
         </div>
         {showContact && (
           <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200 text-slate-800">

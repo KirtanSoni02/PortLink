@@ -56,7 +56,8 @@ const AuthMethodModal: React.FC<AuthMethodModalProps> = ({
             onClick={onSelectGoogle}
             className="w-full flex items-center justify-center p-4 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors"
           >
-            <Chrome className="h-6 w-6 mr-3 text-slate-600" />
+            {/* <Chrome className="h-6 w-6 mr-3 text-slate-600" /> */}
+            <img src="../images/google.png" alt="Google Logo" className="w-6 h-6 mr-3" />
             <span className="text-lg font-medium">Continue with Google</span>
           </button>
         </div>

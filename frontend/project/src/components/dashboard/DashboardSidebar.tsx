@@ -34,11 +34,10 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
               <button
                 key={item.id}
                 onClick={() => onSectionChange(item.id)}
-                className={`flex items-center space-x-3 w-full px-4 py-3 rounded-lg transition-all duration-200 ${
-                  activeSection === item.id
+                className={`flex items-center space-x-3 w-full px-4 py-3 rounded-lg transition-all duration-200 ${activeSection === item.id
                     ? 'bg-gradient-to-r from-sky-500 to-emerald-500 text-white shadow-lg'
                     : 'text-slate-600 hover:bg-slate-100 hover:text-slate-800'
-                }`}
+                  }`}
               >
                 <item.icon className="w-5 h-5" />
                 <span className="font-medium">{item.label}</span>
@@ -84,11 +83,10 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
                   onSectionChange(item.id);
                   onClose();
                 }}
-                className={`flex items-center space-x-3 w-full px-4 py-3 rounded-lg transition-all duration-200 ${
-                  activeSection === item.id
+                className={`flex items-center space-x-3 w-full px-4 py-3 rounded-lg transition-all duration-200 ${activeSection === item.id
                     ? 'bg-gradient-to-r from-sky-500 to-emerald-500 text-white shadow-lg'
                     : 'text-slate-600 hover:bg-slate-100 hover:text-slate-800'
-                }`}
+                  }`}
               >
                 <item.icon className="w-5 h-5" />
                 <span className="font-medium">{item.label}</span>

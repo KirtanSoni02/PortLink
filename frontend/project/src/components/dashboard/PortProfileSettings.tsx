@@ -133,7 +133,7 @@ const PortProfileSettings: React.FC<PortProfileSettingsProps> = ({ portData }) =
         {/* Personal Information */}
         <div className="bg-white rounded-2xl p-6 shadow-lg border border-slate-200">
           <h2 className="text-xl font-bold text-slate-800 mb-6">Personal Information</h2>
-          
+
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">Full Name</label>
@@ -208,7 +208,7 @@ const PortProfileSettings: React.FC<PortProfileSettingsProps> = ({ portData }) =
         {/* Port Information */}
         <div className="bg-white rounded-2xl p-6 shadow-lg border border-slate-200">
           <h2 className="text-xl font-bold text-slate-800 mb-6">Port Information</h2>
-          
+
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">Port Name</label>
@@ -314,7 +314,7 @@ const PortProfileSettings: React.FC<PortProfileSettingsProps> = ({ portData }) =
       {/* Port Statistics */}
       <div className="bg-white rounded-2xl p-6 shadow-lg border border-slate-200">
         <h2 className="text-xl font-bold text-slate-800 mb-6">Port Performance Statistics</h2>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="text-center">
             <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mx-auto mb-3">

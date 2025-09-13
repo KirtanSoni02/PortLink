@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Anchor, Menu, X } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
-import   {HashLink}  from 'react-router-hash-link';
+import { HashLink } from 'react-router-hash-link';
 
 // import { useThemeToggle } from '../hooks/useTheme'
 // import { Sun, Moon } from 'lucide-react';
@@ -18,7 +18,7 @@ const Header: React.FC = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-// const { theme, toggleTheme } = useThemeToggle(); // Place this inside the component
+  // const { theme, toggleTheme } = useThemeToggle(); // Place this inside the component
 
   // Don't show header on auth pages
   if (location.pathname === '/login' || location.pathname === '/register') {
@@ -26,16 +26,15 @@ const Header: React.FC = () => {
   }
 
   return (
-    
+
     <motion.header
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.8 }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled 
-          ? 'bg-white/95 backdrop-blur-md shadow-lg border-b border-slate-200/50' 
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
+          ? 'bg-white/95 backdrop-blur-md shadow-lg border-b border-slate-200/50'
           : 'bg-transparent'
-      }`}
+        }`}
     >
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
@@ -45,16 +44,14 @@ const Header: React.FC = () => {
             className="flex items-center space-x-3"
           >
             <Link to="/" className="flex items-center space-x-3">
-              <div className={`flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300 ${
-                isScrolled 
-                  ? 'bg-gradient-to-br from-sky-500 to-emerald-500' 
+              <div className={`flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300 ${isScrolled
+                  ? 'bg-gradient-to-br from-sky-500 to-emerald-500'
                   : 'bg-white/10 backdrop-blur-md border border-white/20'
-              }`}>
+                }`}>
                 <Anchor className={`w-6 h-6 ${isScrolled ? 'text-white' : 'text-white'}`} />
               </div>
-              <span className={`text-xl font-bold transition-colors duration-300 ${
-                isScrolled ? 'text-slate-800' : 'text-white'
-              }`}>
+              <span className={`text-xl font-bold transition-colors duration-300 ${isScrolled ? 'text-slate-800' : 'text-white'
+                }`}>
                 PortLink
               </span>
             </Link>
@@ -63,16 +60,15 @@ const Header: React.FC = () => {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
             {['Features', 'How It Works', 'About', 'Contact'].map((item) => (
-              <HashLink 
-  key={item}
-  smooth 
-  to={`/#${item.toLowerCase().replace(/\s+/g, '-')}`}
-  className={`font-medium transition-colors duration-300 hover:text-sky-500 ${
-    isScrolled ? 'text-slate-600' : 'text-white/90'
-  }`} 
->
-  {item}
-</HashLink>
+              <HashLink
+                key={item}
+                smooth
+                to={`/#${item.toLowerCase().replace(/\s+/g, '-')}`}
+                className={`font-medium transition-colors duration-300 hover:text-sky-500 ${isScrolled ? 'text-slate-600' : 'text-white/90'
+                  }`}
+              >
+                {item}
+              </HashLink>
 
             ))}
           </nav>
@@ -82,11 +78,10 @@ const Header: React.FC = () => {
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link
                 to="/login"
-                className={`px-4 py-2 font-medium rounded-full transition-all duration-300 ${
-                  isScrolled 
-                    ? 'text-slate-600 hover:text-sky-600' 
+                className={`px-4 py-2 font-medium rounded-full transition-all duration-300 ${isScrolled
+                    ? 'text-slate-600 hover:text-sky-600'
                     : 'text-white/90 hover:text-white'
-                }`}
+                  }`}
               >
                 Login
               </Link>
@@ -100,7 +95,7 @@ const Header: React.FC = () => {
               </Link>
             </motion.div>
           </div>
-    {/* <motion.button
+          {/* <motion.button
   whileHover={{ scale: 1.1 }}
   whileTap={{ scale: 0.95 }}
   onClick={toggleTheme}
@@ -116,9 +111,8 @@ const Header: React.FC = () => {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className={`md:hidden p-2 rounded-lg transition-colors duration-300 ${
-              isScrolled ? 'text-slate-600' : 'text-white'
-            }`}
+            className={`md:hidden p-2 rounded-lg transition-colors duration-300 ${isScrolled ? 'text-slate-600' : 'text-white'
+              }`}
           >
             {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
@@ -135,13 +129,13 @@ const Header: React.FC = () => {
             <div className="p-4 space-y-4">
               {['Features', 'How It Works', 'About', 'Contact'].map((item) => (
                 <HashLink
-  smooth
-  to={`/#${item.toLowerCase().replace(' ', '-')}`}
-  className="block text-slate-600 font-medium hover:text-sky-600 transition-colors"
-  onClick={() => setIsMobileMenuOpen(false)}
->
-  {item}
-</HashLink>
+                  smooth
+                  to={`/#${item.toLowerCase().replace(' ', '-')}`}
+                  className="block text-slate-600 font-medium hover:text-sky-600 transition-colors"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  {item}
+                </HashLink>
 
               ))}
               <div className="flex space-x-4 pt-4 border-t border-slate-200">

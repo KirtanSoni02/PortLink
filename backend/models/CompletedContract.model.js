@@ -4,12 +4,12 @@ const completedContractSchema = new mongoose.Schema({
   portAuthority: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "PortAuthority",
-    required: true
+    required: true,
   },
   ship: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Ship",
-    required: true
+    required: true,
   },
   shipNumber: String,
   shipName: String,
@@ -18,19 +18,21 @@ const completedContractSchema = new mongoose.Schema({
   endDate: Date,
 
   sailorsCount: Number,
-  crew: [{
-    sailorId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Sailor'
+  crew: [
+    {
+      sailorId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Sailor",
+      },
+      name: String,
+      role: String,
+      experience: String,
     },
-    name: String,
-    role: String,
-    experience: String
-  }],
+  ],
 
   route: {
     source: String,
-    destination: String
+    destination: String,
   },
 
   cargoType: String,
@@ -39,11 +41,10 @@ const completedContractSchema = new mongoose.Schema({
 
   completedAt: {
     type: Date,
-    default: Date.now
-  }
+    default: Date.now,
+  },
 });
 export default mongoose.model("CompletedContract", completedContractSchema);
-
 
 //In this model we kept this many things indtead of ship model because we neeed to delete ship model after completion of contract and we need to keep this data for future reference
 //So we are keeping this data in completed contract model

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Ship, MapPin, Clock, Users, Package, Cloud, Eye, ChevronDown, ChevronUp , Navigation} from 'lucide-react';
+import { Ship, MapPin, Clock, Users, Package, Cloud, Eye, ChevronDown, ChevronUp, Navigation } from 'lucide-react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
@@ -27,9 +27,9 @@ const createCustomIcon = (color: string, withPulse = false) =>
     iconAnchor: [10, 10],
   });
 
-const shipIcon = createCustomIcon('bg-red-500',true);
-const sourceIcon = createCustomIcon('bg-blue-500',true);
-const destinationIcon = createCustomIcon('bg-green-500',true);
+const shipIcon = createCustomIcon('bg-red-500', true);
+const sourceIcon = createCustomIcon('bg-blue-500', true);
+const destinationIcon = createCustomIcon('bg-green-500', true);
 
 
 
@@ -65,7 +65,7 @@ interface IncomingShipTrackerProps {
 }
 
 const IncomingShipTracker: React.FC<IncomingShipTrackerProps> = ({ ships }) => {
- 
+
   const [expandedShip, setExpandedShip] = useState<string | null>(null);
 
   // Mock data - replace with API cal
@@ -150,12 +150,12 @@ const IncomingShipTracker: React.FC<IncomingShipTrackerProps> = ({ ships }) => {
                       <div>
                         <div className="text-xs text-slate-500">ETA</div>
                         <div className="text-sm font-medium text-slate-800">{new Date(ship.eta).toLocaleString("en-IN", {
-                      day: "2-digit",
-                      month: "short",
-                      year: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      })}</div>
+                          day: "2-digit",
+                          month: "short",
+                          year: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}</div>
                       </div>
                     </div>
                     <div className="flex items-center space-x-2">
@@ -191,7 +191,7 @@ const IncomingShipTracker: React.FC<IncomingShipTrackerProps> = ({ ships }) => {
                       {ship.currentLocation.lat.toFixed(4)}°, {ship.currentLocation.lng.toFixed(4)}°
                     </div>
                   </div>
-                  
+
                   <button
                     onClick={() => setExpandedShip(expandedShip === ship.id ? null : ship.id)}
                     className="flex items-center space-x-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
@@ -280,89 +280,74 @@ const IncomingShipTracker: React.FC<IncomingShipTrackerProps> = ({ ships }) => {
                     </div>
 
                     {/* Map Placeholder */}
-                    
+
 
 
                     <h3 className="text-xl font-semibold text-slate-800 mb-4 mt-6 flex items-center">
-    <Navigation className="w-6 h-6 mr-3 text-blue-500" />
-    Route Tracking
-  </h3>
+                      <Navigation className="w-6 h-6 mr-3 text-blue-500" />
+                      Route Tracking
+                    </h3>
 
-  {/* Leaflet Map Container */}
-  <div className="rounded-xl overflow-hidden border border-blue-100 shadow-inner">
+                    {/* Leaflet Map Container */}
+                    <div className="rounded-xl overflow-hidden border border-blue-100 shadow-inner">
+                      <MapContainer
+                        center={[20, 0]} // Initial map center
+                        zoom={2}
+                        style={{ height: '500px', width: '100%' }}
+                      >
+                        <TileLayer
+                          attribution='&copy; OpenStreetMap contributors'
+                          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        />
 
+                        {ship.source && portLocations[ship.source] && (
+                          <Marker
+                            position={[
+                              parseFloat(portLocations[ship.source].latitude),
+                              parseFloat(portLocations[ship.source].longitude)
+                            ]}
+                            icon={sourceIcon} // you can create a green icon for source
+                          />
+                        )}
 
+                        <Marker
+                          key={ship.id}
+                          position={[ship.currentLocation.lat, ship.currentLocation.lng]}
+                          icon={shipIcon}
+                        >
+                        </Marker>
+                        {ship.destination && portLocations[ship.destination] && (
+                          <Marker
+                            position={[
+                              parseFloat(portLocations[ship.destination].latitude),
+                              parseFloat(portLocations[ship.destination].longitude)
+                            ]}
+                            icon={destinationIcon} // you can create a red icon for destination
+                          />
+                        )}
 
+                      </MapContainer>
 
+                    </div>
 
-
-
-   {/* <LiveMap
-  shipId={ship._id}
-  sourceCoords={getPortCoords(ship.source || '')}
-  destinationCoords={getPortCoords(ship.destination || '')}
-/> */}
-
-
-
-<MapContainer
-          center={[20, 0]} // Initial map center
-          zoom={2}
-          style={{ height: '500px', width: '100%' }}
-        >
-          <TileLayer
-            attribution='&copy; OpenStreetMap contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-
-{ship.source && portLocations[ship.source] && (
-    <Marker
-      position={[
-        parseFloat(portLocations[ship.source].latitude),
-        parseFloat(portLocations[ship.source].longitude)
-      ]}
-      icon={sourceIcon} // you can create a green icon for source
-    />
-  )}
-         
-            <Marker
-              key={ship.id}
-              position={[ship.currentLocation.lat, ship.currentLocation.lng]}
-              icon={shipIcon}
-            >
-            </Marker>
-           {ship.destination && portLocations[ship.destination] && (
-    <Marker
-      position={[
-        parseFloat(portLocations[ship.destination].latitude),
-        parseFloat(portLocations[ship.destination].longitude)
-      ]}
-      icon={destinationIcon} // you can create a red icon for destination
-    />
-  )}
-          
-        </MapContainer>
-
-  </div>
-
-  {/* Legend and Status */}
-  <div className="flex justify-between items-center mt-4 text-sm text-slate-600">
-    <div className="flex items-center space-x-4">
-      <div className="flex items-center space-x-2">
-        <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-        <span>Source</span>
-      </div>
-      <div className="flex items-center space-x-2">
-        <div className="w-3 h-3 bg-red-500 rounded-full animate-ping-fast"></div>
-        <span>Live Position</span>
-      </div>
-      <div className="flex items-center space-x-2">
-        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-        <span>Destination</span>
-      </div>
-    </div>
-    <div className="text-emerald-600 font-medium">Real-time tracking active</div>
-  </div>
+                    {/* Legend and Status */}
+                    <div className="flex justify-between items-center mt-4 text-sm text-slate-600">
+                      <div className="flex items-center space-x-4">
+                        <div className="flex items-center space-x-2">
+                          <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                          <span>Source</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <div className="w-3 h-3 bg-red-500 rounded-full animate-ping-fast"></div>
+                          <span>Live Position</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                          <span>Destination</span>
+                        </div>
+                      </div>
+                      <div className="text-emerald-600 font-medium">Real-time tracking active</div>
+                    </div>
 
 
 

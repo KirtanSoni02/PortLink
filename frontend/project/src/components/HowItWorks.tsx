@@ -23,7 +23,7 @@ const Step: React.FC<StepProps> = ({ step, icon, title, description, delay }) =>
       <div className="absolute -top-4 -left-4 w-10 h-10 bg-gradient-to-br from-sky-500 to-emerald-500 text-white font-bold rounded-full flex items-center justify-center text-lg shadow-lg">
         {step}
       </div>
-      
+
       {/* Card */}
       <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 group-hover:-translate-y-2 border border-slate-100">
         <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-sky-100 to-emerald-100 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">

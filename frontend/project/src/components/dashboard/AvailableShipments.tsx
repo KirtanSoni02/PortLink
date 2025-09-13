@@ -45,48 +45,48 @@ const AvailableShipments: React.FC<AvailableShipmentsProps> = ({ sailorData, lim
   const [applications, setApplications] = useState<any[]>([]);
 
 
-const [AvailableShipmentsData, setAvailableShipmentsData] = useState(null);
-const [hasAlreadyApplied, setHasAlreadyApplied] = useState(false);
-const API_URL = import.meta.env.VITE_API_URL;
+  const [AvailableShipmentsData, setAvailableShipmentsData] = useState(null);
+  const [hasAlreadyApplied, setHasAlreadyApplied] = useState(false);
+  const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-  const fetchAvailableShipments = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get(`${API_URL}/api/sailor/available-shipments`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      console.log("📦 Available Shipments Data:", response.data);
-      const { shipments, hasAlreadyApplied } = response.data;
-      const sailorId = sailorData?.id
+    const fetchAvailableShipments = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get(`${API_URL}/api/sailor/available-shipments`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        console.log("📦 Available Shipments Data:", response.data);
+        const { shipments, hasAlreadyApplied } = response.data;
+        const sailorId = sailorData?.id
 
 
-      const mappedData: Shipment[] = shipments.map((job: any) => ({
-        id: job._id,
-        sourcePort: job.sourcePort,
-        destinationPort: job.destinationPort,
-        DepartureDate: new Date(job.departureDate),
-        salary: job.salaryOffered,
-        crewRequired: job.sailorsRequired,
-        cargoType: job.cargoType,
-        urgency: getUrgencyLevel(job.departureDate),
-        postedDate: new Date(job.createdDate).toISOString(),
-        company: job.createdBy?.companyName || "Unknown Shipping Co.",
-        description: `Sailing from ${job.sourcePort} to ${job.destinationPort} carrying ${job.cargoType}. Departure: ${new Date(job.departureDate).toLocaleDateString()}.`,
-        alreadyAssigned: job.crewAssigned?.includes(sailorId),
-      }));
+        const mappedData: Shipment[] = shipments.map((job: any) => ({
+          id: job._id,
+          sourcePort: job.sourcePort,
+          destinationPort: job.destinationPort,
+          DepartureDate: new Date(job.departureDate),
+          salary: job.salaryOffered,
+          crewRequired: job.sailorsRequired,
+          cargoType: job.cargoType,
+          urgency: getUrgencyLevel(job.departureDate),
+          postedDate: new Date(job.createdDate).toISOString(),
+          company: job.createdBy?.companyName || "Unknown Shipping Co.",
+          description: `Sailing from ${job.sourcePort} to ${job.destinationPort} carrying ${job.cargoType}. Departure: ${new Date(job.departureDate).toLocaleDateString()}.`,
+          alreadyAssigned: job.crewAssigned?.includes(sailorId),
+        }));
 
-      setAvailableShipmentsData(mappedData);
-      setHasAlreadyApplied(hasAlreadyApplied);
-    } catch (error) {
-      console.error("❌ Failed to fetch available shipments:", error);
-    }
-  };
+        setAvailableShipmentsData(mappedData);
+        setHasAlreadyApplied(hasAlreadyApplied);
+      } catch (error) {
+        console.error("❌ Failed to fetch available shipments:", error);
+      }
+    };
 
-  fetchAvailableShipments();
-}, []);
+    fetchAvailableShipments();
+  }, []);
 
 
   // Mock sailor data if not provided
@@ -104,21 +104,21 @@ const API_URL = import.meta.env.VITE_API_URL;
 
   // Mock data - replace with API call
   const shipments: Shipment[] = AvailableShipmentsData || [];
- const displayedShipments = limit ? shipments.slice(0, limit) : shipments;
+  const displayedShipments = limit ? shipments.slice(0, limit) : shipments;
 
-function estimateDays(departureDate: string): number {
-  const now = new Date();
-  const departure = new Date(departureDate);
-  const diffMs = Math.abs(departure.getTime() - now.getTime());
-  return Math.max(1, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
-}
+  function estimateDays(departureDate: string): number {
+    const now = new Date();
+    const departure = new Date(departureDate);
+    const diffMs = Math.abs(departure.getTime() - now.getTime());
+    return Math.max(1, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
+  }
 
-function getUrgencyLevel(departureDate: string): 'low' | 'medium' | 'high' {
-  const daysUntilDeparture = estimateDays(departureDate);
-  if (daysUntilDeparture <= 3) return 'high';
-  if (daysUntilDeparture <= 7) return 'medium';
-  return 'low';
-}
+  function getUrgencyLevel(departureDate: string): 'low' | 'medium' | 'high' {
+    const daysUntilDeparture = estimateDays(departureDate);
+    if (daysUntilDeparture <= 3) return 'high';
+    if (daysUntilDeparture <= 7) return 'medium';
+    return 'low';
+  }
 
   const getUrgencyColor = (urgency: string) => {
     switch (urgency) {
@@ -131,33 +131,33 @@ function getUrgencyLevel(departureDate: string): 'low' | 'medium' | 'high' {
 
   const canApplyToShipment = (shipment: Shipment): { canApply: boolean; reason?: string } => {
     // Check if sailor has no ongoing contract
-     if (hasAlreadyApplied) {
-    return { canApply: false, reason: "You have already applied to a shipment. You cannot apply to others." };
-  }
+    if (hasAlreadyApplied) {
+      return { canApply: false, reason: "You have already applied to a shipment. You cannot apply to others." };
+    }
 
 
     // if (!currentSailorData.hasOngoingContract) {
     //   return { canApply: true };
     // }
-      if (shipment.alreadyAssigned) {
-    return { canApply: false, reason: "You are already assigned to this shipment." };
-  }
+    if (shipment.alreadyAssigned) {
+      return { canApply: false, reason: "You are already assigned to this shipment." };
+    }
 
     // Check if current contract is near completion (90% or more)
     if (currentSailorData.currentContract && (currentSailorData.currentContract.progress < 90)) {
-      return { 
-      canApply: false, 
-      reason: 'You can only apply for new shipments when you have no ongoing contract, are near completion (90%+).' 
-    };
-  }
-    else return { 
-      canApply: true,  
+      return {
+        canApply: false,
+        reason: 'You can only apply for new shipments when you have no ongoing contract, are near completion (90%+).'
+      };
+    }
+    else return {
+      canApply: true,
     };
   };
 
   const handleApply = (shipment: Shipment) => {
     const { canApply, reason } = canApplyToShipment(shipment);
-    
+
     if (!canApply) {
       alert(reason);
       return;
@@ -230,9 +230,8 @@ function getUrgencyLevel(departureDate: string): 'low' | 'medium' | 'high' {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className={`border rounded-xl p-6 transition-all duration-300 hover:shadow-lg ${
-                  canApply ? 'border-slate-200 hover:border-sky-300' : 'border-slate-200 bg-slate-50'
-                }`}
+                className={`border rounded-xl p-6 transition-all duration-300 hover:shadow-lg ${canApply ? 'border-slate-200 hover:border-sky-300' : 'border-slate-200 bg-slate-50'
+                  }`}
               >
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                   {/* Left side - Main info */}
@@ -275,7 +274,7 @@ function getUrgencyLevel(departureDate: string): 'low' | 'medium' | 'high' {
                           <div className="text-xs text-slate-500">Departure Date</div>
                           <div className="text-sm font-medium text-slate-800">{shipment.DepartureDate.toString().slice(0, 10)}</div>
                         </div>
-                      </div> 
+                      </div>
                       <div className="flex items-center space-x-2">
                         <Users className="w-4 h-4 text-purple-500" />
                         <div>
@@ -316,19 +315,18 @@ function getUrgencyLevel(departureDate: string): 'low' | 'medium' | 'high' {
                         <Eye className="w-4 h-4" />
                         <span className="text-sm">View Details</span>
                       </motion.button>
-                      
+
                       <motion.button
                         whileHover={canApply && !applied ? { scale: 1.05 } : {}}
                         whileTap={canApply && !applied ? { scale: 0.95 } : {}}
                         onClick={() => handleApply(shipment)}
                         disabled={!canApply || applied}
-                        className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-300 ${
-                          applied 
+                        className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-300 ${applied
                             ? 'bg-emerald-100 text-emerald-700 border border-emerald-200 cursor-not-allowed'
                             : canApply
-                            ? 'bg-gradient-to-r from-sky-500 to-emerald-500 text-white hover:from-sky-600 hover:to-emerald-600'
-                            : 'bg-slate-200 text-slate-500 cursor-not-allowed'
-                        }`}
+                              ? 'bg-gradient-to-r from-sky-500 to-emerald-500 text-white hover:from-sky-600 hover:to-emerald-600'
+                              : 'bg-slate-200 text-slate-500 cursor-not-allowed'
+                          }`}
                       >
                         <Send className="w-4 h-4" />
                         <span className="text-sm">

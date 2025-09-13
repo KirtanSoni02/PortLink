@@ -25,7 +25,7 @@ const createCustomIcon = (color: string, withPulse = false) =>
     iconAnchor: [10, 10],
   });
 
-const shipIcon = createCustomIcon('bg-blue-500',true);
+const shipIcon = createCustomIcon('bg-blue-500', true);
 // Custom Ship Icon
 // const shipIcon = new L.Icon({
 //   iconUrl: '/ship-icon.png', // Put ship icon in public folder
@@ -54,31 +54,31 @@ const RealTimeTracking: React.FC = () => {
 
   const [activeVessel, setActiveVessel] = useState(0);
   const API_URL = import.meta.env.VITE_API_URL;
-  
+
   useEffect(() => {
-  const fetchVesselData = async () => {
-    try {
-      const response = await axios.get(`${API_URL}/api/ship/realtimetracking`);
-      console.log('Fetched vessel data:', response.data);
-      if (Array.isArray(response.data)) {
-        setVessels(response.data);
-      } else {
-        console.warn("Expected an array of vessels, got:", response.data);
+    const fetchVesselData = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/api/ship/realtimetracking`);
+        console.log('Fetched vessel data:', response.data);
+        if (Array.isArray(response.data)) {
+          setVessels(response.data);
+        } else {
+          console.warn("Expected an array of vessels, got:", response.data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch vessel data:', error);
       }
-    } catch (error) {
-      console.error('Failed to fetch vessel data:', error);
-    }
-  };
+    };
 
-  fetchVesselData();
-  
-  const interval = setInterval(() => {
     fetchVesselData();
-    setActiveVessel(prev => (prev + 1) % Math.max(1, vessels.length));
-  }, 10000);
 
-  return () => clearInterval(interval);
-}, [vessels.length]);
+    const interval = setInterval(() => {
+      fetchVesselData();
+      setActiveVessel(prev => (prev + 1) % Math.max(1, vessels.length));
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, [vessels.length]);
 
 
   const getStatusColor = (status: string) => {
@@ -137,37 +137,37 @@ const RealTimeTracking: React.FC = () => {
             {/* Map Container */}
             <div className="relative bg-gradient-to-br from-blue-50 to-sky-100 rounded-xl h-80 overflow-hidden z-0">
               <section className="py-20 bg-gradient-to-b from-slate-50 to-white">
-      <div className="container mx-auto px-4">
-        
-        {/* <h2 className="text-4xl font-bold text-center mb-8">Real-Time Maritime Tracking</h2> */}
+                <div className="container mx-auto px-4">
 
-        {/* Leaflet Map */}
-        <MapContainer
-          center={[20, 0]} // Initial map center
-          zoom={2}
-          style={{ height: '500px', width: '100%' }}
-        >
-          <TileLayer
-            attribution='&copy; OpenStreetMap contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
+                  {/* <h2 className="text-4xl font-bold text-center mb-8">Real-Time Maritime Tracking</h2> */}
 
-          {vessels.map(vessel => (
-            <Marker
-              key={vessel.id}
-              position={[vessel.lat, vessel.lng]}
-              icon={shipIcon}
-            >
-              <Popup>
-                <strong>{vessel.name}</strong><br />
-                Status: {vessel.status}<br />
-                Speed: {vessel.speed} knots
-              </Popup>
-            </Marker>
-          ))}
-        </MapContainer>
-      </div>
-    </section>
+                  {/* Leaflet Map */}
+                  <MapContainer
+                    center={[20, 0]} // Initial map center
+                    zoom={2}
+                    style={{ height: '500px', width: '100%' }}
+                  >
+                    <TileLayer
+                      attribution='&copy; OpenStreetMap contributors'
+                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    />
+
+                    {vessels.map(vessel => (
+                      <Marker
+                        key={vessel.id}
+                        position={[vessel.lat, vessel.lng]}
+                        icon={shipIcon}
+                      >
+                        <Popup>
+                          <strong>{vessel.name}</strong><br />
+                          Status: {vessel.status}<br />
+                          Speed: {vessel.speed} knots
+                        </Popup>
+                      </Marker>
+                    ))}
+                  </MapContainer>
+                </div>
+              </section>
             </div>
           </motion.div>
 
@@ -181,7 +181,7 @@ const RealTimeTracking: React.FC = () => {
           >
             <div className="bg-white rounded-2xl p-6 shadow-xl border border-slate-200">
               <h3 className="text-2xl font-bold text-slate-800 mb-6">Active Vessels</h3>
-              
+
               <div className="space-y-4 max-h-96 overflow-y-auto pr-2">
                 {vessels.map((vessel, index) => (
                   <motion.div
@@ -195,17 +195,16 @@ const RealTimeTracking: React.FC = () => {
                   >
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center space-x-3">
-                        <div className={`w-3 h-3 rounded-full ${
-                          vessel.status === 'sailing' ? 'bg-emerald-500' :
-                          vessel.status === 'docked' ? 'bg-blue-500' : 'bg-amber-500'
-                        }`}></div>
+                        <div className={`w-3 h-3 rounded-full ${vessel.status === 'sailing' ? 'bg-emerald-500' :
+                            vessel.status === 'docked' ? 'bg-blue-500' : 'bg-amber-500'
+                          }`}></div>
                         <span className="font-semibold text-slate-800">{vessel.name}</span>
                       </div>
                       <span className={`text-sm font-medium capitalize ${getStatusColor(vessel.status)}`}>
                         {vessel.status}
                       </span>
                     </div>
-                    
+
                     <div className="grid grid-cols-2 gap-4 text-sm text-slate-600">
                       <div className="flex items-center space-x-2">
                         <MapPin className="w-4 h-4" />

@@ -23,8 +23,8 @@ interface ContractHistoryProps {
 
 const ContractHistory: React.FC<ContractHistoryProps> = ({ sailorId }) => {
   const [filter, setFilter] = useState<'all' | 'completed' | 'ongoing' | 'cancelled'>('all');
- const [contracts, setContracts] = useState<Contract[]>([]);
-const API_URL = import.meta.env.VITE_API_URL;
+  const [contracts, setContracts] = useState<Contract[]>([]);
+  const API_URL = import.meta.env.VITE_API_URL;
   useEffect(() => {
     const fetchContracts = async () => {
       try {
@@ -43,10 +43,10 @@ const API_URL = import.meta.env.VITE_API_URL;
     if (sailorId) fetchContracts();
   }, [sailorId]);
   // Mock data - replace with API call
-  
 
-  const filteredContracts = filter === 'all' 
-    ? contracts 
+
+  const filteredContracts = filter === 'all'
+    ? contracts
     : contracts.filter(contract => contract.status === filter);
 
   const getStatusColor = (status: string) => {
@@ -121,18 +121,17 @@ const API_URL = import.meta.env.VITE_API_URL;
       <div className="bg-white rounded-2xl p-6 shadow-lg border border-slate-200">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
           <h2 className="text-2xl font-bold text-slate-800 mb-4 sm:mb-0">Contract History</h2>
-          
+
           {/* Filter Buttons */}
           <div className="flex space-x-2">
             {(['all', 'completed', 'ongoing', 'cancelled'] as const).map((status) => (
               <button
                 key={status}
                 onClick={() => setFilter(status)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  filter === status
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${filter === status
                     ? 'bg-sky-500 text-white'
                     : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                }`}
+                  }`}
               >
                 {status.charAt(0).toUpperCase() + status.slice(1)}
               </button>
@@ -211,7 +210,7 @@ const API_URL = import.meta.env.VITE_API_URL;
                   </div>
 
                   <div className="flex space-x-2">
-                    
+
                   </div>
                 </div>
               </div>

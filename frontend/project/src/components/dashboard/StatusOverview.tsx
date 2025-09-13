@@ -56,25 +56,25 @@ const StatusOverview: React.FC<StatusOverviewProps> = ({ sailorData }) => {
     );
   }
 
-const contract = sailorData.currentContract!;
-const sourceportname = contract.sourcePort;
-const destportname = contract.destinationPort;
-const currentCordinates = contract.currentLocation.lng.toFixed(4)
+  const contract = sailorData.currentContract!;
+  const sourceportname = contract.sourcePort;
+  const destportname = contract.destinationPort;
+  const currentCordinates = contract.currentLocation.lng.toFixed(4)
 
 
 
-const getPortCoords = (portName: string) => {
-  const port = PortLocation[portName];
-  if (!port) {
-    console.warn(`Port not found: ${portName}`);
-    return { latitude: 0, longitude: 0 }; // fallback
-  }
+  const getPortCoords = (portName: string) => {
+    const port = PortLocation[portName];
+    if (!port) {
+      console.warn(`Port not found: ${portName}`);
+      return { latitude: 0, longitude: 0 }; // fallback
+    }
 
-  return {
-    latitude: parseFloat(port.latitude),
-    longitude: parseFloat(port.longitude)
+    return {
+      latitude: parseFloat(port.latitude),
+      longitude: parseFloat(port.longitude)
+    };
   };
-};
 
 
 
@@ -212,7 +212,7 @@ const getPortCoords = (portName: string) => {
 
 
 
-{/* <ShipTrackerMap
+      {/* <ShipTrackerMap
   sourceCoords={sourceportCordiantes}
   destinationCoords={destportCordiantes}
   currentCoords={"latitude":contract.currentLocation.lat.toFixed(4),"longitude":}  // Comes from socket update
@@ -241,44 +241,44 @@ const getPortCoords = (portName: string) => {
 
       {/* Map Placeholder */}
       <motion.div
-  initial={{ opacity: 0, y: 20 }}
-  animate={{ opacity: 1, y: 0 }}
-  transition={{ delay: 0.4 }}
-  className="bg-white rounded-2xl p-6 shadow-lg border border-slate-200"
->
-  <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center">
-    <Navigation className="w-6 h-6 mr-3 text-blue-500" />
-    Route Tracking
-  </h3>
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+        className="bg-white rounded-2xl p-6 shadow-lg border border-slate-200"
+      >
+        <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center">
+          <Navigation className="w-6 h-6 mr-3 text-blue-500" />
+          Route Tracking
+        </h3>
 
-  {/* Leaflet Map Container */}
-  <div className="rounded-xl overflow-hidden border border-blue-100 shadow-inner z-10">
-    <LiveMap
-      shipId={sailorData.currentContract?.id || ''}
-      sourceCoords={getPortCoords(sailorData.currentContract?.sourcePort || '')}
-  destinationCoords={getPortCoords(sailorData.currentContract?.destinationPort || '')}
-    /> 
-  </div>
+        {/* Leaflet Map Container */}
+        <div className="rounded-xl overflow-hidden border border-blue-100 shadow-inner z-10">
+          <LiveMap
+            shipId={sailorData.currentContract?.id || ''}
+            sourceCoords={getPortCoords(sailorData.currentContract?.sourcePort || '')}
+            destinationCoords={getPortCoords(sailorData.currentContract?.destinationPort || '')}
+          />
+        </div>
 
-  {/* Legend and Status */}
-  <div className="flex justify-between items-center mt-4 text-sm text-slate-600">
-    <div className="flex items-center space-x-4">
-      <div className="flex items-center space-x-2">
-        <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-        <span>Source</span>
-      </div>
-      <div className="flex items-center space-x-2">
-        <div className="w-3 h-3 bg-red-500 rounded-full animate-ping-fast"></div>
-        <span>Live Position</span>
-      </div>
-      <div className="flex items-center space-x-2">
-        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-        <span>Destination</span>
-      </div>
-    </div>
-    <div className="text-emerald-600 font-medium">Real-time tracking active</div>
-  </div>
-</motion.div>
+        {/* Legend and Status */}
+        <div className="flex justify-between items-center mt-4 text-sm text-slate-600">
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2">
+              <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+              <span>Source</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-3 h-3 bg-red-500 rounded-full animate-ping-fast"></div>
+              <span>Live Position</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+              <span>Destination</span>
+            </div>
+          </div>
+          <div className="text-emerald-600 font-medium">Real-time tracking active</div>
+        </div>
+      </motion.div>
     </div>
   );
 };

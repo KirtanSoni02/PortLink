@@ -6,18 +6,18 @@ const JobDetailsModal = ({ job, onClose }: { job: any, onClose: () => void }) =>
   if (!job) return null;
 
   return (
-    <motion.div 
+    <motion.div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
     >
-      <motion.div 
+      <motion.div
         className="bg-white rounded-xl p-6 max-w-lg w-full shadow-xl relative"
         initial={{ scale: 0.9 }}
         animate={{ scale: 1 }}
       >
-        <button 
-          onClick={onClose} 
+        <button
+          onClick={onClose}
           className="absolute top-2 right-2 text-gray-500 hover:text-black"
         >
           <X />

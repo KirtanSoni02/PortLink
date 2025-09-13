@@ -38,7 +38,7 @@ const PortDashboardHeader: React.FC<PortDashboardHeaderProps> = ({ portData, onM
           >
             <Menu className="w-6 h-6 text-slate-600" />
           </button>
-          
+
           <Link to="/" className="flex items-center space-x-3">
             <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-sky-500 to-emerald-500 rounded-full">
               <Anchor className="w-6 h-6 text-white" />
@@ -103,9 +103,9 @@ const PortDashboardHeader: React.FC<PortDashboardHeaderProps> = ({ portData, onM
                     <div className="text-sm text-slate-500">{portData.email}</div>
                     <div className="text-xs text-blue-600 mt-1">{portData.portName}</div>
                   </div>
-                  
+
                   <div className="py-2">
-                   
+
                     <Link
                       to="/"
                       className="flex items-center space-x-3 w-full px-4 py-2 text-left hover:bg-slate-50 transition-colors"

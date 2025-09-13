@@ -40,7 +40,7 @@ interface SailorData {
     progress: number;
     salary: number;
     startDate: string;
-    
+
   };
   currentShip?: {
     id: string;
@@ -50,8 +50,8 @@ interface SailorData {
     capacity: string;
     departureTime: string;
     arrivalTime: string;
-    weather:string;
-    createdBy : string;
+    weather: string;
+    createdBy: string;
     ContactdetailsOfPortAuthority: string;
   };
 }
@@ -67,51 +67,51 @@ const SailorDashboard: React.FC = () => {
 
 
 
-// State and effect for loading real data
-const [sailorData, setSailorData] = useState<SailorData | null>(null);
-const [loading, setLoading] = useState(true);
-const API_URL = import.meta.env.VITE_API_URL;
+  // State and effect for loading real data
+  const [sailorData, setSailorData] = useState<SailorData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const API_URL = import.meta.env.VITE_API_URL;
 
 
-useEffect(() => {
-  const fetchSailorData = async () => {
-    try {
-      const token = localStorage.getItem("token"); // or however you store auth
-      const response = await axios.get(`${API_URL}/api/sailor/dashboard`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      console.log("Sailor data: ",response.data)
-      setSailorData(response.data);
-    } catch (error) {
-      console.error("❌ Failed to fetch sailor dashboard data:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  fetchSailorData();
-}, []);
-
-
-useEffect(() => {
-  if (sailorData?.currentShip?.id) {
-    const watchId = navigator.geolocation.watchPosition((position) => {
-      const { latitude, longitude } = position.coords;
-      console.log(position)
-      socket.emit("sailorLocationUpdate", {
-        shipId: sailorData.currentShip!.id, // '!' tells TypeScript you're sure it's not undefined
-        latitude,
-        longitude,
-      });
-    });
-
-    return () => {
-      navigator.geolocation.clearWatch(watchId);
+  useEffect(() => {
+    const fetchSailorData = async () => {
+      try {
+        const token = localStorage.getItem("token"); // or however you store auth
+        const response = await axios.get(`${API_URL}/api/sailor/dashboard`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        console.log("Sailor data: ", response.data)
+        setSailorData(response.data);
+      } catch (error) {
+        console.error("❌ Failed to fetch sailor dashboard data:", error);
+      } finally {
+        setLoading(false);
+      }
     };
-  }
-}, [sailorData]);
+
+    fetchSailorData();
+  }, []);
+
+
+  useEffect(() => {
+    if (sailorData?.currentShip?.id) {
+      const watchId = navigator.geolocation.watchPosition((position) => {
+        const { latitude, longitude } = position.coords;
+        console.log(position)
+        socket.emit("sailorLocationUpdate", {
+          shipId: sailorData.currentShip!.id, // '!' tells TypeScript you're sure it's not undefined
+          latitude,
+          longitude,
+        });
+      });
+
+      return () => {
+        navigator.geolocation.clearWatch(watchId);
+      };
+    }
+  }, [sailorData]);
 
 
 
@@ -123,14 +123,14 @@ useEffect(() => {
 
   const renderActiveSection = () => {
     if (loading) return <div className="text-center mt-10">Loading dashboard...</div>;
-if (!sailorData) return <div className="text-center mt-10 text-red-500">Failed to load dashboard data.</div>;
+    if (!sailorData) return <div className="text-center mt-10 text-red-500">Failed to load dashboard data.</div>;
 
     switch (activeSection) {
       case 'dashboard':
         return (
           <div className="space-y-8">
             <StatusOverview sailorData={sailorData} />
-           
+
 
             <AvailableShipments sailorData={sailorData} limit={2} />
             {sailorData.currentShip && <ShipDetails ship={sailorData.currentShip} />}
@@ -148,59 +148,59 @@ if (!sailorData) return <div className="text-center mt-10 text-red-500">Failed t
   };
 
   return (
-  <div className="min-h-screen bg-slate-50">
-    {/* Render nothing until sailorData is loaded */}
-    {!sailorData ? (
-      <div className="flex items-center justify-center h-screen">
-        <p className="text-slate-500 text-lg animate-pulse">Loading dashboard...</p>
-      </div>
-    ) : (
-      <>
-        {/* Header */}
-        <DashboardHeader 
-          sailorData={{
-            name: sailorData.name,
-            email: sailorData.email,
-            rating: sailorData.rating
-          }}
-          onMenuClick={() => setSidebarOpen(!sidebarOpen)}
-        />
-
-        <div className="flex">
-          {/* Sidebar */}
-          <DashboardSidebar
-            activeSection={activeSection}
-            onSectionChange={setActiveSection}
-            isOpen={sidebarOpen}
-            onClose={() => setSidebarOpen(false)}
-          />
-
-          {/* Main Content */}
-          <main className="flex-1 lg:ml-64 pt-16">
-            <div className="p-6">
-              <motion.div
-                key={activeSection}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-              >
-                {renderActiveSection()}
-              </motion.div>
-            </div>
-          </main>
+    <div className="min-h-screen bg-slate-50">
+      {/* Render nothing until sailorData is loaded */}
+      {!sailorData ? (
+        <div className="flex items-center justify-center h-screen">
+          <p className="text-slate-500 text-lg animate-pulse">Loading dashboard...</p>
         </div>
-
-        {/* Mobile sidebar overlay */}
-        {sidebarOpen && (
-          <div 
-            className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
-            onClick={() => setSidebarOpen(false)}
+      ) : (
+        <>
+          {/* Header */}
+          <DashboardHeader
+            sailorData={{
+              name: sailorData.name,
+              email: sailorData.email,
+              rating: sailorData.rating
+            }}
+            onMenuClick={() => setSidebarOpen(!sidebarOpen)}
           />
-        )}
-      </>
-    )}
-  </div>
-);
+
+          <div className="flex">
+            {/* Sidebar */}
+            <DashboardSidebar
+              activeSection={activeSection}
+              onSectionChange={setActiveSection}
+              isOpen={sidebarOpen}
+              onClose={() => setSidebarOpen(false)}
+            />
+
+            {/* Main Content */}
+            <main className="flex-1 lg:ml-64 pt-16">
+              <div className="p-6">
+                <motion.div
+                  key={activeSection}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  {renderActiveSection()}
+                </motion.div>
+              </div>
+            </main>
+          </div>
+
+          {/* Mobile sidebar overlay */}
+          {sidebarOpen && (
+            <div
+              className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+              onClick={() => setSidebarOpen(false)}
+            />
+          )}
+        </>
+      )}
+    </div>
+  );
 
 };
 

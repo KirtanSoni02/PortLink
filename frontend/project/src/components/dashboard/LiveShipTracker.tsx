@@ -370,12 +370,6 @@ const LiveShipTracker: React.FC<LiveShipTrackerProps> = ({ ships }) => {
                     </div>
 
                     {/* Map Placeholder */}
-                    {/* <motion.div
-  initial={{ opacity: 0, y: 20 }}
-  animate={{ opacity: 1, y: 0 }}
-  transition={{ delay: 0.4 }}
-  className="lg:col-span-2 bg-white rounded-2xl p-6 shadow-lg border border-slate-200"
-> */}
 
                     <h3 className="text-xl font-semibold text-slate-800 mb-4 mt-6 flex items-center">
                       <Navigation className="w-6 h-6 mr-3 text-blue-500" />
@@ -384,11 +378,6 @@ const LiveShipTracker: React.FC<LiveShipTrackerProps> = ({ ships }) => {
 
                     {/* Leaflet Map Container */}
                     <div className="rounded-xl overflow-hidden border border-blue-100 shadow-inner">
-                      {/* <LiveMap
-  shipId={ship._id}
-  sourceCoords={getPortCoords(ship.source || '')}
-  destinationCoords={getPortCoords(ship.destination || '')}
-/> */}
 
                       <MapContainer
                         center={[20, 0]} // Initial map center

@@ -8,7 +8,7 @@ const connectDB = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URI, {
       useNewUrlParser: true,
-      useUnifiedTopology: true
+      useUnifiedTopology: true,
     });
     console.log("✅ MongoDB connected");
   } catch (err) {
@@ -36,7 +36,7 @@ const seedJobPosts = async () => {
         status: "active",
         crewAssigned: [],
         applicationsCount: 5,
-        createdDate: new Date("2025-07-01")
+        createdDate: new Date("2025-07-01"),
       },
       {
         createdBy: portAuthorityId,
@@ -47,12 +47,9 @@ const seedJobPosts = async () => {
         departureDate: new Date("2025-07-15"),
         cargoType: "General Cargo",
         status: "filled",
-        crewAssigned: [
-          "64a1cc3e2edcf9ab98765432",
-          "64a1cc3e2edcf9ab98765433"
-        ],
+        crewAssigned: ["64a1cc3e2edcf9ab98765432", "64a1cc3e2edcf9ab98765433"],
         applicationsCount: 12,
-        createdDate: new Date("2025-06-28")
+        createdDate: new Date("2025-06-28"),
       },
       {
         createdBy: portAuthorityId,
@@ -65,8 +62,8 @@ const seedJobPosts = async () => {
         status: "expired",
         crewAssigned: [],
         applicationsCount: 3,
-        createdDate: new Date("2025-06-25")
-      }
+        createdDate: new Date("2025-06-25"),
+      },
     ];
 
     // await JobPost.deleteMany(); // optional: clears old data

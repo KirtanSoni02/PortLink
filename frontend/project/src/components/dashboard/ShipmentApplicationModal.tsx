@@ -130,7 +130,7 @@ const ShipmentApplicationModal: React.FC<ShipmentApplicationModalProps> = ({
 
   // const handleSubmit = async (e: React.FormEvent) => {
   //   e.preventDefault();
-    
+
   //   if (!validateForm()) {
   //     return;
   //   }
@@ -176,59 +176,59 @@ const ShipmentApplicationModal: React.FC<ShipmentApplicationModalProps> = ({
   // };
 
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (!validateForm()) {
-    return;
-  }
+    if (!validateForm()) {
+      return;
+    }
 
-  setIsSubmitting(true);
+    setIsSubmitting(true);
 
-  try {
-    const token = localStorage.getItem("token");
-    // Build the application payload
-    const applicationData = {
-      shipmentId: shipment.id
-    };
+    try {
+      const token = localStorage.getItem("token");
+      // Build the application payload
+      const applicationData = {
+        shipmentId: shipment.id
+      };
 
-    await axios.post(
-      "${API_URL}/api/sailor/jobposts/assign-crew",
-      applicationData,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
+      await axios.post(
+        "${API_URL}/api/sailor/jobposts/assign-crew",
+        applicationData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
         }
-      }
-    );
+      );
 
-    setSubmitSuccess(true);
-    setIsSubmitting(false);
+      setSubmitSuccess(true);
+      setIsSubmitting(false);
 
-    setTimeout(() => {
-      setSubmitSuccess(false);
-      onClose();
-      setFormData({
-        personalMessage: '',
-        availabilityDate: '',
-        relevantExperience: '',
-        certifications: '',
-        emergencyContact: '',
-        emergencyPhone: '',
-        medicalCertification: '',
-        passportNumber: '',
-        visaStatus: ''
-      });
-    }, 1500);
-  } catch (error) {
-    setIsSubmitting(false);
-    alert("Failed to submit application. Please try again.");
-  }
-};
+      setTimeout(() => {
+        setSubmitSuccess(false);
+        onClose();
+        setFormData({
+          personalMessage: '',
+          availabilityDate: '',
+          relevantExperience: '',
+          certifications: '',
+          emergencyContact: '',
+          emergencyPhone: '',
+          medicalCertification: '',
+          passportNumber: '',
+          visaStatus: ''
+        });
+      }, 1500);
+    } catch (error) {
+      setIsSubmitting(false);
+      alert("Failed to submit application. Please try again.");
+    }
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    
+
     // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: undefined }));
@@ -277,7 +277,7 @@ const ShipmentApplicationModal: React.FC<ShipmentApplicationModalProps> = ({
                 </div>
                 <h3 className="text-2xl font-bold text-slate-800 mb-4">Application Submitted!</h3>
                 <p className="text-slate-600 mb-6">
-                  Your application has been successfully submitted to {shipment.company}. 
+                  Your application has been successfully submitted to {shipment.company}.
                   You will receive a notification once they review your application.
                 </p>
                 <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
@@ -330,9 +330,8 @@ const ShipmentApplicationModal: React.FC<ShipmentApplicationModalProps> = ({
                       value={formData.personalMessage}
                       onChange={handleInputChange}
                       rows={4}
-                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300 ${
-                        errors.personalMessage ? 'border-red-500 bg-red-50' : 'border-slate-300'
-                      }`}
+                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300 ${errors.personalMessage ? 'border-red-500 bg-red-50' : 'border-slate-300'
+                        }`}
                       placeholder="Tell the company why you're the right fit for this shipment. Include your relevant experience and motivation..."
                     />
                     <div className="flex justify-between items-center mt-1">
@@ -357,9 +356,8 @@ const ShipmentApplicationModal: React.FC<ShipmentApplicationModalProps> = ({
                       value={formData.availabilityDate}
                       onChange={handleInputChange}
                       min={new Date().toISOString().split('T')[0]}
-                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300 ${
-                        errors.availabilityDate ? 'border-red-500 bg-red-50' : 'border-slate-300'
-                      }`}
+                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300 ${errors.availabilityDate ? 'border-red-500 bg-red-50' : 'border-slate-300'
+                        }`}
                     />
                     {errors.availabilityDate && (
                       <p className="mt-1 text-sm text-red-600">{errors.availabilityDate}</p>
@@ -367,7 +365,7 @@ const ShipmentApplicationModal: React.FC<ShipmentApplicationModalProps> = ({
                   </div>
 
                   {/* Expected Salary */}
-                  
+
 
                   {/* Relevant Experience */}
                   <div className="lg:col-span-2">
@@ -380,9 +378,8 @@ const ShipmentApplicationModal: React.FC<ShipmentApplicationModalProps> = ({
                       value={formData.relevantExperience}
                       onChange={handleInputChange}
                       rows={3}
-                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300 ${
-                        errors.relevantExperience ? 'border-red-500 bg-red-50' : 'border-slate-300'
-                      }`}
+                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300 ${errors.relevantExperience ? 'border-red-500 bg-red-50' : 'border-slate-300'
+                        }`}
                       placeholder="Describe your relevant maritime experience, similar routes, cargo types, etc."
                     />
                     {errors.relevantExperience && (
@@ -401,9 +398,8 @@ const ShipmentApplicationModal: React.FC<ShipmentApplicationModalProps> = ({
                       value={formData.certifications}
                       onChange={handleInputChange}
                       rows={2}
-                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300 ${
-                        errors.certifications ? 'border-red-500 bg-red-50' : 'border-slate-300'
-                      }`}
+                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300 ${errors.certifications ? 'border-red-500 bg-red-50' : 'border-slate-300'
+                        }`}
                       placeholder="List your maritime certifications (STCW, Medical First Aid, etc.)"
                     />
                     {errors.certifications && (
@@ -422,9 +418,8 @@ const ShipmentApplicationModal: React.FC<ShipmentApplicationModalProps> = ({
                       name="emergencyContact"
                       value={formData.emergencyContact}
                       onChange={handleInputChange}
-                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300 ${
-                        errors.emergencyContact ? 'border-red-500 bg-red-50' : 'border-slate-300'
-                      }`}
+                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300 ${errors.emergencyContact ? 'border-red-500 bg-red-50' : 'border-slate-300'
+                        }`}
                       placeholder="Full name of emergency contact"
                     />
                     {errors.emergencyContact && (
@@ -443,9 +438,8 @@ const ShipmentApplicationModal: React.FC<ShipmentApplicationModalProps> = ({
                       name="emergencyPhone"
                       value={formData.emergencyPhone}
                       onChange={handleInputChange}
-                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300 ${
-                        errors.emergencyPhone ? 'border-red-500 bg-red-50' : 'border-slate-300'
-                      }`}
+                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300 ${errors.emergencyPhone ? 'border-red-500 bg-red-50' : 'border-slate-300'
+                        }`}
                       placeholder="+1 (555) 123-4567"
                     />
                     {errors.emergencyPhone && (
@@ -463,9 +457,8 @@ const ShipmentApplicationModal: React.FC<ShipmentApplicationModalProps> = ({
                       name="medicalCertification"
                       value={formData.medicalCertification}
                       onChange={handleInputChange}
-                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300 ${
-                        errors.medicalCertification ? 'border-red-500 bg-red-50' : 'border-slate-300'
-                      }`}
+                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300 ${errors.medicalCertification ? 'border-red-500 bg-red-50' : 'border-slate-300'
+                        }`}
                     >
                       <option value="">Select status</option>
                       <option value="valid">Valid and Current</option>
@@ -488,9 +481,8 @@ const ShipmentApplicationModal: React.FC<ShipmentApplicationModalProps> = ({
                       name="passportNumber"
                       value={formData.passportNumber}
                       onChange={handleInputChange}
-                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300 ${
-                        errors.passportNumber ? 'border-red-500 bg-red-50' : 'border-slate-300'
-                      }`}
+                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300 ${errors.passportNumber ? 'border-red-500 bg-red-50' : 'border-slate-300'
+                        }`}
                       placeholder="Passport number"
                     />
                     {errors.passportNumber && (
@@ -508,9 +500,8 @@ const ShipmentApplicationModal: React.FC<ShipmentApplicationModalProps> = ({
                       name="visaStatus"
                       value={formData.visaStatus}
                       onChange={handleInputChange}
-                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300 ${
-                        errors.visaStatus ? 'border-red-500 bg-red-50' : 'border-slate-300'
-                      }`}
+                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300 ${errors.visaStatus ? 'border-red-500 bg-red-50' : 'border-slate-300'
+                        }`}
                     >
                       <option value="">Select visa status</option>
                       <option value="citizen">Citizen</option>

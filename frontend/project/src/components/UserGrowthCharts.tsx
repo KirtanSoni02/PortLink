@@ -90,33 +90,33 @@ const UserGrowthCharts: React.FC = () => {
                 <span className="text-sm text-slate-600">Growing</span>
               </div>
             </div>
-            
+
             <ResponsiveContainer width="100%" height={300}>
               <AreaChart data={monthlyGrowthData}>
                 <defs>
                   <linearGradient id="colorUsers" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#3B82F6" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#3B82F6" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
                 <XAxis dataKey="month" stroke="#64748B" />
                 <YAxis stroke="#64748B" />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: 'white', 
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: 'white',
                     border: '1px solid #E2E8F0',
                     borderRadius: '8px',
                     boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                  }} 
+                  }}
                 />
-                <Area 
-                  type="monotone" 
-                  dataKey="users" 
-                  stroke="#3B82F6" 
+                <Area
+                  type="monotone"
+                  dataKey="users"
+                  stroke="#3B82F6"
                   strokeWidth={3}
-                  fillOpacity={1} 
-                  fill="url(#colorUsers)" 
+                  fillOpacity={1}
+                  fill="url(#colorUsers)"
                 />
               </AreaChart>
             </ResponsiveContainer>
@@ -131,19 +131,19 @@ const UserGrowthCharts: React.FC = () => {
             className="bg-white rounded-2xl p-6 shadow-lg border border-slate-200"
           >
             <h3 className="text-2xl font-bold text-slate-800 mb-6">User Categories</h3>
-            
+
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={monthlyGrowthData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
                 <XAxis dataKey="month" stroke="#64748B" />
                 <YAxis stroke="#64748B" />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: 'white', 
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: 'white',
                     border: '1px solid #E2E8F0',
                     borderRadius: '8px',
                     boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                  }} 
+                  }}
                 />
                 <Line type="monotone" dataKey="sailors" stroke="#10B981" strokeWidth={3} dot={{ fill: '#10B981', strokeWidth: 2, r: 4 }} />
                 <Line type="monotone" dataKey="ports" stroke="#8B5CF6" strokeWidth={3} dot={{ fill: '#8B5CF6', strokeWidth: 2, r: 4 }} />
@@ -176,19 +176,19 @@ const UserGrowthCharts: React.FC = () => {
             className="bg-white rounded-2xl p-6 shadow-lg border border-slate-200 lg:col-span-2"
           >
             <h3 className="text-2xl font-bold text-slate-800 mb-6">Weekly Activity Overview</h3>
-            
+
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={dailyActivityData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
                 <XAxis dataKey="day" stroke="#64748B" />
                 <YAxis stroke="#64748B" />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: 'white', 
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: 'white',
                     border: '1px solid #E2E8F0',
                     borderRadius: '8px',
                     boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                  }} 
+                  }}
                 />
                 <Bar dataKey="active" fill="#3B82F6" radius={[4, 4, 0, 0]} />
                 <Bar dataKey="transactions" fill="#10B981" radius={[4, 4, 0, 0]} />

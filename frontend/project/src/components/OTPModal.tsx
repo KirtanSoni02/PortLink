@@ -22,7 +22,7 @@ const OTPModal: React.FC<OTPModalProps> = ({ isOpen, onClose, email, onVerify, o
       const timer = setInterval(() => {
         setCountdown(prev => Math.max(0, prev - 1));
       }, 1000);
-      
+
       return () => clearInterval(timer);
     }
   }, [isOpen]);
@@ -36,12 +36,12 @@ const OTPModal: React.FC<OTPModalProps> = ({ isOpen, onClose, email, onVerify, o
 
     setIsLoading(true);
     setError('');
-    
+
     const isValid = await onVerify(otp);
     if (!isValid) {
       setError('Invalid OTP. Please try again.');
     }
-    
+
     setIsLoading(false);
   };
 
@@ -99,9 +99,8 @@ const OTPModal: React.FC<OTPModalProps> = ({ isOpen, onClose, email, onVerify, o
               type="button"
               onClick={handleResend}
               disabled={countdown > 0}
-              className={`text-sm ${
-                countdown > 0 ? 'text-gray-400' : 'text-blue-600 hover:text-blue-800'
-              }`}
+              className={`text-sm ${countdown > 0 ? 'text-gray-400' : 'text-blue-600 hover:text-blue-800'
+                }`}
             >
               {countdown > 0 ? `Resend in ${countdown}s` : 'Resend OTP'}
             </button>

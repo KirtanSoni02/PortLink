@@ -1,15 +1,20 @@
-import express from 'express';
-import { getSailorDashboardData ,updateSailorProfile, getAvailableShipments,getContractHistory} from '../controllers/sailorController.js';
-import verifyToken from '../middlewares/authmiddleware.js'; // Ensure this middleware is defined
-import SailorModel from '../models/Sailor.model.js';
-import JobPost from '../models/JobPost.model.js';
+import express from "express";
+import {
+  getSailorDashboardData,
+  updateSailorProfile,
+  getAvailableShipments,
+  getContractHistory,
+} from "../controllers/sailorController.js";
+import verifyToken from "../middlewares/authmiddleware.js"; // Ensure this middleware is defined
+import SailorModel from "../models/Sailor.model.js";
+import JobPost from "../models/JobPost.model.js";
 
 const router = express.Router();
 
-router.get('/dashboard', verifyToken, getSailorDashboardData);
-router.put('/edit-profile', verifyToken, updateSailorProfile);
-router.get('/available-shipments', verifyToken, getAvailableShipments);
-router.get('/contractshistory/:sailorId', verifyToken, getContractHistory);
+router.get("/dashboard", verifyToken, getSailorDashboardData);
+router.put("/edit-profile", verifyToken, updateSailorProfile);
+router.get("/available-shipments", verifyToken, getAvailableShipments);
+router.get("/contractshistory/:sailorId", verifyToken, getContractHistory);
 router.post("/jobposts/assign-crew", verifyToken, async (req, res) => {
   const { shipmentId } = req.body;
   try {
@@ -26,7 +31,9 @@ router.post("/jobposts/assign-crew", verifyToken, async (req, res) => {
 
     // Prevent duplicate assignment
     if (jobPost.crewAssigned.includes(sailor._id)) {
-      return res.status(400).json({ error: "Sailor already assigned to this job" });
+      return res
+        .status(400)
+        .json({ error: "Sailor already assigned to this job" });
     }
 
     // Add sailor to crewAssigned

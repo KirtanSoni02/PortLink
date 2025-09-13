@@ -22,7 +22,7 @@ const Footer: React.FC = () => {
               <span className="text-2xl font-bold">PortLink</span>
             </div>
             <p className="text-slate-300 mb-6 leading-relaxed">
-              Connecting sailors, ports, and services through a real-time digital platform. 
+              Connecting sailors, ports, and services through a real-time digital platform.
               The future of maritime operations starts here.
             </p>
             <div className="flex space-x-4">
@@ -47,21 +47,21 @@ const Footer: React.FC = () => {
             viewport={{ once: true }}
           >
             <h3 className="text-xl font-bold mb-6">Quick Links</h3>
-        
 
-<ul className="space-y-3">
-  {['About Us', 'Features', 'How It Works', 'Statistics', 'Support', 'Blog'].map((link) => (
-    <li key={link}>
-      <HashLink
-        smooth
-        to={`/#${link.toLowerCase().replace(/\s+/g, '-')}`}
-        className="text-slate-300 hover:text-sky-400 transition-colors duration-300 hover:translate-x-1 inline-block"
-      >
-        {link}
-      </HashLink>
-    </li>
-  ))}
-</ul>
+
+            <ul className="space-y-3">
+              {['About Us', 'Features', 'How It Works', 'Statistics', 'Support', 'Blog'].map((link) => (
+                <li key={link}>
+                  <HashLink
+                    smooth
+                    to={`/#${link.toLowerCase().replace(/\s+/g, '-')}`}
+                    className="text-slate-300 hover:text-sky-400 transition-colors duration-300 hover:translate-x-1 inline-block"
+                  >
+                    {link}
+                  </HashLink>
+                </li>
+              ))}
+            </ul>
 
           </motion.div>
 
@@ -74,22 +74,22 @@ const Footer: React.FC = () => {
           >
             <h3 className="text-xl font-bold mb-6">Services</h3>
             <ul className="space-y-3">
-  {[
-    'Port Management',
-    'Real-Time Tracking',
-    'Digital Contracts',
-    'Service Marketplace',
-    'Analytics',
-    'Mobile App'
-  ].map((service) => (
-    <li
-      key={service}
-      className="text-slate-300 hover:text-sky-400 transition-colors duration-300 hover:translate-x-1"
-    >
-      {service}
-    </li>
-  ))}
-</ul>
+              {[
+                'Port Management',
+                'Real-Time Tracking',
+                'Digital Contracts',
+                'Service Marketplace',
+                'Analytics',
+                'Mobile App'
+              ].map((service) => (
+                <li
+                  key={service}
+                  className="text-slate-300 hover:text-sky-400 transition-colors duration-300 hover:translate-x-1"
+                >
+                  {service}
+                </li>
+              ))}
+            </ul>
 
           </motion.div>
 

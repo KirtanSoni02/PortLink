@@ -84,7 +84,6 @@
 // src/components/GoogleAuthButton.tsx
 import React from 'react';
 import { useGoogleLogin } from '@react-oauth/google';
-import { Chrome } from 'lucide-react';
 import axios from 'axios';
 
 interface GoogleAuthButtonProps {
@@ -153,7 +152,8 @@ const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
       className="w-full flex justify-center py-3 px-4 border border-slate-300 rounded-lg shadow-sm bg-white text-slate-700 font-medium hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 transition-all duration-300"
     >
       <div className="flex items-center">
-        <Chrome className="h-5 w-5 mr-2 text-slate-500" />
+        {/* <Chrome className="h-5 w-5 mr-2 text-slate-500" /> */}
+        <img src="../images/google.png" alt="Google Logo" className="w-5 h-5 mr-2" />
         Continue with Google
       </div>
     </button>

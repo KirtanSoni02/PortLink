@@ -21,10 +21,10 @@ interface JobPost {
 
 interface JobPostsManagementProps {
   jobPosts: JobPost[];
-  onDeleteJob: (jobId: string) => void; 
+  onDeleteJob: (jobId: string) => void;
 }
 
-const JobPostsManagement: React.FC<JobPostsManagementProps> = ({ jobPosts, onDeleteJob}) => {
+const JobPostsManagement: React.FC<JobPostsManagementProps> = ({ jobPosts, onDeleteJob }) => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'active': return 'bg-emerald-100 text-emerald-700 border-emerald-200';
@@ -36,24 +36,24 @@ const JobPostsManagement: React.FC<JobPostsManagementProps> = ({ jobPosts, onDel
 
 
 
-const [selectedJob, setSelectedJob] = useState(null);
-const API_URL = import.meta.env.VITE_API_URL;
-const handleViewApplications = async (jobId: string) => {
-  try {
-    const token = localStorage.getItem("token");
-    const response = await axios.get(`${API_URL}/api/activejob/view/${jobId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    console.log("Job post details:", response.data);
-    setSelectedJob(response.data);
-  } catch (err) {
-    console.error("Failed to fetch job post details", err);
-  }
-};
+  const [selectedJob, setSelectedJob] = useState(null);
+  const API_URL = import.meta.env.VITE_API_URL;
+  const handleViewApplications = async (jobId: string) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get(`${API_URL}/api/activejob/view/${jobId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log("Job post details:", response.data);
+      setSelectedJob(response.data);
+    } catch (err) {
+      console.error("Failed to fetch job post details", err);
+    }
+  };
 
-const closeModal = () => setSelectedJob(null);
+  const closeModal = () => setSelectedJob(null);
 
 
 
@@ -65,7 +65,7 @@ const closeModal = () => setSelectedJob(null);
   };
 
 
-   const handleDeleteJob = async (jobId: string) => {
+  const handleDeleteJob = async (jobId: string) => {
     try {
       const token = localStorage.getItem("token");
       await axios.delete(`${API_URL}/api/activejob/delete/${jobId}`, {
@@ -82,8 +82,8 @@ const closeModal = () => setSelectedJob(null);
       toast.error("Failed to delete job post");
     }
   };
-    
-  
+
+
 
 
 
@@ -119,7 +119,7 @@ const closeModal = () => setSelectedJob(null);
                     </span>
                   )}
                 </div>
-                
+
                 <div className="space-y-2">
                   <div className="flex items-center space-x-2 text-sm">
                     <MapPin className="w-3 h-3 text-emerald-500" />
@@ -127,7 +127,7 @@ const closeModal = () => setSelectedJob(null);
                     <span className="text-slate-400">→</span>
                     <span className="text-slate-600">{job.destinationPort}</span>
                   </div>
-                  
+
                   <div className="flex items-center space-x-4 text-xs text-slate-500">
                     <div className="flex items-center space-x-1">
                       <Users className="w-3 h-3" />
@@ -138,7 +138,7 @@ const closeModal = () => setSelectedJob(null);
                       <span>{job.salaryOffered.toLocaleString()}</span>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center space-x-1 text-xs text-slate-500">
                     <Calendar className="w-3 h-3" />
                     <span>Departs: {new Date(job.departureDate).toLocaleDateString()}</span>
@@ -149,15 +149,15 @@ const closeModal = () => setSelectedJob(null);
 
             <div className="flex space-x-2">
               <motion.button
-  whileHover={{ scale: 1.05 }}
-  whileTap={{ scale: 0.95 }}
-  onClick={() => handleViewApplications(job.id)}
-  className="flex items-center space-x-1 px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors"
->
-  <Eye className="w-3 h-3" />
-  <span>View</span>
-</motion.button>
-                {selectedJob && <JobDetailsModal job={selectedJob} onClose={closeModal} />}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => handleViewApplications(job.id)}
+                className="flex items-center space-x-1 px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors"
+              >
+                <Eye className="w-3 h-3" />
+                <span>View</span>
+              </motion.button>
+              {selectedJob && <JobDetailsModal job={selectedJob} onClose={closeModal} />}
 
               {/* <motion.button
                 whileHover={{ scale: 1.05 }}
@@ -168,7 +168,7 @@ const closeModal = () => setSelectedJob(null);
                 <Edit className="w-3 h-3" />
                 <span>Edit</span>
               </motion.button> */}
-              
+
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -190,7 +190,7 @@ const closeModal = () => setSelectedJob(null);
         </div>
       )}
     </motion.div>
-    
+
   );
 
 };
