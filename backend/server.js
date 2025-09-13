@@ -18,7 +18,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cors({
-  origin: "https://portlink-realtime-marine-operations-and.onrender.com",
+  origin: ["https://portlink-realtime-marine-operations-and.onrender.com","http://localhost:5173"],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
