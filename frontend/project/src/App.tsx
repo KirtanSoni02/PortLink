@@ -13,6 +13,7 @@ import Login from './components/Login';
 import Register from './components/Register';
 import SailorDashboard from './components/dashboard/SailorDashboard';
 import PortAuthorityDashboard from './components/dashboard/PortAuthorityDashboard';
+import AIAssistantChat from './components/AIAssistantChat';
 
 const HomePage: React.FC = () => {
   return (
@@ -41,6 +42,7 @@ function App() {
         <Route path="/dashboard/port-authority" element={<PortAuthorityDashboard />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      <AIAssistantChat />
     </Router>
   );
 }
