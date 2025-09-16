@@ -175,6 +175,8 @@ const ShipmentApplicationModal: React.FC<ShipmentApplicationModalProps> = ({
   //   }, 2000);
   // };
 
+const API_URL = import.meta.env.VITE_API_URL;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -190,9 +192,19 @@ const ShipmentApplicationModal: React.FC<ShipmentApplicationModalProps> = ({
       const applicationData = {
         shipmentId: shipment.id
       };
+      const payload = {
+      shipmentId: shipment.id,
+      sailorEmail: sailorData.email,
+      sailorName: sailorData.name,
+      sailorPhone: sailorData.phone,
+      sailorExperience: sailorData.experience,
+      sailorRating: sailorData.rating,
+      ...formData
+    };
 
-      await axios.post(
-        "${API_URL}/api/sailor/jobposts/assign-crew",
+    await axios.post(`${API_URL}/api/shipment-applications/apply`, payload);
+    await axios.post(
+        `${API_URL}/api/sailor/jobposts/assign-crew`,
         applicationData,
         {
           headers: {
