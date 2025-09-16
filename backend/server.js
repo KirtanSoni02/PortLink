@@ -14,6 +14,7 @@ import sailorRoutes from "./routes/sailorroutes.js";
 import http from "http";
 import { Server } from "socket.io";
 import { updateSailorLocation } from "./controllers/shipController.js"; // your location logic
+import shipmentApplicationsRoutes from "./routes/shipmentApplication.js";
 import aiRoutes from "./routes/ai.js";
 await connectDB();
 
@@ -38,6 +39,7 @@ app.use("/api/ship", shipRoutes);
 app.use("/api/activejob", activeJobRoutes);
 app.use("/api/contract", completedContractRoutes);
 app.use("/api/sailor", sailorRoutes);
+app.use("/api/shipment-applications", shipmentApplicationsRoutes);
 app.use("/api/ai", aiRoutes);
 app.get("/", (req, res) => {
   res.send("Welcome to the backend server!");
