@@ -9,9 +9,6 @@ import ContractHistory from './ContractHistory';
 import ProfileSettings from './ProfileSettings';
 import axios from 'axios';
 import socket from '../../socket.ts';
-import mongoose from 'mongoose';
-
-
 
 export type ActiveSection = 'dashboard' | 'contracts' | 'shipments' | 'profile';
 
@@ -40,7 +37,6 @@ interface SailorData {
     progress: number;
     salary: number;
     startDate: string;
-
   };
   currentShip?: {
     id: string;
@@ -59,33 +55,23 @@ interface SailorData {
 const SailorDashboard: React.FC = () => {
   const [activeSection, setActiveSection] = useState<ActiveSection>('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
-  // Mock sailor data - replace with API call
-
-
-
-
-
-
-  // State and effect for loading real data
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [sailorData, setSailorData] = useState<SailorData | null>(null);
   const [loading, setLoading] = useState(true);
   const API_URL = import.meta.env.VITE_API_URL;
 
-
   useEffect(() => {
     const fetchSailorData = async () => {
       try {
-        const token = localStorage.getItem("token"); // or however you store auth
+        const token = localStorage.getItem('token');
         const response = await axios.get(`${API_URL}/api/sailor/dashboard`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        console.log("Sailor data: ", response.data)
         setSailorData(response.data);
       } catch (error) {
-        console.error("❌ Failed to fetch sailor dashboard data:", error);
+        console.error('❌ Failed to fetch sailor dashboard data:', error);
       } finally {
         setLoading(false);
       }
@@ -94,14 +80,12 @@ const SailorDashboard: React.FC = () => {
     fetchSailorData();
   }, []);
 
-
   useEffect(() => {
     if (sailorData?.currentShip?.id) {
       const watchId = navigator.geolocation.watchPosition((position) => {
         const { latitude, longitude } = position.coords;
-        console.log(position)
-        socket.emit("sailorLocationUpdate", {
-          shipId: sailorData.currentShip!.id, // '!' tells TypeScript you're sure it's not undefined
+        socket.emit('sailorLocationUpdate', {
+          shipId: sailorData.currentShip!.id,
           latitude,
           longitude,
         });
@@ -113,14 +97,6 @@ const SailorDashboard: React.FC = () => {
     }
   }, [sailorData]);
 
-
-
-
-
-
-
-
-
   const renderActiveSection = () => {
     if (loading) return <div className="text-center mt-10">Loading dashboard...</div>;
     if (!sailorData) return <div className="text-center mt-10 text-red-500">Failed to load dashboard data.</div>;
@@ -130,8 +106,6 @@ const SailorDashboard: React.FC = () => {
         return (
           <div className="space-y-8">
             <StatusOverview sailorData={sailorData} />
-
-
             <AvailableShipments sailorData={sailorData} limit={2} />
             {sailorData.currentShip && <ShipDetails ship={sailorData.currentShip} />}
           </div>
@@ -148,11 +122,21 @@ const SailorDashboard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      {/* Render nothing until sailorData is loaded */}
+    <div className="min-h-screen bg-slate-50 dark:bg-black text-slate-900 dark:text-white transition-colors duration-300 relative overflow-x-hidden">
+      {/* Background Radar & Grid Overlay */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0 opacity-20">
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `linear-gradient(rgba(148, 163, 184, 0.12) 1px, transparent 1px), linear-gradient(90deg, rgba(148, 163, 184, 0.12) 1px, transparent 1px)`,
+            backgroundSize: '40px 40px',
+          }}
+        />
+      </div>
+
       {!sailorData ? (
-        <div className="flex items-center justify-center h-screen">
-          <p className="text-slate-500 text-lg animate-pulse">Loading dashboard...</p>
+        <div className="flex items-center justify-center h-screen relative z-10">
+          <p className="text-slate-500 dark:text-neutral-400 text-lg animate-pulse font-medium">Loading sailor dashboard...</p>
         </div>
       ) : (
         <>
@@ -161,28 +145,34 @@ const SailorDashboard: React.FC = () => {
             sailorData={{
               name: sailorData.name,
               email: sailorData.email,
-              rating: sailorData.rating
+              rating: sailorData.rating,
             }}
             onMenuClick={() => setSidebarOpen(!sidebarOpen)}
           />
 
-          <div className="flex">
+          <div className="flex relative z-10">
             {/* Sidebar */}
             <DashboardSidebar
               activeSection={activeSection}
               onSectionChange={setActiveSection}
               isOpen={sidebarOpen}
               onClose={() => setSidebarOpen(false)}
+              isCollapsed={isSidebarCollapsed}
+              onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
             />
 
             {/* Main Content */}
-            <main className="flex-1 lg:ml-64 pt-16">
-              <div className="p-6">
+            <main
+              className={`flex-1 min-w-0 w-full ${
+                isSidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'
+              } pt-16 transition-all duration-300`}
+            >
+              <div className="p-3 sm:p-6 lg:p-8 max-w-[1600px] mx-auto">
                 <motion.div
                   key={activeSection}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5 }}
+                  transition={{ duration: 0.4 }}
                 >
                   {renderActiveSection()}
                 </motion.div>
@@ -193,7 +183,7 @@ const SailorDashboard: React.FC = () => {
           {/* Mobile sidebar overlay */}
           {sidebarOpen && (
             <div
-              className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999] lg:hidden"
               onClick={() => setSidebarOpen(false)}
             />
           )}
@@ -201,7 +191,6 @@ const SailorDashboard: React.FC = () => {
       )}
     </div>
   );
-
 };
 
 export default SailorDashboard;

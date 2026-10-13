@@ -13,74 +13,80 @@ interface StepProps {
 const Step: React.FC<StepProps> = ({ step, icon, title, description, delay }) => {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 50 }}
+      initial={{ opacity: 0, y: 15 }}
       whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, delay }}
+      transition={{ duration: 0.4, delay }}
       viewport={{ once: true }}
-      className="relative text-center group"
+      className="h-full"
     >
-      {/* Step Number */}
-      <div className="absolute -top-4 -left-4 w-10 h-10 bg-gradient-to-br from-sky-500 to-emerald-500 text-white font-bold rounded-full flex items-center justify-center text-lg shadow-lg">
-        {step}
-      </div>
+      <div className="bg-white dark:bg-neutral-900 rounded-xl p-5 border border-slate-200 dark:border-neutral-800 h-full flex flex-col justify-between shadow-sm transition-colors">
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <div className="w-9 h-9 rounded-lg bg-slate-100 dark:bg-black border border-slate-200 dark:border-neutral-800 text-slate-900 dark:text-white flex items-center justify-center">
+              {icon}
+            </div>
+            <span className="text-[11px] font-bold text-slate-900 dark:text-white bg-slate-100 dark:bg-black px-2 py-0.5 rounded border border-slate-200 dark:border-neutral-800">
+              0{step}
+            </span>
+          </div>
 
-      {/* Card */}
-      <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 group-hover:-translate-y-2 border border-slate-100">
-        <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-sky-100 to-emerald-100 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-          {icon}
+          <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1 tracking-tight">
+            {title}
+          </h3>
+
+          <p className="text-slate-600 dark:text-neutral-400 text-xs leading-relaxed">
+            {description}
+          </p>
         </div>
-        <h3 className="text-2xl font-bold text-slate-800 mb-4">{title}</h3>
-        <p className="text-slate-600 leading-relaxed">{description}</p>
       </div>
-
-      {/* Connector Line (hidden on mobile, visible on larger screens) */}
-      {step < 3 && (
-        <div className="hidden lg:block absolute top-1/2 -right-16 w-32 h-0.5 bg-gradient-to-r from-sky-300 to-emerald-300"></div>
-      )}
     </motion.div>
   );
 };
 
 const HowItWorks: React.FC = () => {
   return (
-    <section className="py-20 bg-gradient-to-b from-white to-slate-50">
-      <div className="container mx-auto px-4">
+    <section id="how-it-works" className="py-10 md:py-16 bg-slate-50 dark:bg-black text-slate-900 dark:text-white border-b border-slate-200 dark:border-neutral-800 transition-colors duration-300">
+      <div className="container mx-auto px-4 max-w-6xl">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.4 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-center mb-8"
         >
-          <h2 className="text-4xl md:text-5xl font-bold text-slate-800 mb-4">
-            How It Works
+          <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-slate-200 dark:bg-neutral-900 border border-slate-300 dark:border-neutral-800 text-slate-800 dark:text-neutral-300 text-xs font-medium mb-2">
+            <span>Simple Workflow</span>
+          </div>
+
+          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
+            How PortLink Works
           </h2>
-          <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-            Get started with PortLink in three simple steps
+          <p className="text-slate-600 dark:text-neutral-400 text-xs sm:text-sm max-w-xl mx-auto mt-1">
+            Three simple steps to manage your maritime operations.
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-16 max-w-6xl mx-auto relative">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-6xl mx-auto">
           <Step
             step={1}
-            icon={<UserPlus className="w-12 h-12 text-sky-600" />}
-            title="Register & Choose Role"
-            description="Sign up and select your role - whether you're a sailor, port authority, or service provider. Complete your profile to get started."
-            delay={0.2}
+            icon={<UserPlus className="w-4 h-4" />}
+            title="Register & Profile"
+            description="Sign up as a Sailor or Port Authority Administrator to access your custom dashboard."
+            delay={0.1}
           />
           <Step
             step={2}
-            icon={<Search className="w-12 h-12 text-sky-600" />}
-            title="Discover & Connect"
-            description="Browse available port services, check availability, and connect with the right providers for your maritime needs."
-            delay={0.4}
+            icon={<Search className="w-4 h-4" />}
+            title="Track Telemetry & Ports"
+            description="Monitor live vessel movements, port berth schedules, and weather reports."
+            delay={0.2}
           />
           <Step
             step={3}
-            icon={<Handshake className="w-12 h-12 text-sky-600" />}
-            title="Contract & Operate"
-            description="Create digital contracts, schedule docking, and manage all your maritime operations seamlessly through our platform."
-            delay={0.6}
+            icon={<Handshake className="w-4 h-4" />}
+            title="Execute Contracts"
+            description="Manage digital crew contracts, berth allocations, and verified logbooks."
+            delay={0.3}
           />
         </div>
       </div>

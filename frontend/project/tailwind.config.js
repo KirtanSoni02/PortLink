@@ -6,5 +6,5 @@ export default {
   },
   plugins: [],
 
-  // darkMode: 'class', // Enable dark mode support
+  darkMode: 'class',
 };

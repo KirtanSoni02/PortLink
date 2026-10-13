@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Anchor, Eye, EyeOff, Mail, Lock } from 'lucide-react';
+import { Anchor, Eye, EyeOff, Mail, Lock, ArrowLeft, Sun, Moon } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 import GoogleAuthButton from './GoogleAuthButton';
+import { useTheme } from '../context/ThemeContext';
 
 interface FormErrors {
   email?: string;
@@ -12,6 +14,8 @@ interface FormErrors {
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme();
+
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -67,11 +71,11 @@ const Login: React.FC = () => {
         email: formData.email,
         password: formData.password
       });
-
-      alert('Login Successful');
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data));
+      toast.success('Login Successful! Welcome back.');
       const role = response.data.role;
 
-      // Navigate based on role
       if (role === 'sailor') {
         navigate('/dashboard/sailor');
       } else if (role === 'port') {
@@ -81,14 +85,8 @@ const Login: React.FC = () => {
       } else {
         navigate('/dashboard');
       }
-
-      // Store token for auth
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data));
-
-      console.log(response.data);
-    } catch (err) {
-      alert('Login failed');
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Login failed. Please check your credentials.');
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -101,7 +99,6 @@ const Login: React.FC = () => {
 
     const newErrors: FormErrors = { ...errors };
 
-    // Real-time validation for email
     if (name === 'email') {
       if (!value.trim()) {
         newErrors.email = 'Email is required';
@@ -114,7 +111,6 @@ const Login: React.FC = () => {
       }
     }
 
-    // Real-time validation for password
     if (name === 'password') {
       if (!value.trim()) {
         newErrors.password = 'Password is required';
@@ -129,13 +125,10 @@ const Login: React.FC = () => {
   };
 
   const handleGoogleSuccess = (response: any) => {
-    console.log("Google login response:", response);
-
     if (response.success) {
-      alert('Google Login Successful');
+      toast.success('Google Login Successful!');
       const role = response.user.role;
 
-      // Navigate based on role
       if (role === 'sailor') {
         navigate('/dashboard/sailor');
       } else if (role === 'port') {
@@ -146,59 +139,75 @@ const Login: React.FC = () => {
         navigate('/dashboard');
       }
 
-      // Store token for auth
       localStorage.setItem('token', response.token);
       localStorage.setItem('user', JSON.stringify(response.user));
     } else {
-      alert('Google login failed: ' + (response.error || 'Unknown error'));
+      toast.error('Google login failed: ' + (response.error || 'Unknown error'));
     }
   };
 
   const handleGoogleError = (error: any) => {
     console.error('Google authentication error:', error);
-    alert('Google authentication failed. Please try again.');
+    toast.error('Google authentication failed. Please try again.');
   };
 
   return (
-    <div className="min-h-screen flex">
-      {/* Left Side - Form */}
+    <div className="min-h-screen flex bg-slate-50 dark:bg-black text-slate-900 dark:text-white transition-colors duration-300">
+      {/* Left Side - Form Container */}
       <motion.div
-        initial={{ opacity: 0, x: -50 }}
+        initial={{ opacity: 0, x: -30 }}
         animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.8 }}
-        className="flex-1 flex items-center justify-center p-8 bg-gradient-to-br from-slate-50 to-white"
+        transition={{ duration: 0.6 }}
+        className="flex-1 flex flex-col justify-between p-6 sm:p-12 relative z-10"
       >
-        <div className="w-full max-w-md">
-          {/* Logo and Title */}
-          <motion.div
-            initial={{ opacity: 0, y: -30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-center mb-8"
+        {/* Top Bar Navigation */}
+        <div className="flex items-center justify-between max-w-md mx-auto w-full mb-6">
+          <Link
+            to="/"
+            className="inline-flex items-center space-x-2 text-xs font-semibold text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white transition-colors"
           >
-            <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-sky-500 to-emerald-500 rounded-full">
-              <Anchor className="w-8 h-8 text-white" />
-            </div>
-            <h1 className="text-3xl font-bold text-slate-800 mb-2">Login to PortLink</h1>
-            <p className="text-slate-600">Welcome back to your maritime platform</p>
-          </motion.div>
+            <ArrowLeft className="w-4 h-4" />
+            <span>Back to Home</span>
+          </Link>
+
+          <button
+            onClick={toggleTheme}
+            className="p-2 rounded-lg bg-slate-200 dark:bg-neutral-900 text-slate-700 dark:text-neutral-300 hover:bg-slate-300 dark:hover:bg-neutral-800 border border-slate-300 dark:border-neutral-800 transition-all"
+            title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
+          >
+            {theme === 'dark' ? (
+              <Sun className="w-4 h-4 text-amber-400" />
+            ) : (
+              <Moon className="w-4 h-4 text-slate-800" />
+            )}
+          </button>
+        </div>
+
+        {/* Center Form */}
+        <div className="w-full max-w-md mx-auto my-auto">
+          {/* Logo and Title */}
+          <div className="text-center mb-8">
+            <Link to="/" className="inline-flex items-center justify-center w-12 h-12 mb-4 rounded-xl bg-slate-900 dark:bg-neutral-900 border border-slate-800 dark:border-neutral-700 text-white shadow-md">
+              <Anchor className="w-6 h-6 text-white" />
+            </Link>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white mb-1.5">
+              Login to PortLink
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-neutral-400">
+              Enter your credentials to access your maritime dashboard
+            </p>
+          </div>
 
           {/* Form */}
-          <motion.form
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            onSubmit={handleSubmit}
-            className="space-y-6"
-          >
+          <form onSubmit={handleSubmit} className="space-y-4">
             {/* Email Field */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-2">
-                Email
+              <label htmlFor="email" className="block text-xs font-medium text-slate-700 dark:text-neutral-300 mb-1">
+                Email Address
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-slate-400" />
+                  <Mail className="h-4 w-4 text-slate-400 dark:text-neutral-500" />
                 </div>
                 <input
                   type="text"
@@ -206,30 +215,29 @@ const Login: React.FC = () => {
                   name="email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className={`block w-full pl-10 pr-3 py-3 border rounded-lg shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300 ${errors.email ? 'border-red-500 bg-red-50' : 'border-slate-300 bg-white'
-                    }`}
-                  placeholder="Enter your email"
+                  className={`block w-full pl-9 pr-3 py-2.5 text-sm border rounded-lg shadow-sm placeholder-slate-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-1 transition-all ${
+                    errors.email
+                      ? 'border-red-500 bg-red-50 dark:bg-red-950/20 text-red-900 dark:text-red-300'
+                      : 'border-slate-300 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-slate-900 dark:text-white focus:border-slate-500 dark:focus:border-white'
+                  }`}
+                  placeholder="name@example.com"
                 />
               </div>
               {errors.email && (
-                <motion.p
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="mt-2 text-sm text-red-600"
-                >
+                <p className="mt-1 text-xs text-red-600 dark:text-red-400">
                   {errors.email}
-                </motion.p>
+                </p>
               )}
             </div>
 
             {/* Password Field */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-2">
+              <label htmlFor="password" className="block text-xs font-medium text-slate-700 dark:text-neutral-300 mb-1">
                 Password
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-slate-400" />
+                  <Lock className="h-4 w-4 text-slate-400 dark:text-neutral-500" />
                 </div>
                 <input
                   type={showPassword ? 'text' : 'password'}
@@ -237,58 +245,57 @@ const Login: React.FC = () => {
                   name="password"
                   value={formData.password}
                   onChange={handleInputChange}
-                  className={`block w-full pl-10 pr-12 py-3 border rounded-lg shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300 ${errors.password ? 'border-red-500 bg-red-50' : 'border-slate-300 bg-white'
-                    }`}
+                  className={`block w-full pl-9 pr-10 py-2.5 text-sm border rounded-lg shadow-sm placeholder-slate-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-1 transition-all ${
+                    errors.password
+                      ? 'border-red-500 bg-red-50 dark:bg-red-950/20 text-red-900 dark:text-red-300'
+                      : 'border-slate-300 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-slate-900 dark:text-white focus:border-slate-500 dark:focus:border-white'
+                  }`}
                   placeholder="Enter your password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-neutral-200"
                 >
                   {showPassword ? (
-                    <EyeOff className="h-5 w-5 text-slate-400 hover:text-slate-600" />
+                    <EyeOff className="h-4 w-4" />
                   ) : (
-                    <Eye className="h-5 w-5 text-slate-400 hover:text-slate-600" />
+                    <Eye className="h-4 w-4" />
                   )}
                 </button>
               </div>
               {errors.password && (
-                <motion.p
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="mt-2 text-sm text-red-600"
-                >
+                <p className="mt-1 text-xs text-red-600 dark:text-red-400">
                   {errors.password}
-                </motion.p>
+                </p>
               )}
             </div>
 
             {/* Submit Button */}
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+            <button
               type="submit"
               disabled={isLoading}
-              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-sky-500 to-emerald-500 hover:from-sky-600 hover:to-emerald-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+              className="w-full py-2.5 px-4 rounded-lg shadow-sm text-sm font-semibold text-white dark:text-black bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-neutral-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center"
             >
               {isLoading ? (
-                <div className="flex items-center">
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                  Logging in...
+                <div className="flex items-center space-x-2">
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-current border-t-transparent"></div>
+                  <span>Logging in...</span>
                 </div>
               ) : (
                 'Log In'
               )}
-            </motion.button>
+            </button>
 
             {/* Divider */}
-            <div className="relative">
+            <div className="relative my-4">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300"></div>
+                <div className="w-full border-t border-slate-200 dark:border-neutral-800"></div>
               </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">Or continue with</span>
+              <div className="relative flex justify-center text-xs">
+                <span className="px-2 bg-slate-50 dark:bg-black text-slate-500 dark:text-neutral-500">
+                  Or continue with
+                </span>
               </div>
             </div>
 
@@ -300,43 +307,51 @@ const Login: React.FC = () => {
             />
 
             {/* Register Link */}
-            <div className="text-center">
-              <p className="text-sm text-slate-600">
+            <div className="text-center pt-2">
+              <p className="text-xs text-slate-600 dark:text-neutral-400">
                 Don't have an account?{' '}
                 <Link
                   to="/register"
-                  className="font-medium text-sky-600 hover:text-sky-500 transition-colors duration-300"
+                  className="font-semibold text-slate-900 dark:text-white hover:underline transition-colors"
                 >
                   Register here
                 </Link>
               </p>
             </div>
-          </motion.form>
+          </form>
+        </div>
+
+        {/* Footer info */}
+        <div className="text-center text-[11px] text-slate-500 dark:text-neutral-500 pt-6">
+          © 2025 PortLink. Secure Maritime Telemetry Platform.
         </div>
       </motion.div>
 
-      {/* Right Side - Image */}
+      {/* Right Side - Image Panel */}
       <motion.div
-        initial={{ opacity: 0, x: 50 }}
+        initial={{ opacity: 0, x: 30 }}
         animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.8 }}
-        className="hidden lg:flex flex-1 relative overflow-hidden"
+        transition={{ duration: 0.6 }}
+        className="hidden lg:flex flex-1 relative overflow-hidden bg-slate-900"
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-sky-900/20 to-emerald-900/20 z-10"></div>
-        <motion.img
-          whileHover={{ scale: 1.05 }}
-          transition={{ duration: 0.8 }}
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent z-10"></div>
+        <img
           src="../../../images/Login_Page_Image.png"
-          alt="Maritime scene"
-          className="w-full h-full object-cover"
+          alt="Maritime vessel operations"
+          className="w-full h-full object-cover opacity-90"
         />
 
         {/* Overlay Content */}
         <div className="absolute inset-0 z-20 flex items-end p-12">
-          <div className="text-white">
-            <h2 className="text-4xl font-bold mb-4">Navigate Your Future</h2>
-            <p className="text-xl text-white/90">
-              Join the digital maritime revolution and connect with ports worldwide
+          <div className="text-white max-w-lg">
+            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-semibold uppercase tracking-wider mb-3">
+              <span>Port & Crew Telemetry</span>
+            </div>
+            <h2 className="text-3xl font-bold tracking-tight mb-2">
+              Navigate Maritime Operations with Precision
+            </h2>
+            <p className="text-sm text-neutral-300 leading-relaxed font-normal">
+              Connect with global ports, track real-time vessel telemetry, and execute certified sailor contracts seamlessly.
             </p>
           </div>
         </div>

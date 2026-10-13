@@ -18,7 +18,7 @@ const OTPModal: React.FC<OTPModalProps> = ({ isOpen, onClose, email, onVerify, o
 
   useEffect(() => {
     if (isOpen) {
-      setCountdown(30); // 30 seconds countdown for resend
+      setCountdown(30);
       const timer = setInterval(() => {
         setCountdown(prev => Math.max(0, prev - 1));
       }, 1000);
@@ -55,27 +55,28 @@ const OTPModal: React.FC<OTPModalProps> = ({ isOpen, onClose, email, onVerify, o
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black/75 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="bg-white rounded-lg p-6 w-full max-w-md"
+        initial={{ opacity: 0, scale: 0.95, y: 10 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: 10 }}
+        className="bg-white dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 rounded-2xl p-6 w-full max-w-md shadow-2xl text-slate-900 dark:text-white transition-colors"
       >
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold">Verify Email</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white">Verify Email Code</h2>
+          <button onClick={onClose} className="p-1 text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
             <X size={20} />
           </button>
         </div>
 
-        <p className="text-gray-600 mb-4">
-          Enter the 6-digit code sent to <span className="font-medium">{email}</span>
+        <p className="text-xs text-slate-600 dark:text-neutral-400 mb-4">
+          Enter the 6-digit verification code sent to <span className="font-semibold text-slate-900 dark:text-white">{email}</span>
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              OTP Code
+            <label className="block text-xs font-medium text-slate-700 dark:text-neutral-300 mb-1">
+              OTP Security Code
             </label>
             <input
               type="text"
@@ -84,33 +85,36 @@ const OTPModal: React.FC<OTPModalProps> = ({ isOpen, onClose, email, onVerify, o
               maxLength={6}
               value={otp}
               onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter 6-digit code"
+              className="w-full px-3 py-2.5 text-center tracking-widest text-lg font-mono border border-slate-300 dark:border-neutral-800 bg-slate-50 dark:bg-black rounded-xl text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-slate-500 dark:focus:ring-white transition-colors"
+              placeholder="000000"
               disabled={isLoading}
             />
           </div>
 
           {error && (
-            <p className="text-red-600 text-sm">{error}</p>
+            <p className="text-red-500 text-xs text-center font-medium">{error}</p>
           )}
 
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center pt-2">
             <button
               type="button"
               onClick={handleResend}
               disabled={countdown > 0}
-              className={`text-sm ${countdown > 0 ? 'text-gray-400' : 'text-blue-600 hover:text-blue-800'
-                }`}
+              className={`text-xs font-medium ${
+                countdown > 0
+                  ? 'text-slate-400 dark:text-neutral-500 cursor-not-allowed'
+                  : 'text-slate-900 dark:text-white hover:underline'
+              }`}
             >
-              {countdown > 0 ? `Resend in ${countdown}s` : 'Resend OTP'}
+              {countdown > 0 ? `Resend in ${countdown}s` : 'Resend Code'}
             </button>
 
             <button
               type="submit"
               disabled={isLoading || otp.length !== 6}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-5 py-2 text-xs font-semibold bg-slate-900 text-white dark:bg-white dark:text-black rounded-xl hover:bg-slate-800 dark:hover:bg-neutral-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              {isLoading ? 'Verifying...' : 'Verify'}
+              {isLoading ? 'Verifying...' : 'Verify Email'}
             </button>
           </div>
         </form>

@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, User, FileText, MapPin, Calendar, Send, CheckCircle } from 'lucide-react';
 import axios from 'axios';
-
+import toast from 'react-hot-toast';
+import { formatCurrency } from '../../utils/formatters';
 
 interface ShipmentApplicationModalProps {
   isOpen: boolean;
@@ -31,7 +33,6 @@ interface ShipmentApplicationModalProps {
 interface ApplicationFormData {
   personalMessage: string;
   availabilityDate: string;
-  // expectedSalary: string;
   relevantExperience: string;
   certifications: string;
   emergencyContact: string;
@@ -55,7 +56,6 @@ const ShipmentApplicationModal: React.FC<ShipmentApplicationModalProps> = ({
   const [formData, setFormData] = useState<ApplicationFormData>({
     personalMessage: '',
     availabilityDate: '',
-    // expectedSalary: shipment.salary.toString(),
     relevantExperience: '',
     certifications: '',
     emergencyContact: '',
@@ -72,7 +72,6 @@ const ShipmentApplicationModal: React.FC<ShipmentApplicationModalProps> = ({
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
 
-    // Required fields validation
     if (!formData.personalMessage.trim()) {
       newErrors.personalMessage = 'Personal message is required';
     } else if (formData.personalMessage.length < 50) {
@@ -86,22 +85,16 @@ const ShipmentApplicationModal: React.FC<ShipmentApplicationModalProps> = ({
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       if (selectedDate < today || selectedDate > shipment.DepartureDate) {
-        newErrors.availabilityDate = 'Availability date cannot be in the past or after the shipment departure date';
+        newErrors.availabilityDate = 'Availability date cannot be in the past or after the departure date';
       }
     }
 
-    // if (!formData.expectedSalary.trim()) {
-    //   newErrors.expectedSalary = 'Expected salary is required';
-    // } else if (parseInt(formData.expectedSalary) < 1000) {
-    //   newErrors.expectedSalary = 'Expected salary must be at least $1,000';
-    // }
-
     if (!formData.relevantExperience.trim()) {
-      newErrors.relevantExperience = 'Relevant experience description is required';
+      newErrors.relevantExperience = 'Relevant experience is required';
     }
 
     if (!formData.certifications.trim()) {
-      newErrors.certifications = 'Maritime certifications are required';
+      newErrors.certifications = 'Certifications are required';
     }
 
     if (!formData.emergencyContact.trim()) {
@@ -117,65 +110,18 @@ const ShipmentApplicationModal: React.FC<ShipmentApplicationModalProps> = ({
     }
 
     if (!formData.passportNumber.trim()) {
-      newErrors.passportNumber = 'Passport number is required';
+      newErrors.passportNumber = 'Passport/Seaman Book number is required';
     }
 
-    if (!formData.visaStatus.trim()) {
-      newErrors.visaStatus = 'Visa status is required';
+    if (!formData.visaStatus) {
+      newErrors.visaStatus = 'Visa/Work authorization status is required';
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  // const handleSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-
-  //   if (!validateForm()) {
-  //     return;
-  //   }
-
-  //   setIsSubmitting(true);
-
-  //   // Simulate API call
-  //   setTimeout(() => {
-  //     const applicationData = {
-  //       shipmentId: shipment.id,
-  //       sailorId: 'sailor_001', // This would come from auth context
-  //       sailorName: sailorData.name,
-  //       sailorEmail: sailorData.email,
-  //       sailorPhone: sailorData.phone,
-  //       sailorRating: sailorData.rating,
-  //       applicationDate: new Date().toISOString(),
-  //       ...formData,
-  //       status: 'pending'
-  //     };
-
-  //     onSubmitApplication(applicationData);
-  //     setSubmitSuccess(true);
-  //     setIsSubmitting(false);
-
-  //     // Close modal after success message
-  //     setTimeout(() => {
-  //       setSubmitSuccess(false);
-  //       onClose();
-  //       // Reset form
-  //       setFormData({
-  //         personalMessage: '',
-  //         availabilityDate: '',
-  //         relevantExperience: '',
-  //         certifications: '',
-  //         emergencyContact: '',
-  //         emergencyPhone: '',
-  //         medicalCertification: '',
-  //         passportNumber: '',
-  //         visaStatus: ''
-  //       });
-  //     }, 2000);
-  //   }, 2000);
-  // };
-
-const API_URL = import.meta.env.VITE_API_URL;
+  const API_URL = import.meta.env.VITE_API_URL;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -187,34 +133,27 @@ const API_URL = import.meta.env.VITE_API_URL;
     setIsSubmitting(true);
 
     try {
-      const token = localStorage.getItem("token");
-      // Build the application payload
       const applicationData = {
-        shipmentId: shipment.id
+        shipmentId: shipment.id,
+        sailorName: sailorData.name,
+        sailorEmail: sailorData.email,
+        sailorPhone: sailorData.phone,
+        sailorExperience: sailorData.experience,
+        sailorRating: sailorData.rating,
+        ...formData,
+        submittedAt: new Date().toISOString()
       };
-      const payload = {
-      shipmentId: shipment.id,
-      sailorEmail: sailorData.email,
-      sailorName: sailorData.name,
-      sailorPhone: sailorData.phone,
-      sailorExperience: sailorData.experience,
-      sailorRating: sailorData.rating,
-      ...formData
-    };
 
-    await axios.post(`${API_URL}/api/shipment-applications/apply`, payload);
-    await axios.post(
-        `${API_URL}/api/sailor/jobposts/assign-crew`,
-        applicationData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          }
+      const token = localStorage.getItem("token");
+      await axios.post(`${API_URL}/api/shipment-applications`, applicationData, {
+        headers: {
+          Authorization: `Bearer ${token}`
         }
-      );
+      });
 
+      onSubmitApplication(applicationData);
       setSubmitSuccess(true);
-      setIsSubmitting(false);
+      toast.success("Shipment application submitted successfully!");
 
       setTimeout(() => {
         setSubmitSuccess(false);
@@ -231,9 +170,9 @@ const API_URL = import.meta.env.VITE_API_URL;
           visaStatus: ''
         });
       }, 1500);
-    } catch (error) {
+    } catch (error: any) {
       setIsSubmitting(false);
-      alert("Failed to submit application. Please try again.");
+      toast.error(error?.response?.data?.error || "Failed to submit application. Please try again.");
     }
   };
 
@@ -241,7 +180,6 @@ const API_URL = import.meta.env.VITE_API_URL;
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
 
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: undefined }));
     }
@@ -249,117 +187,95 @@ const API_URL = import.meta.env.VITE_API_URL;
 
   if (!isOpen) return null;
 
-  return (
+  return createPortal(
     <AnimatePresence>
-      <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+      <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[10000] flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
         <motion.div
-          initial={{ opacity: 0, scale: 0.9, y: 20 }}
+          initial={{ opacity: 0, scale: 0.95, y: 15 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.9, y: 20 }}
-          className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden"
+          exit={{ opacity: 0, scale: 0.95, y: 15 }}
+          className="bg-white dark:bg-neutral-900 border-0 sm:border border-slate-200 dark:border-neutral-800 rounded-none sm:rounded-2xl shadow-2xl w-full max-w-lg h-full sm:h-auto max-h-none sm:max-h-[90vh] flex flex-col my-auto text-slate-900 dark:text-white overflow-hidden"
         >
           {/* Header */}
-          <div className="bg-gradient-to-r from-sky-500 to-emerald-500 p-6 text-white">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-2xl font-bold mb-2">Apply for Shipment</h2>
-                <p className="text-sky-100">
-                  {shipment.sourcePort} → {shipment.destinationPort}
-                </p>
-              </div>
-              <button
-                onClick={onClose}
-                className="p-2 hover:bg-white/20 rounded-full transition-colors"
-              >
-                <X className="w-6 h-6" />
-              </button>
+          <div className="bg-slate-900 dark:bg-black text-white p-4 sm:p-6 border-b border-slate-800 dark:border-neutral-800 flex justify-between items-center shrink-0">
+            <div className="min-w-0 pr-2">
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-600/30 text-blue-400 border border-blue-500/30 uppercase mb-1 inline-block">
+                OFFSHORE DEPLOYMENT APPLICATION
+              </span>
+              <h2 className="text-lg sm:text-2xl font-bold tracking-tight">Apply for Shipment</h2>
+              <p className="text-xs text-slate-400 mt-0.5 flex items-center gap-1.5 break-words">
+                <MapPin className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+                <span>{shipment.sourcePort} → {shipment.destinationPort}</span>
+              </p>
             </div>
+            <button
+              onClick={onClose}
+              className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 dark:hover:bg-neutral-800 transition-colors shrink-0"
+              aria-label="Close modal"
+            >
+              <X className="w-6 h-6" />
+            </button>
           </div>
 
-          {/* Content */}
-          <div className="overflow-y-auto max-h-[calc(90vh-120px)]">
+          {/* Modal Body Container */}
+          <div className="p-4 sm:p-6 overflow-y-auto flex-1 custom-scrollbar space-y-6">
             {submitSuccess ? (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="p-8 text-center"
-              >
-                <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <CheckCircle className="w-10 h-10 text-emerald-500" />
+              <div className="py-12 text-center space-y-4">
+                <div className="w-16 h-16 bg-blue-600/10 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center mx-auto border border-blue-500/20">
+                  <CheckCircle className="w-10 h-10 text-blue-600 dark:text-blue-400" />
                 </div>
-                <h3 className="text-2xl font-bold text-slate-800 mb-4">Application Submitted!</h3>
-                <p className="text-slate-600 mb-6">
-                  Your application has been successfully submitted to {shipment.company}.
-                  You will receive a notification once they review your application.
+                <h3 className="text-2xl font-bold">Application Submitted!</h3>
+                <p className="text-xs sm:text-sm text-slate-500 dark:text-neutral-400 max-w-md mx-auto">
+                  Your application has been received and logged for review by the Port Authority.
                 </p>
-                <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
-                  <p className="text-emerald-700 text-sm">
-                    <strong>Application ID:</strong> APP-{Date.now()}
-                  </p>
-                </div>
-              </motion.div>
+              </div>
             ) : (
-              <form onSubmit={handleSubmit} className="p-6">
-                {/* Shipment Summary */}
-                <div className="bg-slate-50 rounded-xl p-6 mb-8">
-                  <h3 className="text-lg font-bold text-slate-800 mb-4">Shipment Details</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="flex items-center space-x-2">
-                      <MapPin className="w-4 h-4 text-emerald-500" />
-                      <span className="text-sm text-slate-600">Route:</span>
-                      <span className="text-sm font-medium text-slate-800">
-                        {shipment.sourcePort} → {shipment.destinationPort}
-                      </span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Calendar className="w-4 h-4 text-blue-500" />
-                      <span className="text-sm text-slate-600">Duration:</span>
-                      <span className="text-sm font-medium text-slate-800">{shipment.DepartureDate.toLocaleDateString()}</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <User className="w-4 h-4 text-purple-500" />
-                      <span className="text-sm text-slate-600">Crew Required:</span>
-                      <span className="text-sm font-medium text-slate-800">{shipment.crewRequired} members</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <FileText className="w-4 h-4 text-amber-500" />
-                      <span className="text-sm text-slate-600">Cargo:</span>
-                      <span className="text-sm font-medium text-slate-800">{shipment.cargoType}</span>
-                    </div>
+              <form onSubmit={handleSubmit} className="space-y-5">
+                {/* Summary Card */}
+                <div className="bg-slate-50 dark:bg-black/60 p-3.5 rounded-xl border border-slate-200 dark:border-neutral-800 text-xs grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <span className="text-slate-500 dark:text-neutral-400 block font-medium">Stipend Offered</span>
+                    <span className="font-bold text-blue-600 dark:text-blue-400 text-sm">{formatCurrency(shipment.salary)}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 dark:text-neutral-400 block font-medium">Cargo Type</span>
+                    <span className="font-semibold text-slate-900 dark:text-white break-words">{shipment.cargoType || 'General Cargo'}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 dark:text-neutral-400 block font-medium">Departure Date</span>
+                    <span className="font-semibold text-slate-900 dark:text-white">{new Date(shipment.DepartureDate).toLocaleDateString()}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 dark:text-neutral-400 block font-medium">Applicant Name</span>
+                    <span className="font-semibold text-slate-900 dark:text-white break-words">{sailorData.name}</span>
                   </div>
                 </div>
 
-                {/* Application Form */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {/* Personal Message */}
-                  <div className="lg:col-span-2">
-                    <label htmlFor="personalMessage" className="block text-sm font-medium text-slate-700 mb-2">
-                      Personal Message *
+                {/* Form Fields Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                  {/* Personal Cover Message */}
+                  <div className="sm:col-span-2">
+                    <label htmlFor="personalMessage" className="block font-semibold mb-1.5 uppercase text-slate-700 dark:text-neutral-300 tracking-wider">
+                      Cover Statement / Personal Message * (min 50 chars)
                     </label>
                     <textarea
                       id="personalMessage"
                       name="personalMessage"
+                      rows={3}
                       value={formData.personalMessage}
                       onChange={handleInputChange}
-                      rows={4}
-                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300 ${errors.personalMessage ? 'border-red-500 bg-red-50' : 'border-slate-300'
-                        }`}
-                      placeholder="Tell the company why you're the right fit for this shipment. Include your relevant experience and motivation..."
+                      className={`w-full p-3 border rounded-xl bg-slate-50/50 dark:bg-black text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all ${
+                        errors.personalMessage ? 'border-red-500 bg-red-50/50 dark:bg-red-950/20' : 'border-slate-200 dark:border-neutral-800'
+                      }`}
+                      placeholder="Detail your maritime qualifications, recent vessel deployments, and readiness..."
                     />
-                    <div className="flex justify-between items-center mt-1">
-                      {errors.personalMessage && (
-                        <p className="text-sm text-red-600">{errors.personalMessage}</p>
-                      )}
-                      <p className="text-xs text-slate-500 ml-auto">
-                        {formData.personalMessage.length}/500 characters
-                      </p>
-                    </div>
+                    {errors.personalMessage && <p className="mt-1 text-red-500 font-medium">{errors.personalMessage}</p>}
                   </div>
 
                   {/* Availability Date */}
                   <div>
-                    <label htmlFor="availabilityDate" className="block text-sm font-medium text-slate-700 mb-2">
-                      Available From *
+                    <label htmlFor="availabilityDate" className="block font-semibold mb-1.5 uppercase text-slate-700 dark:text-neutral-300 tracking-wider">
+                      Earliest Availability *
                     </label>
                     <input
                       type="date"
@@ -368,124 +284,17 @@ const API_URL = import.meta.env.VITE_API_URL;
                       value={formData.availabilityDate}
                       onChange={handleInputChange}
                       min={new Date().toISOString().split('T')[0]}
-                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300 ${errors.availabilityDate ? 'border-red-500 bg-red-50' : 'border-slate-300'
-                        }`}
+                      className={`w-full p-2.5 border rounded-xl bg-slate-50/50 dark:bg-black text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all ${
+                        errors.availabilityDate ? 'border-red-500' : 'border-slate-200 dark:border-neutral-800'
+                      }`}
                     />
-                    {errors.availabilityDate && (
-                      <p className="mt-1 text-sm text-red-600">{errors.availabilityDate}</p>
-                    )}
+                    {errors.availabilityDate && <p className="mt-1 text-red-500 font-medium">{errors.availabilityDate}</p>}
                   </div>
 
-                  {/* Expected Salary */}
-
-
-                  {/* Relevant Experience */}
-                  <div className="lg:col-span-2">
-                    <label htmlFor="relevantExperience" className="block text-sm font-medium text-slate-700 mb-2">
-                      Relevant Experience *
-                    </label>
-                    <textarea
-                      id="relevantExperience"
-                      name="relevantExperience"
-                      value={formData.relevantExperience}
-                      onChange={handleInputChange}
-                      rows={3}
-                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300 ${errors.relevantExperience ? 'border-red-500 bg-red-50' : 'border-slate-300'
-                        }`}
-                      placeholder="Describe your relevant maritime experience, similar routes, cargo types, etc."
-                    />
-                    {errors.relevantExperience && (
-                      <p className="mt-1 text-sm text-red-600">{errors.relevantExperience}</p>
-                    )}
-                  </div>
-
-                  {/* Certifications */}
-                  <div className="lg:col-span-2">
-                    <label htmlFor="certifications" className="block text-sm font-medium text-slate-700 mb-2">
-                      Maritime Certifications *
-                    </label>
-                    <textarea
-                      id="certifications"
-                      name="certifications"
-                      value={formData.certifications}
-                      onChange={handleInputChange}
-                      rows={2}
-                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300 ${errors.certifications ? 'border-red-500 bg-red-50' : 'border-slate-300'
-                        }`}
-                      placeholder="List your maritime certifications (STCW, Medical First Aid, etc.)"
-                    />
-                    {errors.certifications && (
-                      <p className="mt-1 text-sm text-red-600">{errors.certifications}</p>
-                    )}
-                  </div>
-
-                  {/* Emergency Contact */}
+                  {/* Passport / Seaman Book Number */}
                   <div>
-                    <label htmlFor="emergencyContact" className="block text-sm font-medium text-slate-700 mb-2">
-                      Emergency Contact Name *
-                    </label>
-                    <input
-                      type="text"
-                      id="emergencyContact"
-                      name="emergencyContact"
-                      value={formData.emergencyContact}
-                      onChange={handleInputChange}
-                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300 ${errors.emergencyContact ? 'border-red-500 bg-red-50' : 'border-slate-300'
-                        }`}
-                      placeholder="Full name of emergency contact"
-                    />
-                    {errors.emergencyContact && (
-                      <p className="mt-1 text-sm text-red-600">{errors.emergencyContact}</p>
-                    )}
-                  </div>
-
-                  {/* Emergency Phone */}
-                  <div>
-                    <label htmlFor="emergencyPhone" className="block text-sm font-medium text-slate-700 mb-2">
-                      Emergency Contact Phone *
-                    </label>
-                    <input
-                      type="tel"
-                      id="emergencyPhone"
-                      name="emergencyPhone"
-                      value={formData.emergencyPhone}
-                      onChange={handleInputChange}
-                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300 ${errors.emergencyPhone ? 'border-red-500 bg-red-50' : 'border-slate-300'
-                        }`}
-                      placeholder="+1 (555) 123-4567"
-                    />
-                    {errors.emergencyPhone && (
-                      <p className="mt-1 text-sm text-red-600">{errors.emergencyPhone}</p>
-                    )}
-                  </div>
-
-                  {/* Medical Certification */}
-                  <div>
-                    <label htmlFor="medicalCertification" className="block text-sm font-medium text-slate-700 mb-2">
-                      Medical Certification Status *
-                    </label>
-                    <select
-                      id="medicalCertification"
-                      name="medicalCertification"
-                      value={formData.medicalCertification}
-                      onChange={handleInputChange}
-                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300 ${errors.medicalCertification ? 'border-red-500 bg-red-50' : 'border-slate-300'
-                        }`}
-                    >
-                      <option value="">Select status</option>
-                      <option value="valid">Valid and Current</option>
-                      <option value="expiring">Expiring Soon</option>
-                      <option value="renewal">Under Renewal</option>
-                    </select>
-                    {errors.medicalCertification && (
-                      <p className="mt-1 text-sm text-red-600">{errors.medicalCertification}</p>
-                    )}
-                  </div>
-
-                  {/* Passport Number */}
-                  <div>
-                    <label htmlFor="passportNumber" className="block text-sm font-medium text-slate-700 mb-2">
-                      Passport Number *
+                    <label htmlFor="passportNumber" className="block font-semibold mb-1.5 uppercase text-slate-700 dark:text-neutral-300 tracking-wider">
+                      Seaman Book / Passport *
                     </label>
                     <input
                       type="text"
@@ -493,65 +302,157 @@ const API_URL = import.meta.env.VITE_API_URL;
                       name="passportNumber"
                       value={formData.passportNumber}
                       onChange={handleInputChange}
-                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300 ${errors.passportNumber ? 'border-red-500 bg-red-50' : 'border-slate-300'
-                        }`}
-                      placeholder="Passport number"
+                      className={`w-full p-2.5 border rounded-xl bg-slate-50/50 dark:bg-black text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all ${
+                        errors.passportNumber ? 'border-red-500' : 'border-slate-200 dark:border-neutral-800'
+                      }`}
+                      placeholder="e.g., N1234567"
                     />
-                    {errors.passportNumber && (
-                      <p className="mt-1 text-sm text-red-600">{errors.passportNumber}</p>
-                    )}
+                    {errors.passportNumber && <p className="mt-1 text-red-500 font-medium">{errors.passportNumber}</p>}
+                  </div>
+
+                  {/* Relevant Experience */}
+                  <div>
+                    <label htmlFor="relevantExperience" className="block font-semibold mb-1.5 uppercase text-slate-700 dark:text-neutral-300 tracking-wider">
+                      Relevant Experience *
+                    </label>
+                    <input
+                      type="text"
+                      id="relevantExperience"
+                      name="relevantExperience"
+                      value={formData.relevantExperience}
+                      onChange={handleInputChange}
+                      className={`w-full p-2.5 border rounded-xl bg-slate-50/50 dark:bg-black text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all ${
+                        errors.relevantExperience ? 'border-red-500' : 'border-slate-200 dark:border-neutral-800'
+                      }`}
+                      placeholder="e.g., 5 yrs Container Cargo"
+                    />
+                    {errors.relevantExperience && <p className="mt-1 text-red-500 font-medium">{errors.relevantExperience}</p>}
                   </div>
 
                   {/* Visa Status */}
-                  <div className="lg:col-span-2">
-                    <label htmlFor="visaStatus" className="block text-sm font-medium text-slate-700 mb-2">
-                      Visa/Work Authorization Status *
+                  <div>
+                    <label htmlFor="visaStatus" className="block font-semibold mb-1.5 uppercase text-slate-700 dark:text-neutral-300 tracking-wider">
+                      Work Visa Status *
                     </label>
                     <select
                       id="visaStatus"
                       name="visaStatus"
                       value={formData.visaStatus}
                       onChange={handleInputChange}
-                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300 ${errors.visaStatus ? 'border-red-500 bg-red-50' : 'border-slate-300'
-                        }`}
+                      className={`w-full p-2.5 border rounded-xl bg-slate-50/50 dark:bg-black text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all ${
+                        errors.visaStatus ? 'border-red-500' : 'border-slate-200 dark:border-neutral-800'
+                      }`}
                     >
-                      <option value="">Select visa status</option>
-                      <option value="citizen">Citizen</option>
-                      <option value="permanent-resident">Permanent Resident</option>
-                      <option value="work-visa">Valid Work Visa</option>
-                      <option value="student-visa">Student Visa with Work Authorization</option>
-                      <option value="other">Other (specify in message)</option>
+                      <option value="" className="dark:bg-black">Select visa status</option>
+                      <option value="citizen" className="dark:bg-black">Citizen</option>
+                      <option value="permanent-resident" className="dark:bg-black">Permanent Resident</option>
+                      <option value="work-visa" className="dark:bg-black">Valid Work Visa</option>
+                      <option value="seaman-discharge" className="dark:bg-black">Seaman Discharge Book</option>
                     </select>
-                    {errors.visaStatus && (
-                      <p className="mt-1 text-sm text-red-600">{errors.visaStatus}</p>
-                    )}
+                    {errors.visaStatus && <p className="mt-1 text-red-500 font-medium">{errors.visaStatus}</p>}
+                  </div>
+
+                  {/* Certifications */}
+                  <div className="sm:col-span-2">
+                    <label htmlFor="certifications" className="block font-semibold mb-1.5 uppercase text-slate-700 dark:text-neutral-300 tracking-wider">
+                      Maritime Certifications *
+                    </label>
+                    <input
+                      type="text"
+                      id="certifications"
+                      name="certifications"
+                      value={formData.certifications}
+                      onChange={handleInputChange}
+                      className={`w-full p-2.5 border rounded-xl bg-slate-50/50 dark:bg-black text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all ${
+                        errors.certifications ? 'border-red-500' : 'border-slate-200 dark:border-neutral-800'
+                      }`}
+                      placeholder="STCW Basic Safety, Firefighting..."
+                    />
+                    {errors.certifications && <p className="mt-1 text-red-500 font-medium">{errors.certifications}</p>}
+                  </div>
+
+                  {/* Emergency Contact */}
+                  <div>
+                    <label htmlFor="emergencyContact" className="block font-semibold mb-1.5 uppercase text-slate-700 dark:text-neutral-300 tracking-wider">
+                      Emergency Contact *
+                    </label>
+                    <input
+                      type="text"
+                      id="emergencyContact"
+                      name="emergencyContact"
+                      value={formData.emergencyContact}
+                      onChange={handleInputChange}
+                      className={`w-full p-2.5 border rounded-xl bg-slate-50/50 dark:bg-black text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all ${
+                        errors.emergencyContact ? 'border-red-500' : 'border-slate-200 dark:border-neutral-800'
+                      }`}
+                      placeholder="Contact Name"
+                    />
+                    {errors.emergencyContact && <p className="mt-1 text-red-500 font-medium">{errors.emergencyContact}</p>}
+                  </div>
+
+                  {/* Emergency Phone */}
+                  <div>
+                    <label htmlFor="emergencyPhone" className="block font-semibold mb-1.5 uppercase text-slate-700 dark:text-neutral-300 tracking-wider">
+                      Emergency Phone *
+                    </label>
+                    <input
+                      type="tel"
+                      id="emergencyPhone"
+                      name="emergencyPhone"
+                      value={formData.emergencyPhone}
+                      onChange={handleInputChange}
+                      className={`w-full p-2.5 border rounded-xl bg-slate-50/50 dark:bg-black text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all ${
+                        errors.emergencyPhone ? 'border-red-500' : 'border-slate-200 dark:border-neutral-800'
+                      }`}
+                      placeholder="+1 (555) 000-0000"
+                    />
+                    {errors.emergencyPhone && <p className="mt-1 text-red-500 font-medium">{errors.emergencyPhone}</p>}
+                  </div>
+
+                  {/* Medical Certification */}
+                  <div className="sm:col-span-2">
+                    <label htmlFor="medicalCertification" className="block font-semibold mb-1.5 uppercase text-slate-700 dark:text-neutral-300 tracking-wider">
+                      Medical Fitness Status *
+                    </label>
+                    <input
+                      type="text"
+                      id="medicalCertification"
+                      name="medicalCertification"
+                      value={formData.medicalCertification}
+                      onChange={handleInputChange}
+                      className={`w-full p-2.5 border rounded-xl bg-slate-50/50 dark:bg-black text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all ${
+                        errors.medicalCertification ? 'border-red-500' : 'border-slate-200 dark:border-neutral-800'
+                      }`}
+                      placeholder="Valid ENG1 Medical Certificate (MM/YYYY)"
+                    />
+                    {errors.medicalCertification && <p className="mt-1 text-red-500 font-medium">{errors.medicalCertification}</p>}
                   </div>
                 </div>
 
-                {/* Submit Button */}
-                <div className="flex justify-end space-x-4 mt-8 pt-6 border-t border-slate-200">
+                {/* Submit Action */}
+                <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-4 border-t border-slate-200 dark:border-neutral-800">
                   <button
                     type="button"
                     onClick={onClose}
-                    className="px-6 py-3 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors"
+                    className="w-full sm:w-auto px-5 py-2.5 border border-slate-200 dark:border-neutral-800 text-slate-700 dark:text-neutral-300 rounded-xl text-xs font-semibold hover:bg-slate-100 dark:hover:bg-neutral-800 transition-colors"
                   >
                     Cancel
                   </button>
                   <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.99 }}
                     type="submit"
                     disabled={isSubmitting}
-                    className="flex items-center space-x-2 px-8 py-3 bg-gradient-to-r from-sky-500 to-emerald-500 text-white font-semibold rounded-lg hover:from-sky-600 hover:to-emerald-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+                    className="w-full sm:w-auto flex items-center justify-center space-x-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl text-xs shadow-md disabled:opacity-50 transition-all"
                   >
                     {isSubmitting ? (
                       <>
-                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
                         <span>Submitting Application...</span>
                       </>
                     ) : (
                       <>
-                        <Send className="w-5 h-5" />
+                        <Send className="w-4 h-4" />
                         <span>Submit Application</span>
                       </>
                     )}
@@ -562,7 +463,8 @@ const API_URL = import.meta.env.VITE_API_URL;
           </div>
         </motion.div>
       </div>
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 };
 

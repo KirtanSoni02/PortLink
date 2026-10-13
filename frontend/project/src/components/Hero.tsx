@@ -1,203 +1,126 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Anchor } from 'lucide-react';
+import { Anchor, ArrowRight, Compass } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useTheme } from '../context/ThemeContext';
 
 const Hero: React.FC = () => {
+  const { theme } = useTheme();
+
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-sky-600 overflow-hidden pt-16">
-      {/* Floating Maritime Graphics */}
-      <div className="absolute inset-0">
-        {/* Ship Silhouettes */}
-        <motion.div
-          animate={{
-            x: [-100, window.innerWidth + 100],
-            y: [0, -20, 0],
-          }}
-          transition={{
-            duration: 25,
-            repeat: Infinity,
-            ease: "linear"
-          }}
-          className="absolute top-32 w-24 h-12 opacity-20"
-        >
-          <img
-            src="https://images.pexels.com/photos/1117210/pexels-photo-1117210.jpeg?auto=compress&cs=tinysrgb&w=400"
-            alt="Ship"
-            className="w-full h-full object-cover rounded-lg filter brightness-0 invert"
-          />
-        </motion.div>
-
-        {/* Floating Port Elements */}
-        <motion.div
-          animate={{
-            y: [-20, 20, -20],
-            rotate: [0, 5, 0],
-          }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-          className="absolute top-20 right-20 w-16 h-16 opacity-30"
-        >
-          <img
-            src="https://images.pexels.com/photos/1117210/pexels-photo-1117210.jpeg?auto=compress&cs=tinysrgb&w=400"
-            alt="Port"
-            className="w-full h-full object-cover rounded-full filter brightness-0 invert"
-          />
-        </motion.div>
-
-        {/* Lighthouse */}
-        <motion.div
-          animate={{
-            y: [10, -10, 10],
-            opacity: [0.2, 0.4, 0.2],
-          }}
-          transition={{
-            duration: 6,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-          className="absolute bottom-40 left-20 w-12 h-20 opacity-25"
-        >
-          <img
-            src="https://images.pexels.com/photos/1532771/pexels-photo-1532771.jpeg?auto=compress&cs=tinysrgb&w=400"
-            alt="Lighthouse"
-            className="w-full h-full object-cover rounded-lg filter brightness-0 invert"
-          />
-        </motion.div>
-
-        {/* Compass */}
-        <motion.div
-          animate={{
-            rotate: [0, 360],
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: "linear"
-          }}
-          className="absolute top-60 left-32 w-14 h-14 opacity-20"
-        >
-          <div className="w-full h-full bg-white/20 rounded-full flex items-center justify-center">
-            <div className="w-8 h-8 border-2 border-white/40 rounded-full relative">
-              <div className="absolute top-0 left-1/2 w-0.5 h-3 bg-white/60 transform -translate-x-1/2"></div>
+    <section className="relative min-h-[85vh] bg-white dark:bg-black text-slate-900 dark:text-white overflow-hidden flex items-center justify-center pt-28 pb-16 border-b border-slate-200 dark:border-neutral-800 transition-colors duration-300">
+      {/* Dynamic Maritime AIS Radar Scope Background */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden flex items-center justify-center">
+        {/* Concentric Radar Distance Rings */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[320px] sm:w-[480px] md:w-[650px] h-[320px] sm:h-[480px] md:h-[650px] border border-slate-300 dark:border-white/20 rounded-full flex items-center justify-center">
+          <div className="w-[70%] h-[70%] border border-slate-200 dark:border-white/15 rounded-full flex items-center justify-center">
+            <div className="w-[50%] h-[50%] border border-slate-200 dark:border-white/10 rounded-full flex items-center justify-center">
+              <div className="w-2.5 h-2.5 bg-slate-900 dark:bg-white rounded-full shadow-sm" />
             </div>
           </div>
-        </motion.div>
-
-        {/* Anchor Icons */}
-        <motion.div
-          animate={{
-            y: [-15, 15, -15],
-            x: [-5, 5, -5],
-          }}
-          transition={{
-            duration: 7,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-          className="absolute bottom-60 right-32 w-10 h-10 opacity-25"
-        >
-          <Anchor className="w-full h-full text-white" />
-        </motion.div>
-
-        {/* Wave Animation */}
-        <div className="absolute bottom-0 left-0 w-full overflow-hidden leading-none">
-          <svg
-            className="relative block w-full h-32"
-            data-name="Layer 1"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 1200 120"
-            preserveAspectRatio="none"
-          >
-            <motion.path
-              d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"
-              className="fill-white/10"
-              initial={{ x: -50 }}
-              animate={{ x: 50 }}
-              transition={{
-                duration: 8,
-                repeat: Infinity,
-                repeatType: "reverse",
-                ease: "easeInOut"
-              }}
-            />
-          </svg>
         </div>
 
-        {/* Digital Grid Overlay */}
-        <div className="absolute inset-0 opacity-5">
-          <div className="w-full h-full" style={{
-            backgroundImage: `
-              linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)
-            `,
-            backgroundSize: '50px 50px'
-          }}></div>
+        {/* 360-Degree Rotating Radar Sweep Beam */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[320px] sm:w-[480px] md:w-[650px] h-[320px] sm:h-[480px] md:h-[650px] rounded-full overflow-hidden animate-[spin_10s_linear_infinite]">
+          <div className="w-1/2 h-1/2 bg-gradient-to-br from-slate-400/20 dark:from-white/25 via-slate-400/5 dark:via-white/5 to-transparent origin-bottom-right rounded-tl-full" />
         </div>
-      </div>
 
-      {/* Content */}
-      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 text-center">
-        {/* Logo */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.5 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="mb-8"
-        >
-          <div className="flex items-center justify-center w-20 h-20 mx-auto mb-4 bg-white/10 backdrop-blur-md rounded-full border border-white/20">
-            <Anchor className="w-10 h-10 text-white" />
+        {/* Crosshair Compass Bearing Lines */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[320px] sm:w-[480px] md:w-[650px] h-[320px] sm:h-[480px] md:h-[650px]">
+          <div className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-[1px] bg-slate-300 dark:bg-white/15" />
+          <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 h-[1px] bg-slate-300 dark:bg-white/15" />
+
+          <span className="absolute top-2 left-1/2 -translate-x-1/2 text-[10px] font-mono font-bold text-slate-500 dark:text-neutral-400">000° N</span>
+          <span className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[10px] font-mono font-bold text-slate-500 dark:text-neutral-400">180° S</span>
+          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-mono font-bold text-slate-500 dark:text-neutral-400">090° E</span>
+          <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[10px] font-mono font-bold text-slate-500 dark:text-neutral-400">270° W</span>
+        </div>
+
+        {/* AIS Vessel Target Blips */}
+        <div className="absolute inset-0 max-w-4xl mx-auto pointer-events-none">
+          <div className="absolute top-1/4 left-1/4 flex items-center space-x-1">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping" />
+            <span className="w-2 h-2 rounded-full bg-emerald-500" />
+            <span className="text-[9px] font-mono text-slate-600 dark:text-neutral-400 hidden sm:inline">MV TITAN [18.4 KTS]</span>
           </div>
-          <h1 className="text-3xl font-bold text-white">PortLink</h1>
+
+          <div className="absolute top-1/3 right-1/4 flex items-center space-x-1">
+            <span className="w-2 h-2 rounded-full bg-sky-500" />
+            <span className="text-[9px] font-mono text-slate-600 dark:text-neutral-400 hidden sm:inline">APL NAVIGATOR</span>
+          </div>
+
+          <div className="absolute bottom-1/3 right-1/3 flex items-center space-x-1">
+            <span className="w-2 h-2 rounded-full bg-slate-900 dark:bg-white" />
+            <span className="text-[9px] font-mono text-slate-600 dark:text-neutral-400 hidden sm:inline">EVER MARITIME</span>
+          </div>
+        </div>
+
+        {/* Ambient Grid Overlay */}
+        <div 
+          className="absolute inset-0 opacity-15"
+          style={{
+            backgroundImage: theme === 'dark'
+              ? `linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px)`
+              : `linear-gradient(rgba(0, 0, 0, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.1) 1px, transparent 1px)`,
+            backgroundSize: '40px 40px'
+          }}
+        />
+      </div>
+
+      {/* Hero Content */}
+      <div className="relative z-10 max-w-4xl mx-auto px-4 text-center">
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-slate-100 dark:bg-neutral-900/90 border border-slate-300 dark:border-neutral-700 text-slate-700 dark:text-neutral-200 text-xs font-medium mb-6 shadow-sm backdrop-blur-md"
+        >
+          <Anchor className="w-3.5 h-3.5 text-slate-900 dark:text-white" />
+          <span>Real-Time Maritime Intelligence</span>
         </motion.div>
 
-        {/* Main Headlines */}
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
+        <motion.h1
+          initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.3 }}
-          className="mb-8"
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-slate-900 dark:text-white mb-5 leading-tight"
         >
-          <h2 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
-            Sailing Meets
-            <span className="block bg-gradient-to-r from-sky-400 to-emerald-400 bg-clip-text text-transparent">
-              Technology
-            </span>
-          </h2>
-          <p className="text-xl md:text-2xl text-sky-100 max-w-3xl mx-auto leading-relaxed">
-            Connecting sailors, ports, and services through a real-time digital platform
-          </p>
-        </motion.div>
+          Vessel Tracking & Sailor Contract Management
+        </motion.h1>
 
-        {/* CTA Buttons */}
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
+        <motion.p
+          initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.6 }}
-          className="flex flex-col sm:flex-row gap-4"
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="text-sm sm:text-base text-slate-600 dark:text-neutral-300 max-w-2xl mx-auto mb-8 font-normal leading-relaxed"
         >
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Link
-              to="/login"
-              className="px-8 py-4 bg-gradient-to-r from-sky-500 to-emerald-500 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 inline-block"
-            >
-              Login
-            </Link>
-          </motion.div>
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Link
-              to="/register"
-              className="px-8 py-4 bg-white/10 backdrop-blur-md text-white font-semibold rounded-full border border-white/20 hover:bg-white/20 transition-all duration-300 inline-block"
-            >
-              Register
-            </Link>
-          </motion.div>
+          Connecting sailors, vessel managers, and port authorities through real-time AIS tracking, verified contract execution, and live port logistics.
+        </motion.p>
+
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="flex flex-col sm:flex-row items-center justify-center gap-3 max-w-sm mx-auto"
+        >
+          <Link
+            to="/register"
+            className="w-full sm:w-auto px-6 py-3 bg-slate-900 text-white dark:bg-white dark:text-black font-semibold rounded-lg hover:bg-slate-800 dark:hover:bg-neutral-200 transition-colors flex items-center justify-center space-x-2 text-sm shadow-md"
+          >
+            <span>Get Started</span>
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+
+          <a
+            href="#tracking"
+            className="w-full sm:w-auto px-6 py-3 bg-slate-100 dark:bg-neutral-900/90 text-slate-900 dark:text-white font-medium rounded-lg border border-slate-300 dark:border-neutral-700 hover:bg-slate-200 dark:hover:bg-neutral-800 transition-colors flex items-center justify-center space-x-2 text-sm backdrop-blur-md"
+          >
+            <Compass className="w-4 h-4 text-slate-500 dark:text-neutral-400" />
+            <span>Live AIS Radar</span>
+          </a>
         </motion.div>
       </div>
-    </div>
+    </section>
   );
 };
 

@@ -85,6 +85,7 @@
 import React from 'react';
 import { useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 interface GoogleAuthButtonProps {
   mode: 'register' | 'login';
@@ -126,7 +127,7 @@ const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
     if (onError) {
       onError(error);
     } else {
-      alert('Google authentication failed. Please check console for details.');
+      toast.error('Google authentication failed. Please check console for details.');
     }
   }
 };
@@ -136,7 +137,7 @@ const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
     if (onError) {
       onError(error);
     } else {
-      alert('Google login failed. Please try again.');
+      toast.error('Google login failed. Please try again.');
     }
   };
 

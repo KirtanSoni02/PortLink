@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Bell, Menu, User, LogOut, Settings, Anchor, MapPin } from 'lucide-react';
+import { Menu, User, LogOut, Anchor, MapPin, Sun, Moon } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useTheme } from '../../context/ThemeContext';
 
 interface PortDashboardHeaderProps {
   portData: {
@@ -19,74 +20,77 @@ interface PortDashboardHeaderProps {
 
 const PortDashboardHeader: React.FC<PortDashboardHeaderProps> = ({ portData, onMenuClick }) => {
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
-  const [notifications] = useState([
-    { id: 1, message: 'New sailor application received', time: '5 min ago', unread: true },
-    { id: 2, message: 'Ship "Ocean Navigator" requesting docking', time: '15 min ago', unread: true },
-    { id: 3, message: 'Weather alert for port area', time: '1 hour ago', unread: false }
-  ]);
-
-  const unreadCount = notifications.filter(n => n.unread).length;
+  const { theme, toggleTheme } = useTheme();
 
   return (
-    <header className="fixed top-0 left-0 right-0 bg-white border-b border-slate-200 z-50" style={{ pointerEvents: "auto", zIndex: 9999 }}>
-      <div className="flex items-center justify-between h-16 px-6">
-        {/* Left side - Logo and Menu */}
-        <div className="flex items-center space-x-4">
+    <header
+      className="fixed top-0 left-0 right-0 bg-white/90 dark:bg-black/90 backdrop-blur-md border-b border-slate-200 dark:border-neutral-800 z-40 transition-colors duration-300"
+      style={{ pointerEvents: 'auto', zIndex: 40 }}
+    >
+      <div className="flex items-center justify-between h-16 px-3 sm:px-6 max-w-full">
+        {/* Left side - Logo and Mobile Drawer Toggle */}
+        <div className="flex items-center space-x-2 sm:space-x-3 min-w-0">
           <button
             onClick={onMenuClick}
-            className="lg:hidden p-2 rounded-lg hover:bg-slate-100 transition-colors"
+            aria-label="Open mobile menu"
+            className="lg:hidden p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-neutral-800 text-slate-700 dark:text-neutral-300 transition-colors shrink-0"
           >
-            <Menu className="w-6 h-6 text-slate-600" />
+            <Menu className="w-5 h-5" />
           </button>
 
-          <Link to="/" className="flex items-center space-x-3">
-            <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-sky-500 to-emerald-500 rounded-full">
-              <Anchor className="w-6 h-6 text-white" />
+          <Link to="/" className="flex items-center space-x-2 sm:space-x-2.5 group min-w-0">
+            <div className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-slate-900 dark:bg-neutral-900 border border-slate-800 dark:border-neutral-700 group-hover:border-slate-600 transition-colors shrink-0">
+              <Anchor className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             </div>
-            <div className="hidden sm:block">
-              <span className="text-xl font-bold text-slate-800">PortLink</span>
-              <div className="text-xs text-slate-500">Port Authority</div>
+            <div className="min-w-0">
+              <span className="text-base sm:text-xl font-bold tracking-tight text-slate-900 dark:text-white transition-colors block truncate">
+                PortLink
+              </span>
+              <div className="text-[10px] sm:text-xs font-medium text-slate-500 dark:text-neutral-400 hidden sm:block">
+                Port Authority
+              </div>
             </div>
           </Link>
         </div>
 
-        {/* Center - Port Info */}
-        <div className="hidden md:flex items-center space-x-3 bg-slate-50 px-4 py-2 rounded-lg">
-          <MapPin className="w-5 h-5 text-blue-500" />
-          <div>
-            <div className="text-sm font-semibold text-slate-800">{portData.portName}</div>
-            <div className="text-xs text-slate-500">
+        {/* Center - Port Location Info (Desktop / Tablet) */}
+        <div className="hidden md:flex items-center space-x-2 bg-slate-100 dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 px-3.5 py-1.5 rounded-xl transition-colors min-w-0">
+          <MapPin className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
+          <div className="min-w-0 text-left">
+            <div className="text-xs font-semibold text-slate-900 dark:text-white max-w-[160px] truncate">{portData.portName}</div>
+            <div className="text-[10px] text-slate-500 dark:text-neutral-400 truncate max-w-[160px]">
               {portData.location.city}, {portData.location.state}
             </div>
           </div>
         </div>
 
-        {/* Right side - Notifications and Profile */}
-        <div className="flex items-center space-x-4">
-          {/* Notifications */}
-          {/* <div className="relative">
-            <button className="relative p-2 rounded-lg hover:bg-slate-100 transition-colors">
-              <Bell className="w-6 h-6 text-slate-600" />
-              {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                  {unreadCount}
-                </span>
-              )}
-            </button>
-          </div> */}
+        {/* Right side - Theme Toggle and Profile */}
+        <div className="flex items-center space-x-1.5 sm:space-x-3 shrink-0">
+          <button
+            onClick={toggleTheme}
+            aria-label="Toggle theme"
+            className="p-2 rounded-xl bg-slate-100 dark:bg-neutral-900 text-slate-700 dark:text-neutral-300 hover:bg-slate-200 dark:hover:bg-neutral-800 border border-slate-200 dark:border-neutral-800 transition-all"
+            title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
+          >
+            {theme === 'dark' ? (
+              <Sun className="w-4 h-4 text-amber-400 transition-transform hover:rotate-45" />
+            ) : (
+              <Moon className="w-4 h-4 text-slate-800 transition-transform hover:-rotate-12" />
+            )}
+          </button>
 
           {/* Profile Dropdown */}
           <div className="relative">
             <button
               onClick={() => setShowProfileDropdown(!showProfileDropdown)}
-              className="flex items-center space-x-3 p-2 rounded-lg hover:bg-slate-100 transition-colors"
+              className="flex items-center space-x-2 p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-neutral-800 transition-colors border border-transparent hover:border-slate-200 dark:hover:border-neutral-700"
             >
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
-                <User className="w-5 h-5 text-white" />
+              <div className="w-8 h-8 bg-slate-900 dark:bg-white text-white dark:text-black rounded-lg flex items-center justify-center font-bold text-xs shadow-sm shrink-0">
+                <User className="w-4 h-4" />
               </div>
-              <div className="hidden md:block text-left">
-                <div className="text-sm font-medium text-slate-800">{portData.name}</div>
-                <div className="text-xs text-slate-500">Port Authority</div>
+              <div className="hidden md:block text-left min-w-0">
+                <div className="text-xs font-bold text-slate-900 dark:text-white leading-tight max-w-[120px] truncate">{portData.name}</div>
+                <div className="text-[10px] text-slate-500 dark:text-neutral-400">Administrator</div>
               </div>
             </button>
 
@@ -96,22 +100,25 @@ const PortDashboardHeader: React.FC<PortDashboardHeaderProps> = ({ portData, onM
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-slate-200 py-2"
+                  className="absolute right-0 mt-2 w-56 sm:w-64 bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-neutral-800 py-2 transition-colors z-50"
                 >
-                  <div className="px-4 py-3 border-b border-slate-200">
-                    <div className="font-medium text-slate-800">{portData.name}</div>
-                    <div className="text-sm text-slate-500">{portData.email}</div>
-                    <div className="text-xs text-blue-600 mt-1">{portData.portName}</div>
+                  <div className="px-4 py-3 border-b border-slate-100 dark:border-neutral-800">
+                    <div className="font-semibold text-xs text-slate-900 dark:text-white truncate">{portData.name}</div>
+                    <div className="text-[11px] text-slate-500 dark:text-neutral-400 truncate">{portData.email}</div>
+                    <div className="text-[11px] font-semibold text-blue-600 dark:text-blue-400 mt-1 truncate">{portData.portName}</div>
                   </div>
 
-                  <div className="py-2">
-
+                  <div className="py-1">
                     <Link
                       to="/"
-                      className="flex items-center space-x-3 w-full px-4 py-2 text-left hover:bg-slate-50 transition-colors"
+                      onClick={() => {
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('user');
+                      }}
+                      className="flex items-center space-x-2.5 w-full px-4 py-2 text-left text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors text-xs font-semibold"
                     >
-                      <LogOut className="w-4 h-4 text-slate-500" />
-                      <span className="text-sm text-slate-700">Logout</span>
+                      <LogOut className="w-4 h-4" />
+                      <span>Logout</span>
                     </Link>
                   </div>
                 </motion.div>

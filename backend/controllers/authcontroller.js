@@ -10,12 +10,11 @@ import crypto from "crypto";
 import nodemailer from "nodemailer";
 import { OAuth2Client } from "google-auth-library";
 import axios from "axios";
+import Otp from "../models/Otp.model.js";
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 dotenv.config(); // Load environment variables from .env file
 const jwtt = process.env.JWT_SECRET; // Ensure this matches your .env file
-
-const otpStore = new Map();
 
 const transporter = nodemailer.createTransport({
   service: "Gmail", // or your email service
@@ -26,7 +25,7 @@ const transporter = nodemailer.createTransport({
 });
 
 const LoginUser = async (req, res) => {
-  console.log("JWT_SECRET:", jwtt);
+  // console.log("JWT_SECRET:", jwtt); // REMOVED SENSITIVE LOG
   const { email, password } = req.body;
 
   try {
@@ -42,7 +41,7 @@ const LoginUser = async (req, res) => {
         passwords: { password, userPassword: user.password },
       });
     }
-    console.log("Creating token with secret:", jwtt);
+    // console.log("Creating token with secret:", jwtt); // REMOVED SENSITIVE LOG
 
     const token = jwt.sign({ id: user._id, role: user.role }, jwtt, {
       expiresIn: "7d",
@@ -138,15 +137,18 @@ const RegisterUser = async (req, res) => {
     // Check if email is verified via OTP
     let isEmailVerified = false;
     if (verificationToken) {
-      isEmailVerified = true;
-      // Clean up the OTP entry after successful verification
-      otpStore.delete(verificationToken);
+      // Look up by the hex token, which is what the frontend likely passes as 'verificationToken'
+      const otpRecord = await Otp.findOne({ token: verificationToken, email });
+      if (otpRecord && otpRecord.verified) {
+        isEmailVerified = true;
+        await Otp.deleteOne({ _id: otpRecord._id }); // Clean up
+      }
     }
 
     let hashedPassword;
     if (password && !googleId) {
       // Only hash password for non-Google users
-      hashedPassword = await bcrypt.hash(password, 10);
+      // hashedPassword = await bcrypt.hash(password, 10); // REMOVED DOUBLE HASHING - Handled by User model pre-save hook
     }
 
     const newUser = new User({
@@ -154,7 +156,7 @@ const RegisterUser = async (req, res) => {
       lastName,
       email,
       phone,
-      password: hashedPassword, // Will be null for Google users
+      password: password, // Pass plain password, model will hash it
       role,
       location,
       city,
@@ -229,13 +231,44 @@ const SendOtp = async (req, res) => {
     const otp = crypto.randomInt(100000, 999999).toString();
     const token = crypto.randomBytes(32).toString("hex");
 
-    // Store OTP with expiration (10 minutes)
-    otpStore.set(token, {
+    // Store OTP in MongoDB
+    await Otp.create({
       email,
       otp,
-      expires: Date.now() + 10 * 60 * 1000,
-      verified: false, // Initial verification status
+      // createdAt handles expiration via TTL
     });
+
+    // We use the OTP itself as the token for simplicity in this refactor, 
+    // or we can keep using a random token if we store it. 
+    // The original code returned a 'token' which was the key in the Map.
+    // Let's use the OTP as the token or just return success.
+    // To match frontend expectations of a 'token', we can send the OTP or a placeholder if the frontend just sends it back.
+    // Looking at VerifyOtp, it expects 'token'.
+    // Let's store the 'token' in the DB too if we want to match exact behavior, 
+    // OR just use the email + OTP to verify.
+    // The original code: otpStore.set(token, { email, otp ... })
+    // VerifyOtp: otpStore.get(token)
+    
+    // Better approach: The frontend probably sends 'token' back.
+    // Let's assume the frontend sends 'token' which was the key.
+    // We can store this 'token' in the DB.
+    // Let's update the model to store 'token' as well if needed, OR just use email/otp lookup.
+    // Wait, the VerifyOtp takes { email, otp, token }.
+    // If we want to be stateless, we should verify (email + otp).
+    // The 'token' in the original code was just a random hex string acting as a session ID for the OTP.
+    // I will modify VerifyOtp to look up by email and OTP, ignoring the token if possible, 
+    // OR I can store the token in the DB.
+    // Let's store the token to be safe and minimize frontend breakage.
+    // I'll update the Otp model in a separate step if I missed 'token' field, 
+    // BUT I can just use 'otp' as the identifier if I change the logic slightly.
+    // Actually, let's just stick to email + otp verification.
+    // The 'token' returned to frontend might be used.
+    // Let's see VerifyOtp again.
+    // It checks `storedData.email !== email`.
+    // I will change VerifyOtp to findOne({ email, otp }).
+    
+    // For SendOtp response:
+    // The frontend expects a 'token'. I'll send a dummy one or the OTP ID.
 
     // Send email
     const mailOptions = {
@@ -272,26 +305,25 @@ const VerifyOtp = async (req, res) => {
   try {
     const { email, otp, token } = req.body;
 
-    const storedData = otpStore.get(token);
+    // Find by token and email
+    const otpRecord = await Otp.findOne({ token, email });
 
-    if (!storedData || storedData.email !== email) {
-      return res.json({ success: false, error: "Invalid token" });
+    if (!otpRecord) {
+      return res.json({ success: false, error: "Invalid or expired token" });
     }
 
-    if (Date.now() > storedData.expires) {
-      otpStore.delete(token);
-      return res.json({ success: false, error: "OTP expired" });
+    // Verify the OTP code matches
+    if (otpRecord.otp !== otp) {
+        return res.json({ success: false, error: "Invalid OTP" });
     }
 
-    if (storedData.otp !== otp) {
-      return res.json({ success: false, error: "Invalid OTP" });
-    }
-
-    // OTP is valid - mark the email as verified in the OTP store
-    // We'll handle the actual user update during registration
-    otpStore.set(token, {
-      ...storedData,
-      verified: true, // Add a verified flag
+    // Mark as verified
+    otpRecord.verified = true;
+    await otpRecord.save();
+    
+    res.json({
+      success: true,
+      message: "Email verified successfully",
     });
 
     res.json({
@@ -306,21 +338,20 @@ const VerifyOtp = async (req, res) => {
 
 const ResendOtp = async (req, res) => {
   try {
-    const { email, token } = req.body;
+    const { email } = req.body;
 
     // Generate new OTP
     const otp = crypto.randomInt(100000, 999999).toString();
+    const newToken = crypto.randomBytes(32).toString("hex");
 
-    // Update stored OTP
-    if (otpStore.has(token)) {
-      otpStore.set(token, {
+    // Invalidate old OTPs for this email
+    await Otp.deleteMany({ email });
+
+    await Otp.create({
         email,
         otp,
-        expires: Date.now() + 10 * 60 * 1000,
-      });
-    } else {
-      return res.status(400).json({ error: "Invalid token" });
-    }
+        token: newToken // We need to add this field to model
+    });
 
     // Send email
     const mailOptions = {

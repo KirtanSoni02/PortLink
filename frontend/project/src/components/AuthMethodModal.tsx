@@ -18,52 +18,61 @@ const AuthMethodModal: React.FC<AuthMethodModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black/75 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="bg-white rounded-lg p-6 w-full max-w-md"
+        initial={{ opacity: 0, scale: 0.95, y: 10 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: 10 }}
+        className="bg-white dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 rounded-2xl p-6 w-full max-w-md shadow-2xl text-slate-900 dark:text-white transition-colors"
       >
+        {/* Header */}
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-slate-800">Choose Authentication Method</h2>
+          <div>
+            <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+              Join PortLink
+            </h2>
+            <p className="text-xs text-slate-500 dark:text-neutral-400 mt-0.5">
+              Select your preferred authentication method
+            </p>
+          </div>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 transition-colors"
+            className="p-1 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-neutral-800 transition-colors"
           >
-            <X size={24} />
+            <X size={20} />
           </button>
         </div>
 
-        <div className="space-y-4">
+        {/* Buttons */}
+        <div className="space-y-3">
           <button
             onClick={onSelectEmail}
-            className="w-full flex items-center justify-center p-4 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors"
+            className="w-full flex items-center justify-center p-3.5 border border-slate-300 dark:border-neutral-800 rounded-xl bg-slate-50 dark:bg-black hover:bg-slate-100 dark:hover:bg-neutral-800 transition-colors group"
           >
-            <Mail className="h-6 w-6 mr-3 text-slate-600" />
-            <span className="text-lg font-medium">Sign up with Email</span>
+            <Mail className="h-5 w-5 mr-3 text-slate-700 dark:text-neutral-300 group-hover:scale-105 transition-transform" />
+            <span className="text-sm font-semibold text-slate-900 dark:text-white">Sign up with Email</span>
           </button>
 
-          <div className="relative">
+          <div className="relative my-2">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300"></div>
+              <div className="w-full border-t border-slate-200 dark:border-neutral-800"></div>
             </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">Or</span>
+            <div className="relative flex justify-center text-xs">
+              <span className="px-2 bg-white dark:bg-neutral-900 text-slate-400 dark:text-neutral-500">Or</span>
             </div>
           </div>
 
           <button
             onClick={onSelectGoogle}
-            className="w-full flex items-center justify-center p-4 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors"
+            className="w-full flex items-center justify-center p-3.5 border border-slate-300 dark:border-neutral-800 rounded-xl bg-slate-50 dark:bg-black hover:bg-slate-100 dark:hover:bg-neutral-800 transition-colors group"
           >
-            {/* <Chrome className="h-6 w-6 mr-3 text-slate-600" /> */}
-            <img src="../images/google.png" alt="Google Logo" className="w-6 h-6 mr-3" />
-            <span className="text-lg font-medium">Continue with Google</span>
+            <img src="../images/google.png" alt="Google Logo" className="w-5 h-5 mr-3 group-hover:scale-105 transition-transform" />
+            <span className="text-sm font-semibold text-slate-900 dark:text-white">Continue with Google</span>
           </button>
         </div>
 
-        <p className="mt-6 text-center text-sm text-gray-600">
-          By continuing, you agree to our Terms of Service and Privacy Policy.
+        <p className="mt-6 text-center text-xs text-slate-500 dark:text-neutral-500">
+          By continuing, you agree to PortLink's Terms of Service and Privacy Policy.
         </p>
       </motion.div>
     </div>

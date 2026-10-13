@@ -84,51 +84,12 @@ export const getIncomingShipsToPort = async (req, res, next) => {
 
     console.log("Active Ships found:", activeShips);
 
-    for (const ship of activeShips) {
-      if (ship.progress >= 100) {
-        // Prepare completed contract data
-        const completedData = {
-          portAuthority: ship.createdBy._id,
-          ship: ship._id,
-          shipNumber: ship.number,
-          shipName: ship.name,
-          startDate: ship.departureDate,
-          endDate: new Date(), // or ship.arrivalDate if present
-          sailorsCount: ship.crewCount,
-          crew:
-            ship.crew?.map((c) => ({
-              sailorId: c.sailorId,
-              name: c.name || "",
-              role: c.role || "",
-              experience: c.experience || "",
-            })) || [],
-          route: {
-            source: ship.source,
-            destination: ship.destination,
-          },
-          cargoType: ship.cargoType,
-          totalPayment: ship.contractvalue * ship.crewCount || 0,
-          duration: `${Math.ceil(
-            (Date.now() - new Date(ship.departureDate).getTime()) /
-              (1000 * 60 * 60 * 24)
-          )} days`,
-        };
-
-        // Save to completed contracts
-        await CompletedContract.create(completedData);
-
-        // Delete ship
-        await Ship.findByIdAndDelete(ship._id);
-
-        console.log(`Ship ${ship.name} archived to CompletedContracts.`);
-      }
-    }
+    // Side effect removed: Archiving logic moved to background job
+    // for (const ship of activeShips) { ... }
 
     // After archiving, get the fresh list again
-    const remainingActiveShips = await Ship.find({
-      destination: portAuthority.portName,
-      status: "active",
-    });
+    // Just return the active ships found
+    const remainingActiveShips = activeShips;
 
     res.status(200).json(remainingActiveShips);
   } catch (error) {
@@ -147,6 +108,12 @@ export const updateSailorLocation = async ({ shipId, latitude, longitude }) => {
     }
 
     const prevLocation = ship.currentLocation;
+
+    // Fix for missing contractvalue (legacy data or bug)
+    if (ship.contractvalue === undefined || ship.contractvalue === null) {
+      console.warn(`⚠️ Ship ${ship.name} missing contractvalue. Defaulting to 0.`);
+      ship.contractvalue = 0;
+    }
 
     // Calculate speed (optional)
     const distance = calculateDistance(
@@ -224,3 +191,73 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
 }
+
+export const archiveCompletedShips = async () => {
+  try {
+    const activeShips = await Ship.find({ status: "active" }).populate({
+      path: "crew.sailorId",
+      populate: { path: "user" }
+    });
+
+    for (const ship of activeShips) {
+      if (ship.progress >= 100) {
+        const crewCount = ship.crew?.length || 1;
+        const perSailorSalary = ship.contractvalue || 0;
+        const totalPayment = perSailorSalary * crewCount;
+
+        // Batch Payroll Processing: Credit assigned sailors
+        for (const member of ship.crew) {
+          const sailor = member.sailorId;
+          if (sailor) {
+            console.log(
+              `💰 [BATCH PAYROLL] Crediting ${perSailorSalary} to Sailor ID: ${sailor._id} for completed ship ${ship.name}`
+            );
+          }
+        }
+
+        // Prepare completed contract data
+        const completedData = {
+          portAuthority: ship.createdBy,
+          ship: ship._id,
+          shipNumber: ship.number,
+          shipName: ship.name,
+          startDate: ship.departureDate,
+          endDate: new Date(),
+          sailorsCount: crewCount,
+          crew:
+            ship.crew?.map((c) => {
+              const sObj = c.sailorId;
+              const uObj = sObj?.user;
+              const nameStr = uObj ? `${uObj.firstName || ''} ${uObj.lastName || ''}`.trim() : (c.name || 'Sailor');
+              return {
+                sailorId: sObj?._id || c.sailorId,
+                name: nameStr,
+                role: c.role || "Able Seaman",
+                experience: c.experience || uObj?.experience || "Standard",
+              };
+            }) || [],
+          route: {
+            source: ship.source,
+            destination: ship.destination,
+          },
+          cargoType: ship.cargoType,
+          totalPayment: totalPayment,
+          duration: `${Math.max(1, Math.ceil(
+            (Date.now() - new Date(ship.departureDate).getTime()) /
+              (1000 * 60 * 60 * 24)
+          ))} days`,
+        };
+
+        // Save to completed contracts
+        await CompletedContract.create(completedData);
+
+        // Delete ship (archived)
+        await Ship.findByIdAndDelete(ship._id);
+
+        console.log(`✅ Ship ${ship.name} destination reached & archived to CompletedContracts. Batch payroll executed.`);
+      }
+    }
+  } catch (error) {
+    console.error("Error in ship archiving job:", error);
+  }
+};

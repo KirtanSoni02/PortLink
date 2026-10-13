@@ -6,6 +6,7 @@ import {
   deleteJobPost,
   viewJobPost,
 } from "../controllers/activejobController.js";
+
 const router = express.Router();
 
 router.get("/activejobpost", verifyToken, ConvertToShip, getMyJobPosts);

@@ -120,9 +120,6 @@ export const getPortOverview = async (req, res) => {
   }
 };
 
-//This is to fetch the
-// port authority profile data for the dashboard
-
 export const getPortDashboardProfile = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -174,6 +171,58 @@ export const getPortDashboardProfile = async (req, res) => {
     });
   } catch (err) {
     console.error("Error fetching port dashboard data:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const updatePortDashboardProfile = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { name, email, portName, city, state, country, phone } = req.body;
+
+    const user = await User.findById(userId);
+    const portData = await PortAuthority.findOne({ user: userId });
+
+    if (!user || !portData) {
+      return res.status(404).json({ message: "User or port authority not found" });
+    }
+
+    if (name) {
+      const nameParts = name.trim().split(" ");
+      user.firstName = nameParts[0] || user.firstName;
+      user.lastName = nameParts.slice(1).join(" ") || user.lastName;
+    }
+    if (email) user.email = email;
+    if (phone) user.phone = phone;
+    await user.save();
+
+    if (portName) portData.portName = portName;
+    if (city || state || country) {
+      portData.location = {
+        city: city ?? portData.location?.city,
+        state: state ?? portData.location?.state,
+        country: country ?? portData.location?.country,
+      };
+    }
+    await portData.save();
+
+    res.status(200).json({
+      message: "Port Authority profile updated successfully",
+      profile: {
+        id: portData._id,
+        name: `${user.firstName} ${user.lastName}`,
+        email: user.email,
+        phone: user.phone,
+        portName: portData.portName,
+        location: portData.location,
+        totalShipsInTransit: portData.totalShipsInTransit,
+        totalContractsCompleted: portData.totalContractsCompleted,
+        activeJobPosts: portData.activeJobPosts,
+        registeredSailors: portData.registeredSailors,
+      },
+    });
+  } catch (err) {
+    console.error("Error updating port profile:", err);
     res.status(500).json({ message: "Internal server error" });
   }
 };

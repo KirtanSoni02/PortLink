@@ -106,9 +106,15 @@ export const updateSailorProfile = async (req, res) => {
   const firstName = name.split(" ")[0];
   const lastName = name.split(" ")[1];
   try {
+    const updateData = { firstName, lastName, email, phone, location };
+
+    if (req.file) {
+      updateData.profilePicture = `/uploads/profiles/${req.file.filename}`;
+    }
+
     const updatedSailor = await User.findByIdAndUpdate(
       userId,
-      { firstName, lastName, email, phone, location },
+      updateData,
       { new: true }
     );
 

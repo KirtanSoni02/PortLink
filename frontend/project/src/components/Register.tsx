@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Anchor, Eye, EyeOff, User, Mail, Phone, MapPin, Globe, Briefcase } from 'lucide-react';
+import { Anchor, Eye, EyeOff, User, Mail, Phone, MapPin, Globe, Briefcase, ArrowLeft, Sun, Moon } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 import { Country, State, City } from 'country-state-city';
 import OTPModal from './OTPModal';
 import AuthMethodModal from './AuthMethodModal';
 import GoogleAuthButton from './GoogleAuthButton';
+import { useTheme } from '../context/ThemeContext';
 
 interface FormData {
   firstName: string;
@@ -29,6 +31,8 @@ interface FormErrors {
 
 const Register: React.FC = () => {
   const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme();
+
   const [formData, setFormData] = useState<FormData>({
     firstName: '',
     lastName: '',
@@ -44,7 +48,7 @@ const Register: React.FC = () => {
     selectedPort: ''
   });
 
-  const [portList, setPortList] = useState<string[]>([
+  const [portList] = useState<string[]>([
     "Port of Deendayal (Kandla)", "Port of Mumbai", "Port of Jawaharlal Nehru (Nhava Sheva)", "Port of Mormugao", "Port of New Mangalore", "Port of Cochin (Kochi)", "Port of V.O. Chidambaranar (Tuticorin)", "Port of Chennai", "Port of Kamarajar (Ennore)", "Port of Visakhapatnam", "Port of Paradip", "Port of Syama Prasad Mookerjee (Kolkata)", "Port of Port Blair", "Port of Vadhavan", "Port of Porbandar", "Port of Veraval", "Port of Bhavnagar", "Port of Bharuch", "Port of Surat", "Port of Mandvi", "Port of Navlakhi", "Port of Bedi", "Port of Sikka", "Port of Jafarabad", "Port of Okha", "Port of Magdalla", "Port of Mundra", "Port of Pipavav", "Port of Dahej", "Port of Hazira", "Port of Tuna", "Port of Ratnagiri", "Port of Dahanu", "Port of Tarapur", "Port of Satpati", "Port of Kellwa-Mahim", "Port of Arnala", "Port of Uttan", "Port of Bassein", "Port of Bhiwandi", "Port of Manori", "Port of Kalyan", "Port of Thane", "Port of Versova", "Port of Bandra", "Port of Trombay", "Port of Ulwa-Belapur", "Port of Panvel", "Port of More", "Port of Mandwa", "Port of Karanja", "Port of Thal", "Port of Rewas", "Port of Alibag", "Port of Dharamtar", "Port of Revdanda", "Port of Borli/Mandla", "Port of Nandgaon", "Port of Murud-Janjira", "Port of Rajpuri", "Port of Mandad", "Port of Dighi", "Port of Panaji", "Port of Chapora", "Port of Betul", "Port of Talpona", "Port of Tiracol", "Port of Mangalore", "Port of Malpe", "Port of Hangarkatta", "Port of Kundapur", "Port of Bhatkal", "Port of Honavar", "Port of Tadri", "Port of Belekeri", "Port of Karwar", "Port of Padubidri", "Port of Alappuzha", "Port of Vadakara", "Port of Kannur", "Port of Kasargode", "Port of Kodungallore", "Port of Ponnani", "Port of Thalassery", "Port of Thiruvananthapuram", "Port of Kollam (Quilon)", "Port of Kozhikode/Beypore", "Port of Neendakara", "Port of Azhikkal", "Port of Vizhinjam", "Port of Nagapattinam", "Port of Kattupalli", "Port of Karaikal", "Port of Cuddalore", "Port of Thirukkadaiyur", "Port of Koondankulam", "Port of Machilipatnam", "Port of Kakinada", "Port of Krishnapatnam", "Port of Gangavaram", "Port of Bhavanapadu", "Port of Calingapatnam", "Port of Bheemunipatnam", "Port of Narsapur", "Port of Vadarevu", "Port of Nizampatnam", "Port of Gopalpur", "Port of Dhamra", "Port of Kulpi", "Port of Durgachak", "Port of Farakka", "Port of Sahebganj"
   ]);
 
@@ -52,7 +56,7 @@ const Register: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const [allCountries, setAllCountries] = useState(Country.getAllCountries());
+  const [allCountries] = useState(Country.getAllCountries());
   const [allStates, setAllStates] = useState<any[]>([]);
   const [allCities, setAllCities] = useState<any[]>([]);
 
@@ -73,12 +77,10 @@ const Register: React.FC = () => {
   const [isSendingOTP, setIsSendingOTP] = useState(false);
   const [verificationToken, setVerificationToken] = useState('');
   const [googleData, setGoogleData] = useState<any>(null);
-  const [isFormUnlocked, setIsFormUnlocked] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(true);
   const [authMethod, setAuthMethod] = useState<'email' | 'google' | null>(null);
 
   useEffect(() => {
-    // If user has already selected an auth method, don't show the modal
     if (authMethod) {
       setShowAuthModal(false);
     }
@@ -144,33 +146,28 @@ const Register: React.FC = () => {
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
 
-    // Common fields validation
     Object.keys(formData).forEach(key => {
       if (
         key !== "selectedPort" &&
-        key !== "password" && // Password might be empty for Google users
+        key !== "password" &&
         !formData[key as keyof FormData]?.trim()
       ) {
         newErrors[key] = "This field cannot be empty";
       }
     });
 
-    // Email validation
     if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = "Please enter a valid email address";
     }
 
-    // Password validation only for email auth
     if (authMethod === 'email' && formData.password && formData.password.length < 6) {
       newErrors.password = "Password must be at least 6 characters long";
     }
 
-    // Phone validation
     if (formData.phone && !/^\+?[\d\s-()]+$/.test(formData.phone)) {
       newErrors.phone = "Please enter a valid phone number";
     }
 
-    // Role-specific validation
     if (formData.role === "port") {
       if (!formData.selectedPort || !formData.selectedPort.trim()) {
         newErrors.selectedPort = "Please select your port";
@@ -185,7 +182,7 @@ const Register: React.FC = () => {
 
   const sendOTP = async () => {
     if (!formData.email || errors.email) {
-      alert('Please enter a valid email first');
+      toast.error('Please enter a valid email first');
       return;
     }
 
@@ -194,12 +191,12 @@ const Register: React.FC = () => {
       const response = await axios.post(`${API_URL}/api/auth/send-otp`, {
         email: formData.email
       });
-      console.log('OTP verification token:', response.data.token);
       setVerificationToken(response.data.token);
       setIsOTPModalOpen(true);
+      toast.success('OTP sent to your email!');
     } catch (error: any) {
       console.error('OTP sending error:', error);
-      alert('Failed to send OTP. Please try again.');
+      toast.error('Failed to send OTP. Please try again.');
     } finally {
       setIsSendingOTP(false);
     }
@@ -231,24 +228,20 @@ const Register: React.FC = () => {
         email: formData.email,
         token: verificationToken
       });
-      alert('OTP sent again!');
+      toast.success('OTP sent again!');
     } catch (error: any) {
       console.error('Resend OTP error:', error);
-      alert('Failed to resend OTP. Please try again.');
+      toast.error('Failed to resend OTP. Please try again.');
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validateForm()) {
-      console.log("❌ Validation failed");
-      return;
-    }
+    if (!validateForm()) return;
 
-    // For email auth, check if email is verified
     if (authMethod === 'email' && !isEmailVerified) {
-      alert('Please verify your email first');
+      toast.error('Please verify your email first');
       return;
     }
 
@@ -258,22 +251,19 @@ const Register: React.FC = () => {
       let response;
 
       if (authMethod === 'google') {
-        // Complete Google user registration
         response = await axios.post(`${API_URL}/api/auth/complete-google-profile`, {
           googleData,
           ...formData
         });
       } else {
-        // Regular email/password registration
         response = await axios.post(`${API_URL}/api/auth/register`, {
           ...formData,
           verificationToken: isEmailVerified ? verificationToken : undefined
         });
       }
 
-
       if (response.data.success) {
-        alert("✅ Registration successful!");
+        toast.success("Registration successful!");
         localStorage.setItem('token', response.data.token);
         navigate('/dashboard');
       } else {
@@ -283,9 +273,9 @@ const Register: React.FC = () => {
     } catch (error: any) {
       console.error("Registration error:", error);
       if (error.response?.status === 409) {
-        alert("❗ User already exists");
+        toast.error("User already exists");
       } else {
-        alert("🚫 Registration failed");
+        toast.error("Registration failed");
       }
     } finally {
       setIsLoading(false);
@@ -307,7 +297,6 @@ const Register: React.FC = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-
     setFormData(prev => ({ ...prev, [name]: value }));
 
     const newErrors = { ...errors };
@@ -348,29 +337,20 @@ const Register: React.FC = () => {
   };
 
   const handleGoogleSuccess = (response: any) => {
-    console.log("Google response received:", response);
-
     if (response.profileComplete) {
-      // Existing user - log them in
       localStorage.setItem('token', response.token);
       navigate('/dashboard');
     } else if (response.googleData) {
-      // New user - store Google data for profile completion
       setGoogleData(response.googleData);
-      setIsFormUnlocked(true);
-
-      // Pre-fill basic info from Google
       setFormData(prev => ({
         ...prev,
         email: response.googleData.email,
         firstName: response.googleData.firstName || '',
         lastName: response.googleData.lastName || '',
       }));
-
       setIsEmailVerified(true);
     } else {
-      console.error('Unexpected response format:', response);
-      alert('Unexpected response from server. Please try again.');
+      toast.error('Unexpected response from server. Please try again.');
     }
   };
 
@@ -382,7 +362,7 @@ const Register: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex bg-slate-50 dark:bg-black text-slate-900 dark:text-white transition-colors duration-300">
       {/* Auth Method Modal */}
       <AuthMethodModal
         isOpen={showAuthModal}
@@ -400,57 +380,62 @@ const Register: React.FC = () => {
         onResend={resendOTP}
       />
 
-      {/* Left Side - Form */}
+      {/* Left Side - Form Container */}
       <motion.div
-        initial={{ opacity: 0, x: -50 }}
+        initial={{ opacity: 0, x: -30 }}
         animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.8 }}
-        className="flex-1 flex items-center justify-center p-8 bg-gradient-to-br from-slate-50 to-white overflow-y-auto"
+        transition={{ duration: 0.6 }}
+        className="flex-1 flex flex-col justify-between p-6 sm:p-12 overflow-y-auto relative z-10"
       >
-        <div className="w-full max-w-md py-8">
-          {/* Logo and Title */}
-          <motion.div
-            initial={{ opacity: 0, y: -30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-center mb-8"
+        {/* Top Bar Navigation */}
+        <div className="flex items-center justify-between max-w-md mx-auto w-full mb-6">
+          <Link
+            to="/"
+            className="inline-flex items-center space-x-2 text-xs font-semibold text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white transition-colors"
           >
-            <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-sky-500 to-emerald-500 rounded-full">
-              <Anchor className="w-8 h-8 text-white" />
-            </div>
-            <h1 className="text-3xl font-bold text-slate-800 mb-2">Create Your PortLink Account</h1>
-            <p className="text-slate-600">Join the maritime digital revolution</p>
-          </motion.div>
+            <ArrowLeft className="w-4 h-4" />
+            <span>Back to Home</span>
+          </Link>
 
-          {/* Authentication Method Indicator */}
-          {/* {authMethod && (
-            <div className={`mb-6 p-3 rounded-lg text-center ${authMethod === 'email' ? 'bg-blue-50 text-blue-700' : 'bg-green-50 text-green-700'}`}>
-              {authMethod === 'email' ? '📧 Email Authentication' : '🔐 Google Authentication'}
-            </div>
-          )} */}
+          <button
+            onClick={toggleTheme}
+            className="p-2 rounded-lg bg-slate-200 dark:bg-neutral-900 text-slate-700 dark:text-neutral-300 hover:bg-slate-300 dark:hover:bg-neutral-800 border border-slate-300 dark:border-neutral-800 transition-all"
+            title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
+          >
+            {theme === 'dark' ? (
+              <Sun className="w-4 h-4 text-amber-400" />
+            ) : (
+              <Moon className="w-4 h-4 text-slate-800" />
+            )}
+          </button>
+        </div>
+
+        {/* Center Form */}
+        <div className="w-full max-w-md mx-auto my-auto py-4">
+          {/* Header Branding */}
+          <div className="text-center mb-8">
+            <Link to="/" className="inline-flex items-center justify-center w-12 h-12 mb-4 rounded-xl bg-slate-900 dark:bg-neutral-900 border border-slate-800 dark:border-neutral-700 text-white shadow-md">
+              <Anchor className="w-6 h-6 text-white" />
+            </Link>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white mb-1.5">
+              Create Your Account
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-neutral-400">
+              Join PortLink maritime digital platform
+            </p>
+          </div>
 
           {/* Form */}
-          <motion.form
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            onSubmit={handleSubmit}
-            className="space-y-6"
-          >
-            {/* Regular Input Fields */}
-            {inputFields.map((field, index) => (
-              <motion.div
-                key={field.name}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.1 * index }}
-              >
-                <label htmlFor={field.name} className="block text-sm font-medium text-slate-700 mb-2">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Input Fields */}
+            {inputFields.map((field) => (
+              <div key={field.name}>
+                <label htmlFor={field.name} className="block text-xs font-medium text-slate-700 dark:text-neutral-300 mb-1">
                   {field.label}
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <field.icon className="h-5 w-5 text-slate-400" />
+                    <field.icon className="h-4 w-4 text-slate-400 dark:text-neutral-500" />
                   </div>
                   <input
                     type={field.type}
@@ -458,37 +443,28 @@ const Register: React.FC = () => {
                     name={field.name}
                     value={formData[field.name as keyof FormData]}
                     onChange={handleInputChange}
-                    className={`block w-full pl-10 pr-3 py-3 border rounded-lg shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300 ${errors[field.name] ? 'border-red-500 bg-red-50' : 'border-slate-300 bg-white'
-                      }`}
+                    className={`block w-full pl-9 pr-3 py-2.5 text-sm border rounded-lg shadow-sm placeholder-slate-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-1 transition-all ${
+                      errors[field.name]
+                        ? 'border-red-500 bg-red-50 dark:bg-red-950/20 text-red-900 dark:text-red-300'
+                        : 'border-slate-300 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-slate-900 dark:text-white focus:border-slate-500 dark:focus:border-white'
+                    }`}
                     placeholder={field.placeholder}
                   />
                 </div>
                 {errors[field.name] && (
-                  <motion.p
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="mt-2 text-sm text-red-600"
-                  >
-                    {errors[field.name]}
-                  </motion.p>
+                  <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors[field.name]}</p>
                 )}
-              </motion.div>
+              </div>
             ))}
 
-
-
             {/* Email Field */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-2">
-                Email
+            <div>
+              <label htmlFor="email" className="block text-xs font-medium text-slate-700 dark:text-neutral-300 mb-1">
+                Email Address
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-slate-400" />
+                  <Mail className="h-4 w-4 text-slate-400 dark:text-neutral-500" />
                 </div>
                 <input
                   type="email"
@@ -497,162 +473,82 @@ const Register: React.FC = () => {
                   value={formData.email}
                   onChange={handleInputChange}
                   readOnly={authMethod === 'google'}
-                  className={`block w-full pl-10 pr-3 py-3 border rounded-lg shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300 ${errors.email ? 'border-red-500 bg-red-50' : 'border-slate-300 bg-white'
-                    } ${authMethod === 'google' ? 'bg-gray-100' : ''}`}
-                  placeholder="Enter your email"
+                  className={`block w-full pl-9 pr-3 py-2.5 text-sm border rounded-lg shadow-sm placeholder-slate-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-1 transition-all ${
+                    errors.email
+                      ? 'border-red-500 bg-red-50 dark:bg-red-950/20 text-red-900 dark:text-red-300'
+                      : 'border-slate-300 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-slate-900 dark:text-white focus:border-slate-500 dark:focus:border-white'
+                  }`}
+                  placeholder="name@example.com"
                 />
               </div>
               {errors.email && (
-                <motion.p
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="mt-2 text-sm text-red-600"
-                >
-                  {errors.email}
-                </motion.p>
+                <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.email}</p>
               )}
-            </motion.div>
+            </div>
 
-            {/* Password Field (only for email auth) */}
+            {/* Password Field */}
             {authMethod === 'email' && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.8 }}
-              >
-                <label
-                  htmlFor="password"
-                  className="block text-sm font-medium text-slate-700 mb-2"
-                >
+              <div>
+                <label htmlFor="password" className="block text-xs font-medium text-slate-700 dark:text-neutral-300 mb-1">
                   Password
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Briefcase className="h-5 w-5 text-slate-400" />
+                    <Briefcase className="h-4 w-4 text-slate-400 dark:text-neutral-500" />
                   </div>
                   <input
-                    type={showPassword ? "text" : "password"}
+                    type={showPassword ? 'text' : 'password'}
                     id="password"
                     name="password"
                     value={formData.password}
                     onChange={handleInputChange}
-                    className={`block w-full pl-10 pr-12 py-3 border rounded-lg shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300 ${errors.password ? "border-red-500 bg-red-50" : "border-slate-300 bg-white"
-                      }`}
+                    className={`block w-full pl-9 pr-10 py-2.5 text-sm border rounded-lg shadow-sm placeholder-slate-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-1 transition-all ${
+                      errors.password
+                        ? 'border-red-500 bg-red-50 dark:bg-red-950/20 text-red-900 dark:text-red-300'
+                        : 'border-slate-300 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-slate-900 dark:text-white focus:border-slate-500 dark:focus:border-white'
+                    }`}
                     placeholder="Create a secure password"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-neutral-200"
                   >
-                    {showPassword ? (
-                      <EyeOff className="h-5 w-5 text-slate-400 hover:text-slate-600" />
-                    ) : (
-                      <Eye className="h-5 w-5 text-slate-400 hover:text-slate-600" />
-                    )}
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
                 {errors.password && (
-                  <motion.p
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="mt-2 text-sm text-red-600"
-                  >
-                    {errors.password}
-                  </motion.p>
+                  <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.password}</p>
                 )}
-              </motion.div>
+              </div>
             )}
 
-            {/* Verify Email Button (only for email auth) */}
+            {/* Verify Email Button */}
             {authMethod === 'email' && (
               <button
                 type="button"
                 onClick={sendOTP}
                 disabled={isSendingOTP || !!errors.email || !formData.email || isEmailVerified}
-                className={`w-full py-3 px-4 border rounded-lg shadow-sm font-medium transition-all duration-300 mb-4 ${isEmailVerified
-                  ? 'bg-green-100 text-green-700 border-green-300'
-                  : isSendingOTP || errors.email || !formData.email
-                    ? 'bg-gray-100 text-gray-500 border-gray-300 cursor-not-allowed'
-                    : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50 hover:shadow-md'
-                  }`}
+                className={`w-full py-2.5 px-4 rounded-lg shadow-sm text-xs font-semibold border transition-all ${
+                  isEmailVerified
+                    ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 border-emerald-300 dark:border-emerald-800'
+                    : isSendingOTP || errors.email || !formData.email
+                      ? 'bg-slate-100 dark:bg-neutral-900 text-slate-400 dark:text-neutral-600 border-slate-200 dark:border-neutral-800 cursor-not-allowed'
+                      : 'bg-white dark:bg-neutral-900 text-slate-900 dark:text-white border-slate-300 dark:border-neutral-700 hover:bg-slate-50 dark:hover:bg-neutral-800'
+                }`}
               >
-                {isSendingOTP ? (
-                  <div className="flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-slate-700 mr-2"></div>
-                    Sending OTP...
-                  </div>
-                ) : isEmailVerified ? (
-                  <div className="flex items-center justify-center">
-                    <svg className="w-5 h-5 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
-                    Email Verified
-                  </div>
-                ) : (
-                  'Verify your email'
-                )}
+                {isSendingOTP ? 'Sending Verification Code...' : isEmailVerified ? '✓ Email Verified' : 'Verify Email with OTP'}
               </button>
             )}
 
-            {/* Google Auth Button (only shown if Google auth not completed yet) */}
-            {authMethod === 'google' && !googleData && (
-              <>
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-slate-300"></div>
-                  </div>
-                  <div className="relative flex justify-center text-sm">
-                    <span className="px-2 bg-white text-slate-500">Authenticate with</span>
-                  </div>
-                </div>
-                <GoogleAuthButton
-                  mode="register"
-                  onSuccess={handleGoogleSuccess}
-                  onError={(error) => {
-                    console.error('Google auth error:', error);
-                    alert('Google authentication failed. Please try again.');
-                  }}
-                />
-              </>
-            )}
-
-            {/* Google User Info */}
-            {googleData && (
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-                <div className="flex items-center">
-                  <img
-                    src={googleData.profilePicture}
-                    alt="Google profile"
-                    className="w-8 h-8 rounded-full mr-3"
-                  />
-                  <div>
-                    <p className="text-sm font-medium text-blue-800">
-                      Signed in with Google as {googleData.email}
-                    </p>
-                    <p className="text-xs text-blue-600">
-                      Please complete your profile information
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Country, State, City Fields */}
-            {/* ... (keep your existing country, state, city fields code) */}
-
-            {/*Country Field*/}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.7 }}
-            >
-              <label htmlFor="country" className="block text-sm font-medium text-slate-700 mb-2">
+            {/* Country */}
+            <div>
+              <label htmlFor="country" className="block text-xs font-medium text-slate-700 dark:text-neutral-300 mb-1">
                 Country
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Globe className="h-5 w-5 text-slate-400" />
+                  <Globe className="h-4 w-4 text-slate-400 dark:text-neutral-500" />
                 </div>
                 <input
                   type="text"
@@ -662,51 +558,38 @@ const Register: React.FC = () => {
                   value={countryInput}
                   onChange={handleCountryInput}
                   onFocus={() => setShowCountryDropdown(true)}
-                  className={`block w-full pl-10 pr-3 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300 ${errors.country ? 'border-red-500 bg-red-50' : 'border-slate-300 bg-white'
-                    }`}
+                  className={`block w-full pl-9 pr-3 py-2.5 text-sm border rounded-lg shadow-sm placeholder-slate-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-1 transition-all ${
+                    errors.country
+                      ? 'border-red-500 bg-red-50 dark:bg-red-950/20 text-red-900 dark:text-red-300'
+                      : 'border-slate-300 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-slate-900 dark:text-white focus:border-slate-500 dark:focus:border-white'
+                  }`}
                   placeholder="Type to search country"
                 />
                 {showCountryDropdown && countryInput.length > 0 && (
-                  <ul className="absolute z-10 w-full bg-white border border-slate-200 rounded-lg mt-1 max-h-40 overflow-y-auto shadow">
+                  <ul className="absolute z-20 w-full bg-white dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 rounded-lg mt-1 max-h-40 overflow-y-auto shadow-lg text-xs">
                     {filteredCountries.map((country, idx) => (
                       <li
                         key={idx}
-                        className="px-4 py-2 hover:bg-sky-100 cursor-pointer"
+                        className="px-3 py-2 hover:bg-slate-100 dark:hover:bg-neutral-800 cursor-pointer text-slate-900 dark:text-white"
                         onClick={() => handleCountrySelect(country)}
                       >
                         {country.name}
                       </li>
                     ))}
-                    {filteredCountries.length === 0 && (
-                      <li className="px-4 py-2 text-slate-400">No countries found</li>
-                    )}
                   </ul>
                 )}
               </div>
-              {errors.country && (
-                <motion.p
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="mt-2 text-sm text-red-600"
-                >
-                  {errors.country}
-                </motion.p>
-              )}
-            </motion.div>
+            </div>
 
-            {/* Conditional State Dropdown */}
+            {/* State */}
             {formData.country && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.8 }}
-              >
-                <label htmlFor="state" className="block text-sm font-medium text-slate-700 mb-2">
-                  State
+              <div>
+                <label htmlFor="state" className="block text-xs font-medium text-slate-700 dark:text-neutral-300 mb-1">
+                  State / Province
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <MapPin className="h-5 w-5 text-slate-400" />
+                    <MapPin className="h-4 w-4 text-slate-400 dark:text-neutral-500" />
                   </div>
                   <input
                     type="text"
@@ -716,52 +599,35 @@ const Register: React.FC = () => {
                     value={stateInput}
                     onChange={handleStateInput}
                     onFocus={() => setShowStateDropdown(true)}
-                    className={`block w-full pl-10 pr-3 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300 ${errors.state ? 'border-red-500 bg-red-50' : 'border-slate-300 bg-white'
-                      }`}
+                    className="block w-full pl-9 pr-3 py-2.5 text-sm border border-slate-300 dark:border-neutral-800 rounded-lg bg-white dark:bg-neutral-900 text-slate-900 dark:text-white focus:outline-none focus:ring-1"
                     placeholder="Type to search state"
                   />
                   {showStateDropdown && stateInput.length > 0 && (
-                    <ul className="absolute z-10 w-full bg-white border border-slate-200 rounded-lg mt-1 max-h-40 overflow-y-auto shadow">
+                    <ul className="absolute z-20 w-full bg-white dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 rounded-lg mt-1 max-h-40 overflow-y-auto shadow-lg text-xs">
                       {filteredStates.map((state, idx) => (
                         <li
                           key={idx}
-                          className="px-4 py-2 hover:bg-sky-100 cursor-pointer"
+                          className="px-3 py-2 hover:bg-slate-100 dark:hover:bg-neutral-800 cursor-pointer text-slate-900 dark:text-white"
                           onClick={() => handleStateSelect(state)}
                         >
                           {state.name}
                         </li>
                       ))}
-                      {filteredStates.length === 0 && (
-                        <li className="px-4 py-2 text-slate-400">No states found</li>
-                      )}
                     </ul>
                   )}
                 </div>
-                {errors.state && (
-                  <motion.p
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="mt-2 text-sm text-red-600"
-                  >
-                    {errors.state}
-                  </motion.p>
-                )}
-              </motion.div>
+              </div>
             )}
 
-            {/* Conditional City Dropdown */}
+            {/* City */}
             {formData.country && formData.state && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.5 }}
-              >
-                <label htmlFor="city" className="block text-sm font-medium text-slate-700 mb-2">
+              <div>
+                <label htmlFor="city" className="block text-xs font-medium text-slate-700 dark:text-neutral-300 mb-1">
                   City
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <MapPin className="h-5 w-5 text-slate-400" />
+                    <MapPin className="h-4 w-4 text-slate-400 dark:text-neutral-500" />
                   </div>
                   <input
                     type="text"
@@ -771,60 +637,41 @@ const Register: React.FC = () => {
                     value={cityInput}
                     onChange={handleCityInput}
                     onFocus={() => setShowCityDropdown(true)}
-                    className={`block w-full pl-10 pr-3 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300 ${errors.city ? 'border-red-500 bg-red-50' : 'border-slate-300 bg-white'
-                      }`}
+                    className="block w-full pl-9 pr-3 py-2.5 text-sm border border-slate-300 dark:border-neutral-800 rounded-lg bg-white dark:bg-neutral-900 text-slate-900 dark:text-white focus:outline-none focus:ring-1"
                     placeholder="Type to search city"
                   />
                   {showCityDropdown && cityInput.length > 0 && (
-                    <ul className="absolute z-10 w-full bg-white border border-slate-200 rounded-lg mt-1 max-h-40 overflow-y-auto shadow">
+                    <ul className="absolute z-20 w-full bg-white dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 rounded-lg mt-1 max-h-40 overflow-y-auto shadow-lg text-xs">
                       {filteredCities.map((city, idx) => (
                         <li
                           key={idx}
-                          className="px-4 py-2 hover:bg-sky-100 cursor-pointer"
+                          className="px-3 py-2 hover:bg-slate-100 dark:hover:bg-neutral-800 cursor-pointer text-slate-900 dark:text-white"
                           onClick={() => handleCitySelect(city)}
                         >
                           {city.name}
                         </li>
                       ))}
-                      {filteredCities.length === 0 && (
-                        <li className="px-4 py-2 text-slate-400">No cities found</li>
-                      )}
                     </ul>
                   )}
                 </div>
-                {errors.city && (
-                  <motion.p
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="mt-2 text-sm text-red-600"
-                  >
-                    {errors.city}
-                  </motion.p>
-                )}
-              </motion.div>
+              </div>
             )}
 
-
             {/* Role Dropdown */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.9 }}
-            >
-              <label htmlFor="role" className="block text-sm font-medium text-slate-700 mb-2">
-                Role
+            <div>
+              <label htmlFor="role" className="block text-xs font-medium text-slate-700 dark:text-neutral-300 mb-1">
+                Account Persona / Role
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Briefcase className="h-5 w-5 text-slate-400" />
+                  <Briefcase className="h-4 w-4 text-slate-400 dark:text-neutral-500" />
                 </div>
                 <select
                   id="role"
                   name="role"
                   value={formData.role}
                   onChange={handleInputChange}
-                  className={`block w-full pl-10 pr-3 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300 ${errors.role ? 'border-red-500 bg-red-50' : 'border-slate-300 bg-white'
-                    }`}
+                  className="block w-full pl-9 pr-3 py-2.5 text-sm border border-slate-300 dark:border-neutral-800 rounded-lg bg-white dark:bg-neutral-900 text-slate-900 dark:text-white focus:outline-none focus:ring-1"
                 >
                   <option value="">Select your role</option>
                   <option value="sailor">Sailor</option>
@@ -833,12 +680,8 @@ const Register: React.FC = () => {
               </div>
 
               {formData.role === "port" && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.5 }}
-                >
-                  <label htmlFor="selectedPort" className="block text-sm font-medium text-slate-700 mb-2 mt-6">
+                <div className="mt-3">
+                  <label htmlFor="selectedPort" className="block text-xs font-medium text-slate-700 dark:text-neutral-300 mb-1">
                     Select Port You Work At
                   </label>
                   <select
@@ -846,131 +689,71 @@ const Register: React.FC = () => {
                     name="selectedPort"
                     value={formData.selectedPort}
                     onChange={handleInputChange}
-                    className="block w-full pl-3 pr-3 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
+                    className="block w-full px-3 py-2.5 text-sm border border-slate-300 dark:border-neutral-800 rounded-lg bg-white dark:bg-neutral-900 text-slate-900 dark:text-white"
                   >
                     <option value="">-- Select a Port --</option>
                     {portList.map((port, idx) => (
-                      <option key={idx} value={port}>
-                        {port}
-                      </option>
+                      <option key={idx} value={port}>{port}</option>
                     ))}
                   </select>
-                  {errors.selectedPort && (
-                    <motion.p
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="mt-2 text-sm text-red-600"
-                    >
-                      {errors.selectedPort}
-                    </motion.p>
-                  )}
-                </motion.div>
-              )}
-
-              {errors.role && (
-                <motion.p
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="mt-2 text-sm text-red-600"
-                >
-                  {errors.role}
-                </motion.p>
-              )}
-            </motion.div>
-
-            {/* Experience Dropdown */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 1.0 }}
-            >
-              <label htmlFor="experience" className="block text-sm font-medium text-slate-700 mb-2">
-                Experience
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Briefcase className="h-5 w-5 text-slate-400" />
                 </div>
-                <select
-                  id="experience"
-                  name="experience"
-                  value={formData.experience}
-                  onChange={handleInputChange}
-                  className={`block w-full pl-10 pr-3 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300 ${errors.experience ? 'border-red-500 bg-red-50' : 'border-slate-300 bg-white'
-                    }`}
-                >
-                  <option value="">Do you have maritime experience?</option>
-                  <option value="yes">Yes</option>
-                  <option value="no">No</option>
-                </select>
-              </div>
-              {errors.experience && (
-                <motion.p
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="mt-2 text-sm text-red-600"
-                >
-                  {errors.experience}
-                </motion.p>
               )}
-            </motion.div>
+            </div>
 
             {/* Submit Button */}
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+            <button
               type="submit"
               disabled={isLoading || (authMethod === 'google' && !googleData)}
-              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-sky-500 to-emerald-500 hover:from-sky-600 hover:to-emerald-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+              className="w-full py-2.5 px-4 rounded-lg shadow-sm text-sm font-semibold text-white dark:text-black bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-neutral-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center mt-6"
             >
-              {isLoading ? (
-                <div className="flex items-center">
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                  Creating Account...
-                </div>
-              ) : (
-                'Register'
-              )}
-            </motion.button>
+              {isLoading ? 'Creating Account...' : 'Complete Registration'}
+            </button>
 
             {/* Login Link */}
-            <div className="text-center">
-              <p className="text-sm text-slate-600">
+            <div className="text-center pt-2">
+              <p className="text-xs text-slate-600 dark:text-neutral-400">
                 Already have an account?{' '}
                 <Link
                   to="/login"
-                  className="font-medium text-sky-600 hover:text-sky-500 transition-colors duration-300"
+                  className="font-semibold text-slate-900 dark:text-white hover:underline transition-colors"
                 >
                   Login here
                 </Link>
               </p>
             </div>
-          </motion.form>
+          </form>
+        </div>
+
+        {/* Footer info */}
+        <div className="text-center text-[11px] text-slate-500 dark:text-neutral-500 pt-4">
+          © 2025 PortLink. Secure Maritime Telemetry Platform.
         </div>
       </motion.div>
 
-      {/* Right Side - Image */}
+      {/* Right Side - Image Panel */}
       <motion.div
-        initial={{ opacity: 0, x: 50 }}
+        initial={{ opacity: 0, x: 30 }}
         animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.8 }}
-        className="hidden lg:flex flex-1 relative overflow-hidden"
+        transition={{ duration: 0.6 }}
+        className="hidden lg:flex flex-1 relative overflow-hidden bg-slate-900"
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-emerald-900/20 to-sky-900/20 z-10"></div>
-        <motion.img
-          whileHover={{ scale: 1.05 }}
-          transition={{ duration: 0.8 }}
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent z-10"></div>
+        <img
           src="../../images/Register_Page_Image.jpg"
           alt="Port and maritime operations"
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover opacity-90"
         />
 
-        {/* Overlay Content */}
         <div className="absolute inset-0 z-20 flex items-end p-12">
-          <div className="text-white">
-            <h2 className="text-4xl font-bold mb-4">Chart Your Course</h2>
-            <p className="text-xl text-white/90">
-              Connect with maritime professionals and unlock new opportunities
+          <div className="text-white max-w-lg">
+            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-semibold uppercase tracking-wider mb-3">
+              <span>Maritime Ecosystem</span>
+            </div>
+            <h2 className="text-3xl font-bold tracking-tight mb-2">
+              Chart Your Maritime Future
+            </h2>
+            <p className="text-sm text-neutral-300 leading-relaxed font-normal">
+              Connect with verified maritime professionals, ports, and real-time telemetry streams worldwide.
             </p>
           </div>
         </div>

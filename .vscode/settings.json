@@ -1,4 +1,10 @@
 {
-    "editor.fontFamily": "Fira Code",
-    "editor.fontLigatures": false,
+  "editor.fontFamily": "Fira Code",
+  "editor.fontLigatures": false,
+  "mdb.presetConnections": [
+    {
+      "name": "Preset Connection",
+      "connectionString": "mongodb://localhost:27017"
+    }
+  ]
 }
